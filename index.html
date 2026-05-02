@@ -37,12 +37,14 @@ body {
     pointer-events: none;
     box-shadow: 0 5px 20px rgba(0,0,0,0.8);
     min-width: 200px;
+    max-width: 300px;
 }
 
 #tooltip h4 { margin: 0 0 8px 0; color: var(--highlight); border-bottom: 1px solid #444; padding-bottom: 5px; }
 .tt-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
 .tt-label { color: #aaa; margin-right: 20px; }
 .tt-val { color: #fff; font-weight: bold; }
+.tt-desc { color: #ddd; font-style: italic; font-size: 12px; line-height: 1.4; }
 
 .title {
     width: 100%;
@@ -181,7 +183,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 .stats-panel { overflow-y: auto; }
 .stat-section { margin-bottom: 15px; }
 .stat-section h3 { color: var(--accent); font-size: 20px; border-bottom: 2px solid #444; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
-.stat-row { display: flex; justify-content: space-between; padding: 8px 12px; background: #1e1e2f; margin-bottom: 4px; border-radius: 6px; font-size: 14px; }
+.stat-row { display: flex; justify-content: space-between; padding: 8px 12px; background: #1e1e2f; margin-bottom: 4px; border-radius: 6px; font-size: 14px; cursor: help; transition: background 0.2s; }
+.stat-row:hover { background: #2a2a40; }
 .stat-label { color: #ccc; }
 .stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
 .val-gold { color: var(--gold) !important; }
@@ -221,42 +224,41 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     <div class="panel stats-panel">
         <div class="stat-section">
             <h3>Damage Stats</h3>
-            <div class="stat-row"><span class="stat-label" id="lbl-dmg">Damage</span><span class="stat-val" id="val-dmg">-</span></div>
-            <div class="stat-row"><span class="stat-label">Attack Speed</span><span class="stat-val" id="val-spd">0</span></div>
-            <div class="stat-row"><span class="stat-label">Attack Range</span><span class="stat-val" id="val-rng">0</span></div>
-            <div class="stat-row"><span class="stat-label">Pierce Accuracy</span><span class="stat-val" id="val-acc-pierce">0</span></div>
-            <div class="stat-row"><span class="stat-label">Slash Accuracy</span><span class="stat-val" id="val-acc-slash">0</span></div>
+            <div class="stat-row" data-stat="quickDamage"><span class="stat-label" id="lbl-dmg">Damage</span><span class="stat-val" id="val-dmg">-</span></div>
+            <div class="stat-row" data-stat="attackSpeed"><span class="stat-label">Attack Speed</span><span class="stat-val" id="val-spd">0</span></div>
+            <div class="stat-row" data-stat="attackRange"><span class="stat-label">Attack Range</span><span class="stat-val" id="val-rng">0</span></div>
+            <div class="stat-row" data-stat="pierceAccuracy"><span class="stat-label">Pierce Accuracy</span><span class="stat-val" id="val-acc-pierce">0</span></div>
+            <div class="stat-row" data-stat="slashAccuracy"><span class="stat-label">Slash Accuracy</span><span class="stat-val" id="val-acc-slash">0</span></div>
         </div>
 
         <div class="stat-section">
             <h3>Power Stats</h3>
-            <div class="stat-row"><span class="stat-label">Melee Power</span><span class="stat-val" id="val-melee">0</span></div>
-            <div class="stat-row"><span class="stat-label">Ranged Power</span><span class="stat-val" id="val-ranged">0</span></div>
-            <div class="stat-row"><span class="stat-label">Magic Power</span><span class="stat-val" id="val-magic">0</span></div>
-            <!-- Added Stats -->
-            <div class="stat-row"><span class="stat-label">Mining Power</span><span class="stat-val" id="val-mining">0</span></div>
-            <div class="stat-row"><span class="stat-label">Smithing Power</span><span class="stat-val" id="val-smithing">0</span></div>
-            <div class="stat-row"><span class="stat-label">Potion Power</span><span class="stat-val" id="val-potion">0</span></div>
+            <div class="stat-row" data-stat="meleePower"><span class="stat-label">Melee Power</span><span class="stat-val" id="val-melee">0</span></div>
+            <div class="stat-row" data-stat="rangedPower"><span class="stat-label">Ranged Power</span><span class="stat-val" id="val-ranged">0</span></div>
+            <div class="stat-row" data-stat="magicPower"><span class="stat-label">Magic Power</span><span class="stat-val" id="val-magic">0</span></div>
+            <div class="stat-row" data-stat="miningPower"><span class="stat-label">Mining Power</span><span class="stat-val" id="val-mining">0</span></div>
+            <div class="stat-row" data-stat="smithingPower"><span class="stat-label">Smithing Power</span><span class="stat-val" id="val-smithing">0</span></div>
+            <div class="stat-row" data-stat="potionMakingPower"><span class="stat-label">Potion Making Power</span><span class="stat-val" id="val-potion">0</span></div>
             
-            <div class="stat-row"><span class="stat-label">Fire Power</span><span class="stat-val" id="val-pow-fire">0</span></div>
-            <div class="stat-row"><span class="stat-label">Ice Power</span><span class="stat-val" id="val-pow-ice">0</span></div>
-            <div class="stat-row"><span class="stat-label">Lightning Power</span><span class="stat-val" id="val-pow-light">0</span></div>
-            <div class="stat-row"><span class="stat-label">Agility</span><span class="stat-val" id="val-agi">0</span></div>
-            <div class="stat-row"><span class="stat-label" id="lbl-shield">Shield Power</span><span class="stat-val" id="val-shield">-</span></div>
+            <div class="stat-row" data-stat="fireAccuracy"><span class="stat-label">Fire Accuracy</span><span class="stat-val" id="val-pow-fire">0</span></div>
+            <div class="stat-row" data-stat="iceAccuracy"><span class="stat-label">Ice Accuracy</span><span class="stat-val" id="val-pow-ice">0</span></div>
+            <div class="stat-row" data-stat="lightningAccuracy"><span class="stat-label">Lightning Accuracy</span><span class="stat-val" id="val-pow-light">0</span></div>
+            <div class="stat-row" data-stat="agility"><span class="stat-label">Agility</span><span class="stat-val" id="val-agi">0</span></div>
+            <div class="stat-row" data-stat="shieldPower"><span class="stat-label" id="lbl-shield">Shield Power</span><span class="stat-val" id="val-shield">-</span></div>
         </div>
 
         <div class="stat-section">
             <h3>Passive Defenses</h3>
-            <div class="stat-row"><span class="stat-label">Pierce Defence</span><span class="stat-val" id="val-def-pierce">0</span></div>
-            <div class="stat-row"><span class="stat-label">Slash Defence</span><span class="stat-val" id="val-def-slash">0</span></div>
-            <div class="stat-row"><span class="stat-label">Fire Defence</span><span class="stat-val" id="val-def-fire">0</span></div>
-            <div class="stat-row"><span class="stat-label">Ice Defence</span><span class="stat-val" id="val-def-ice">0</span></div>
-            <div class="stat-row"><span class="stat-label">Lightning Defence</span><span class="stat-val" id="val-def-light">0</span></div>
+            <div class="stat-row" data-stat="pierceDefence"><span class="stat-label">Pierce Defence</span><span class="stat-val" id="val-def-pierce">0</span></div>
+            <div class="stat-row" data-stat="slashDefence"><span class="stat-label">Slash Defence</span><span class="stat-val" id="val-def-slash">0</span></div>
+            <div class="stat-row" data-stat="fireDefence"><span class="stat-label">Fire Defence</span><span class="stat-val" id="val-def-fire">0</span></div>
+            <div class="stat-row" data-stat="iceDefence"><span class="stat-label">Ice Defence</span><span class="stat-val" id="val-def-ice">0</span></div>
+            <div class="stat-row" data-stat="lightningDefence"><span class="stat-label">Lightning Defence</span><span class="stat-val" id="val-def-light">0</span></div>
         </div>
 
         <div class="stat-section" style="border-top: 2px solid var(--gold); padding-top: 10px;">
             <h3 style="color: var(--gold);">Economic Stats</h3>
-            <div class="stat-row"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
+            <div class="stat-row" data-stat="totalItemValue"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
         </div>
     </div>
 </div>
@@ -345,12 +347,38 @@ const items = [
     {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400}
 ];
 
+const tooltipDescriptions = {
+    quickDamage: "Quick damage a weapon will do on successful hit.",
+    attackSpeed: "Time between regular attacks. Bigger number means slower attacks.",
+    attackRange: "Determines distance at which a weapon can attack from.",
+    pierceAccuracy: "Increases accuracy with pierce weapons.",
+    slashAccuracy: "Increases accuracy with slash weapons.",
+    meleePower: "Increases all melee weapon damage. Scaled by attack speed so all weapons benefit equally.",
+    rangedPower: "Increases all archery weapon damage. Scaled by attack speed so all weapons benefit equally.",
+    magicPower: "Increases all magic weapon damage. Scaled by attack speed so all weapons benefit equally.",
+    miningPower: "Increases the speed of mining.",
+    smithingPower: "Increases the speed of using an anvil.",
+    potionMakingPower: "Increases the speed of using potion making facilities.",
+    fireAccuracy: "Increases accuracy with fire weapons.",
+    iceAccuracy: "Increases accuracy with ice weapons.",
+    lightningAccuracy: "Increases accuracy with lightning weapons.",
+    agility: "Increases speed of the attack animation.",
+    blockPower: "Reduces incoming heavy damage.",
+    wardPower: "Reduces incoming mystical damage.",
+    deflectPower: "Reduces incoming quick damage.",
+    pierceDefence: "Reduces incoming pierce damage.",
+    slashDefence: "Reduces incoming slash damage.",
+    fireDefence: "Reduces incoming fire damage.",
+    iceDefence: "Reduces incoming ice damage.",
+    lightningDefence: "Reduces incoming lightning damage.",
+    totalItemValue: "Total item value the player has currently equipped."
+};
+
 const tooltip = document.getElementById("tooltip");
 
-function showTooltip(e, item) {
+function showItemTooltip(e, item) {
     let html = `<h4>${item.name}</h4>`;
     
-    // Mapping internal keys to display labels including new mining/smithing/potion power[cite: 1]
     const statMap = {
         damage: "Damage", 
         speed: "Speed", 
@@ -370,9 +398,9 @@ function showTooltip(e, item) {
         defFire: "Fire Defense", 
         defIce: "Ice Defense", 
         defLight: "Lightning Defense",
-        firePower: "Fire Power", 
-        icePower: "Ice Power", 
-        lightPower: "Lightning Power"
+        firePower: "Fire Accuracy", 
+        icePower: "Ice Accuracy", 
+        lightPower: "Lightning Accuracy"
     };
 
     Object.keys(item).forEach(key => {
@@ -388,6 +416,16 @@ function showTooltip(e, item) {
     moveTooltip(e);
 }
 
+function showStatTooltip(e, statKey) {
+    const desc = tooltipDescriptions[statKey];
+    if (!desc) return;
+    
+    const label = e.currentTarget.querySelector('.stat-label').innerText;
+    tooltip.innerHTML = `<h4>${label}</h4><div class="tt-desc">${desc}</div>`;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
 function moveTooltip(e) {
     tooltip.style.left = (e.clientX + 15) + "px";
     tooltip.style.top = (e.clientY + 15) + "px";
@@ -396,6 +434,22 @@ function moveTooltip(e) {
 function hideTooltip() {
     tooltip.style.display = "none";
 }
+
+// Add event listeners to all stat rows
+document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
+    row.addEventListener('mouseenter', (e) => {
+        const stat = e.currentTarget.getAttribute('data-stat');
+        if (stat === "shieldPower") {
+            const shield = equipped["shield"];
+            const type = (shield && shield.shieldType) ? shield.shieldType.toLowerCase() : "block";
+            showStatTooltip(e, type + "Power");
+        } else {
+            showStatTooltip(e, stat);
+        }
+    });
+    row.addEventListener('mousemove', moveTooltip);
+    row.addEventListener('mouseleave', hideTooltip);
+});
 
 function updateInventoryUI() {
     const container = document.getElementById("inventory-container");
@@ -457,7 +511,7 @@ function updateInventoryUI() {
         
         div.innerHTML = `<strong>${item.name}</strong>`;
         
-        div.onmouseenter = (e) => showTooltip(e, item);
+        div.onmouseenter = (e) => showItemTooltip(e, item);
         div.onmousemove = (e) => moveTooltip(e);
         div.onmouseleave = () => hideTooltip();
         
@@ -509,7 +563,6 @@ function update() {
     document.getElementById("lbl-shield").innerText = sh && !is2H ? (sh.shieldType || "Shield") + " Power" : "Shield Power";
     document.getElementById("val-shield").innerText = sh && !is2H ? sh.shieldPower : "-";
 
-    // Initialize stat collection including new categories[cite: 1]
     let s = { 
         melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0,
         mining:0, smithing:0, potion:0 
