@@ -361,28 +361,32 @@ let sockets = { neck: null, ring: null };
 
 let selectedSlot = null;
 let selectedWeaponCategory = null;
+let selectedMagicCategory = null; 
 let selectedShieldCategory = null;
+let selectedChestCategory = null; 
+let selectedLegsCategory = null;
+let selectedHeadCategory = null; // New state for Head selection
 
 const items = [
-    {name:"Skeleton Helmet", slot:"head", defPierce:7, defSlash:5, sellPrice:42},
-    {name:"Bronze Helmet", slot:"head", defPierce:6, defSlash:6, sellPrice:35},
-    {name:"Iron Helmet", slot:"head", defPierce:10, defSlash:10, sellPrice:105},
-    {name:"Steel Helmet", slot:"head", defPierce:16, defSlash:16, sellPrice:210},
-    {name:"Mithril Helmet", slot:"head", defPierce:25, defSlash:25, sellPrice:700},
-    {name:"Leather Hood", slot:"head", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35},
-    {name:"Pirate Hat", slot:"head", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210},
-    {name:"Bronze Platebody", slot:"chest", defPierce:9, defSlash:7, sellPrice:70},
-    {name:"Iron Platebody", slot:"chest", defPierce:14, defSlash:11, sellPrice:175},
-    {name:"Steel Platebody", slot:"chest", defPierce:21, defSlash:18, sellPrice:350},
-    {name:"Mithril Platebody", slot:"chest", defPierce:35, defSlash:29, sellPrice:1750},
-    {name:"Leather Armour", slot:"chest", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70},
-    {name:"Pirate Armour", slot:"chest", defPierce:6, defSlash:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175},
-    {name:"Bronze Platelegs", slot:"legs", defPierce:8, defSlash:6, sellPrice:49},
-    {name:"Iron Platelegs", slot:"legs", defPierce:13, defSlash:10, sellPrice:140},
-    {name:"Steel Platelegs", slot:"legs", defPierce:21, defSlash:16, sellPrice:280},
-    {name:"Mithril Platelegs", slot:"legs", defPierce:30, defSlash:27, sellPrice:1400},
-    {name:"Leather Legs", slot:"legs", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49},
-    {name:"Pirate Legs", slot:"legs", defPierce:5, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
+    {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42},
+    {name:"Bronze Helmet", slot:"head", headType: "Heavy armor", defPierce:6, defSlash:6, sellPrice:35},
+    {name:"Iron Helmet", slot:"head", headType: "Heavy armor", defPierce:10, defSlash:10, sellPrice:105},
+    {name:"Steel Helmet", slot:"head", headType: "Heavy armor", defPierce:16, defSlash:16, sellPrice:210},
+    {name:"Mithril Helmet", slot:"head", headType: "Heavy armor", defPierce:25, defSlash:25, sellPrice:700},
+    {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35},
+    {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210},
+    {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70},
+    {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175},
+    {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350},
+    {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750},
+    {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70},
+    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175},
+    {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49},
+    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140},
+    {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280},
+    {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400},
+    {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49},
+    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
     {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490},
     {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28},
     {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28},
@@ -406,14 +410,14 @@ const items = [
     {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250},
     {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000},
     {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420},
-    {name:"Beginner wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2},
-    {name:"Fire wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42},
-    {name:"Birch Fire wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140},
-    {name:"Birch Ice wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140},
-    {name:"Willow fire wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700},
-    {name:"Willow ice wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700},
-    {name:"Willow lightning wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700},
-    {name:"Ornate fire staff", slot:"weapon", subType:"Magic", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000},
+    {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2},
+    {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42},
+    {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140},
+    {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140},
+    {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700},
+    {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700},
+    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700},
+    {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000},
     {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42},
     {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350},
     {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750},
@@ -611,11 +615,107 @@ function updateInventoryUI() {
         return;
     }
 
+    // MAGIC SUB-CATEGORY LOGIC
+    if (selectedSlot === "weapon" && selectedWeaponCategory === "Magic" && !selectedMagicCategory) {
+        const backBtn = document.createElement("div");
+        backBtn.className = "back-btn";
+        backBtn.innerText = `← BACK TO WEAPONS`;
+        backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn);
+
+        instruction.innerText = "SELECT MAGIC TYPE";
+        ["Magic 1H", "Magic 2H"].forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "inventory-item";
+            div.style.borderLeft = "5px solid var(--highlight)";
+            div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { selectedMagicCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
     if (selectedSlot === "weapon" && selectedWeaponCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
-        backBtn.innerText = `← BACK TO CATEGORIES`;
-        backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
+        backBtn.innerText = `← BACK`;
+        backBtn.onclick = () => { 
+            if (selectedMagicCategory) {
+                selectedMagicCategory = null;
+            } else {
+                selectedWeaponCategory = null;
+            }
+            updateInventoryUI(); 
+        };
+        container.appendChild(backBtn);
+    }
+
+    // HEAD CATEGORY LOGIC
+    if (selectedSlot === "head" && !selectedHeadCategory) {
+        instruction.innerText = "SELECT ARMOR TYPE";
+        const hCategories = ["Light armor", "Heavy armor"];
+        hCategories.forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "inventory-item";
+            div.style.borderLeft = "5px solid var(--accent)";
+            div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { selectedHeadCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "head" && selectedHeadCategory) {
+        const backBtn = document.createElement("div");
+        backBtn.className = "back-btn";
+        backBtn.innerText = `← BACK TO TYPES`;
+        backBtn.onclick = () => { selectedHeadCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn);
+    }
+
+    // CHEST CATEGORY LOGIC
+    if (selectedSlot === "chest" && !selectedChestCategory) {
+        instruction.innerText = "SELECT ARMOR TYPE";
+        const cCategories = ["Light armor", "Heavy armor"];
+        cCategories.forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "inventory-item";
+            div.style.borderLeft = "5px solid var(--accent)";
+            div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { selectedChestCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "chest" && selectedChestCategory) {
+        const backBtn = document.createElement("div");
+        backBtn.className = "back-btn";
+        backBtn.innerText = `← BACK TO TYPES`;
+        backBtn.onclick = () => { selectedChestCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn);
+    }
+
+    // LEGS CATEGORY LOGIC
+    if (selectedSlot === "legs" && !selectedLegsCategory) {
+        instruction.innerText = "SELECT ARMOR TYPE";
+        const lCategories = ["Light armor", "Heavy armor"];
+        lCategories.forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "inventory-item";
+            div.style.borderLeft = "5px solid var(--accent)";
+            div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { selectedLegsCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "legs" && selectedLegsCategory) {
+        const backBtn = document.createElement("div");
+        backBtn.className = "back-btn";
+        backBtn.innerText = `← BACK TO TYPES`;
+        backBtn.onclick = () => { selectedLegsCategory = null; updateInventoryUI(); };
         container.appendChild(backBtn);
     }
 
@@ -642,7 +742,10 @@ function updateInventoryUI() {
         container.appendChild(backBtn);
     }
 
-    instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${selectedWeaponCategory ? '(' + selectedWeaponCategory + ')' : ''} ${selectedShieldCategory ? '(' + selectedShieldCategory + ')' : ''}`;
+    let displayCategory = selectedWeaponCategory;
+    if (selectedMagicCategory) displayCategory = selectedMagicCategory;
+
+    instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''} ${selectedShieldCategory ? '(' + selectedShieldCategory + ')' : ''} ${selectedHeadCategory ? '(' + selectedHeadCategory + ')' : ''} ${selectedChestCategory ? '(' + selectedChestCategory + ')' : ''} ${selectedLegsCategory ? '(' + selectedLegsCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
         if (selectedSlot === "neck" || selectedSlot === "ring") {
@@ -692,8 +795,14 @@ function updateInventoryUI() {
     }
 
     const validItems = items.filter(i => {
-        if (selectedSlot === "weapon") return i.slot === "weapon" && i.subType === selectedWeaponCategory;
+        if (selectedSlot === "weapon") {
+            if (selectedMagicCategory) return i.slot === "weapon" && i.subType === selectedMagicCategory;
+            return i.slot === "weapon" && i.subType === selectedWeaponCategory;
+        }
         if (selectedSlot === "shield") return i.slot === "shield" && i.shieldType === selectedShieldCategory;
+        if (selectedSlot === "head") return i.slot === "head" && i.headType === selectedHeadCategory;
+        if (selectedSlot === "chest") return i.slot === "chest" && i.chestType === selectedChestCategory;
+        if (selectedSlot === "legs") return i.slot === "legs" && i.legsType === selectedLegsCategory;
         return i.slot === selectedSlot;
     });
 
@@ -722,7 +831,7 @@ function update() {
     const weapon = equipped["weapon"];
     const is2H = weapon && weapon.isTwoHanded;
     const isBow = weapon && weapon.subType === "Bows";
-    const isMagic = weapon && weapon.subType === "Magic"; 
+    const isMagic = weapon && (weapon.subType === "Magic 1H" || weapon.subType === "Magic 2H"); 
     const is1H = weapon && !weapon.isTwoHanded; 
 
     slots.forEach(s => {
@@ -846,7 +955,11 @@ slots.forEach(s => {
         if (selectedSlot !== s) { 
             selectedSlot = s; 
             selectedWeaponCategory = null; 
+            selectedMagicCategory = null;
             selectedShieldCategory = null; 
+            selectedChestCategory = null;
+            selectedLegsCategory = null;
+            selectedHeadCategory = null; // Clear head sub-selection
         }
         update();
     });
