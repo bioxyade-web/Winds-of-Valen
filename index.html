@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winds of Valen Equipper</title>
+
+<style>
+:root {
+    --accent: #7c3aed;
+    --highlight: #00d1ff;
+    --bg-dark: #1e1e2f;
+    --panel-bg: #2a2a40;
+    --gold: #ffd700;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-dark);
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* TOOLTIP STYLES */
+#tooltip {
+    position: fixed;
+    display: none;
+    background: rgba(10, 10, 20, 0.95);
+    border: 2px solid var(--accent);
+    padding: 12px;
+    border-radius: 8px;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+    min-width: 200px;
+}
+
+#tooltip h4 { margin: 0 0 8px 0; color: var(--highlight); border-bottom: 1px solid #444; padding-bottom: 5px; }
+.tt-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+.tt-label { color: #aaa; margin-right: 20px; }
+.tt-val { color: #fff; font-weight: bold; }
+
+.title {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+    font-size: 32px;
+    font-weight: bold;
+    border-bottom: 4px solid var(--accent);
+    background: #252538;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 350px 550px 400px;
+    gap: 30px;
+    padding: 20px;
+    justify-content: center;
+    width: fit-content;
+}
+
+.panel {
+    background: var(--panel-bg);
+    border-radius: 16px;
+    padding: 25px;
+    height: 850px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #3b3b5c;
+}
+
+h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+
+#inventory-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 10px;
+}
+
+#inventory-container::-webkit-scrollbar { width: 8px; }
+#inventory-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+.inventory-item {
+    background: #1e1e2f;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+    font-size: 18px;
+}
+
+.inventory-item:hover {
+    border-color: var(--highlight);
+    background: #343452;
+    transform: translateX(5px);
+}
+
+.unequip-btn {
+    background: #552222;
+    border: 2px solid #ff4d4d;
+    color: #ff4d4d;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.back-btn {
+    background: #3b3b5c;
+    border: 1px solid var(--highlight);
+    color: var(--highlight);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.character {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #3b3b5c 0%, #1e1e2f 100%);
+}
+
+.character img { max-height: 650px; pointer-events: none; z-index: 1; }
+
+.slot {
+    width: 95px;
+    height: 95px;
+    background: rgba(15, 15, 25, 0.9);
+    border: 3px solid #c28b2c;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: absolute;
+    cursor: pointer;
+    z-index: 5;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    color: #aaa;
+}
+
+.slot:hover { border-color: var(--highlight); color: #fff; background: #243c42; }
+.slot.selected { border-color: var(--highlight); box-shadow: 0 0 25px var(--highlight); transform: scale(1.15); z-index: 10; }
+.filled { border-color: var(--accent); background: #3b3b5c; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+.locked { opacity: 0.4; background: #111 !important; border-color: #333 !important; cursor: not-allowed; pointer-events: none; }
+
+#head    { top: 120px;  left: 225px; }
+#neck    { top: 200px; left: 340px; }
+#chest   { top: 320px; left: 225px; }
+#weapon  { top: 320px; left: 40px;  }
+#shield  { top: 320px; right: 40px; }
+#hands   { top: 440px; left: 40px;  }
+#ring    { top: 440px; right: 40px; }
+#legs    { bottom: 360px; left: 225px; }
+#feet    { bottom: 150px;  left: 225px; }
+#trinket { bottom: 160px; left: 80px; }
+#ammo    { bottom: 160px; right: 80px; }
+
+.stats-panel { overflow-y: auto; }
+.stat-section { margin-bottom: 15px; }
+.stat-section h3 { color: var(--accent); font-size: 20px; border-bottom: 2px solid #444; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
+.stat-row { display: flex; justify-content: space-between; padding: 8px 12px; background: #1e1e2f; margin-bottom: 4px; border-radius: 6px; font-size: 14px; }
+.stat-label { color: #ccc; }
+.stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
+.val-gold { color: var(--gold) !important; }
+</style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<div class="title">WINDS OF VALEN EQUIPPER</div>
+
+<div class="layout">
+    <div class="panel">
+        <h2>Inventory</h2>
+        <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
+            Click a character slot to browse items...
+        </div>
+        <div id="unequip-area"></div>
+        <div id="inventory-container"></div>
+    </div>
+
+    <div class="panel character">
+        <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
+        <div class="slot" id="head">Head</div>
+        <div class="slot" id="neck">Neck</div>
+        <div class="slot" id="chest">Chest</div>
+        <div class="slot" id="weapon">Weapon</div>
+        <div class="slot" id="shield">Shield</div>
+        <div class="slot" id="hands">Hands</div>
+        <div class="slot" id="ring">Ring</div>
+        <div class="slot" id="legs">Legs</div>
+        <div class="slot" id="feet">Feet</div>
+        <div class="slot" id="trinket">Trinket</div>
+        <div class="slot" id="ammo">Ammo</div>
+    </div>
+
+    <div class="panel stats-panel">
+        <div class="stat-section">
+            <h3>Damage Stats</h3>
+            <div class="stat-row"><span class="stat-label" id="lbl-dmg">Damage</span><span class="stat-val" id="val-dmg">-</span></div>
+            <div class="stat-row"><span class="stat-label">Attack Speed</span><span class="stat-val" id="val-spd">0</span></div>
+            <div class="stat-row"><span class="stat-label">Attack Range</span><span class="stat-val" id="val-rng">0</span></div>
+            <div class="stat-row"><span class="stat-label">Pierce Accuracy</span><span class="stat-val" id="val-acc-pierce">0</span></div>
+            <div class="stat-row"><span class="stat-label">Slash Accuracy</span><span class="stat-val" id="val-acc-slash">0</span></div>
+        </div>
+
+        <div class="stat-section">
+            <h3>Power Stats</h3>
+            <div class="stat-row"><span class="stat-label">Melee Power</span><span class="stat-val" id="val-melee">0</span></div>
+            <div class="stat-row"><span class="stat-label">Ranged Power</span><span class="stat-val" id="val-ranged">0</span></div>
+            <div class="stat-row"><span class="stat-label">Magic Power</span><span class="stat-val" id="val-magic">0</span></div>
+            <div class="stat-row"><span class="stat-label">Fire Power</span><span class="stat-val" id="val-pow-fire">0</span></div>
+            <div class="stat-row"><span class="stat-label">Ice Power</span><span class="stat-val" id="val-pow-ice">0</span></div>
+            <div class="stat-row"><span class="stat-label">Lightning Power</span><span class="stat-val" id="val-pow-light">0</span></div>
+            <div class="stat-row"><span class="stat-label">Agility</span><span class="stat-val" id="val-agi">0</span></div>
+            <div class="stat-row"><span class="stat-label" id="lbl-shield">Shield Power</span><span class="stat-val" id="val-shield">-</span></div>
+        </div>
+
+        <div class="stat-section">
+            <h3>Passive Defenses</h3>
+            <div class="stat-row"><span class="stat-label">Pierce Defence</span><span class="stat-val" id="val-def-pierce">0</span></div>
+            <div class="stat-row"><span class="stat-label">Slash Defence</span><span class="stat-val" id="val-def-slash">0</span></div>
+            <div class="stat-row"><span class="stat-label">Fire Defence</span><span class="stat-val" id="val-def-fire">0</span></div>
+            <div class="stat-row"><span class="stat-label">Ice Defence</span><span class="stat-val" id="val-def-ice">0</span></div>
+            <div class="stat-row"><span class="stat-label">Lightning Defence</span><span class="stat-val" id="val-def-light">0</span></div>
+        </div>
+
+        <div class="stat-section" style="border-top: 2px solid var(--gold); padding-top: 10px;">
+            <h3 style="color: var(--gold);">Economic Stats</h3>
+            <div class="stat-row"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
+let equipped = {};
+slots.forEach(s => equipped[s] = null);
+
+let selectedSlot = null;
+let selectedWeaponCategory = null;
+
+const items = [
+    {name:"Skeleton Helmet", slot:"head", defPierce:7, defSlash:5, sellPrice:42},
+    {name:"Bronze Helmet", slot:"head", defPierce:6, defSlash:6, sellPrice:35},
+    {name:"Iron Helmet", slot:"head", defPierce:10, defSlash:10, sellPrice:105},
+    {name:"Steel Helmet", slot:"head", defPierce:16, defSlash:16, sellPrice:210},
+    {name:"Mithril Helmet", slot:"head", defPierce:25, defSlash:25, sellPrice:700},
+    {name:"Leather Hood", slot:"head", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35},
+    {name:"Pirate Hat", slot:"head", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210},
+    {name:"Bronze Platebody", slot:"chest", defPierce:9, defSlash:7, sellPrice:70},
+    {name:"Iron Platebody", slot:"chest", defPierce:14, defSlash:11, sellPrice:175},
+    {name:"Steel Platebody", slot:"chest", defPierce:21, defSlash:18, sellPrice:350},
+    {name:"Mithril Platebody", slot:"chest", defPierce:35, defSlash:29, sellPrice:1750},
+    {name:"Leather Armour", slot:"chest", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70},
+    {name:"Pirate Armour", slot:"chest", defPierce:6, defSlash:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175},
+    {name:"Bronze Platelegs", slot:"legs", defPierce:8, defSlash:6, sellPrice:49},
+    {name:"Iron Platelegs", slot:"legs", defPierce:13, defSlash:10, sellPrice:140},
+    {name:"Steel Platelegs", slot:"legs", defPierce:21, defSlash:16, sellPrice:280},
+    {name:"Mithril Platelegs", slot:"legs", defPierce:30, defSlash:27, sellPrice:1400},
+    {name:"Leather Legs", slot:"legs", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49},
+    {name:"Pirate Legs", slot:"legs", defPierce:5, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
+    {name:"Mining Boots", slot:"feet", sellPrice:28},
+    {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490},
+    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28},
+    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70},
+    {name:"Mining Gloves", slot:"hands", sellPrice:140},
+    {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210},
+    {name:"Artisan Gloves", slot:"hands", sellPrice:1400},
+    {name:"Copper Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0},
+    {name:"Bronze Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40},
+    {name:"Iron Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105},
+    {name:"Steel Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210},
+    {name:"Mithril Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050},
+    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100},
+    {name:"Goblin Axe", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70},
+    {name:"Bandit Spear", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420},
+    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750},
+    {name:"Elven Greatsword", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000},
+    {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5},
+    {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80},
+    {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100},
+    {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250},
+    {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000},
+    {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420},
+    {name:"Beginner wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2},
+    {name:"Fire wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42},
+    {name:"Birch Fire wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140},
+    {name:"Birch Ice wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140},
+    {name:"Willow fire wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700},
+    {name:"Willow ice wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700},
+    {name:"Willow lightning wand", slot:"weapon", subType:"Magic", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700},
+    {name:"Ornate fire staff", slot:"weapon", subType:"Magic", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000},
+    {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42},
+    {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350},
+    {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750},
+    {name:"Elven Shield", slot:"shield", shieldType:"Block", shieldPower:70, sellPrice:7000},
+    {name:"Novice Ward", slot:"shield", shieldType:"Ward", shieldPower:35, sellPrice:350},
+    {name:"Apprentice Ward", slot:"shield", shieldType:"Ward", shieldPower:50, sellPrice:1750},
+    {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000},
+    {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400},
+    {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000},
+    {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1},
+    {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3},
+    {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14},
+    {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28},
+    {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14},
+    {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14},
+    {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70},
+    {name:"Titanium Ring", slot:"ring", meleePower:11, rangedPower:9, magicPower:9, sellPrice:350},
+    {name:"Elven Ring", slot:"ring", meleePower:16, rangedPower:13, magicPower:13, sellPrice:1400},
+    {name:"Copper Amulet", slot:"neck", meleePower:10, rangedPower:10, magicPower:10, sellPrice:175},
+    {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560},
+    {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100},
+    {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000},
+    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400}
+];
+
+const tooltip = document.getElementById("tooltip");
+
+function showTooltip(e, item) {
+    let html = `<h4>${item.name}</h4>`;
+    
+    // Mapping internal keys to display labels without abbreviations[cite: 1]
+    const statMap = {
+        damage: "Damage", 
+        speed: "Speed", 
+        range: "Range",
+        shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
+        accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
+        pierceBonus: "Pierce Accuracy",
+        meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", 
+        magicPower: "Magic Power",
+        agi: "Agility",
+        defPierce: "Pierce Defense", 
+        defSlash: "Slash Defense",
+        defFire: "Fire Defense", 
+        defIce: "Ice Defense", 
+        defLight: "Lightning Defense",
+        firePower: "Fire Power", 
+        icePower: "Ice Power", 
+        lightPower: "Lightning Power"
+    };
+
+    Object.keys(item).forEach(key => {
+        if (statMap[key]) {
+            html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${item[key]}</span></div>`;
+        }
+    });
+
+    html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val">${item.sellPrice || 0}g</span></div>`;
+    
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
+function moveTooltip(e) {
+    tooltip.style.left = (e.clientX + 15) + "px";
+    tooltip.style.top = (e.clientY + 15) + "px";
+}
+
+function hideTooltip() {
+    tooltip.style.display = "none";
+}
+
+function updateInventoryUI() {
+    const container = document.getElementById("inventory-container");
+    const unequipArea = document.getElementById("unequip-area");
+    const instruction = document.getElementById("instruction-text");
+    
+    container.innerHTML = "";
+    unequipArea.innerHTML = "";
+
+    if (!selectedSlot) {
+        instruction.innerText = "Click a character slot to browse items...";
+        container.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 20px;">NO SLOT SELECTED</div>`;
+        return;
+    }
+
+    if (selectedSlot === "weapon" && !selectedWeaponCategory) {
+        instruction.innerText = "SELECT WEAPON CATEGORY";
+        const categories = ["1H Sword", "2H Sword", "Bows", "Magic"];
+        categories.forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "inventory-item";
+            div.style.borderLeft = "5px solid var(--highlight)";
+            div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { selectedWeaponCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "weapon" && selectedWeaponCategory) {
+        const backBtn = document.createElement("div");
+        backBtn.className = "back-btn";
+        backBtn.innerText = `← BACK TO CATEGORIES`;
+        backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn);
+    }
+
+    instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${selectedWeaponCategory ? '(' + selectedWeaponCategory + ')' : ''}`;
+
+    if (equipped[selectedSlot]) {
+        const uBtn = document.createElement("div");
+        uBtn.className = "unequip-btn";
+        uBtn.innerText = `Remove ${equipped[selectedSlot].name}`;
+        uBtn.onclick = () => { equipped[selectedSlot] = null; update(); };
+        unequipArea.appendChild(uBtn);
+    }
+
+    const validItems = items.filter(i => {
+        if (selectedSlot === "weapon") return i.slot === "weapon" && i.subType === selectedWeaponCategory;
+        return i.slot === selectedSlot;
+    });
+
+    // Sort items by sell price ascending[cite: 1]
+    validItems.sort((a, b) => (a.sellPrice || 0) - (b.sellPrice || 0));
+    
+    validItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "inventory-item";
+        if (equipped[selectedSlot] === item) div.style.borderColor = "var(--accent)";
+        
+        div.innerHTML = `<strong>${item.name}</strong>`;
+        
+        div.onmouseenter = (e) => showTooltip(e, item);
+        div.onmousemove = (e) => moveTooltip(e);
+        div.onmouseleave = () => hideTooltip();
+        
+        div.onclick = () => {
+            equipped[selectedSlot] = item;
+            update();
+        };
+        container.appendChild(div);
+    });
+}
+
+function update() {
+    const weapon = equipped["weapon"];
+    const is2H = weapon && weapon.isTwoHanded;
+    const isBow = weapon && weapon.subType === "Bows";
+    const isMagic = weapon && weapon.subType === "Magic"; 
+    const is1H = weapon && !weapon.isTwoHanded; 
+
+    slots.forEach(s => {
+        const el = document.getElementById(s);
+        el.classList.toggle("filled", !!equipped[s]);
+        el.classList.toggle("selected", selectedSlot === s);
+        
+        let shouldLock = false;
+        if (is2H && s === "shield") shouldLock = true;
+        
+        if (s === "ammo") {
+            if (isMagic) shouldLock = true;
+            if (is2H && !isBow) shouldLock = true;
+            if (is1H) shouldLock = true; 
+        }
+
+        if (shouldLock) {
+            el.classList.add("locked");
+            el.innerText = "LOCKED";
+        } else {
+            el.classList.remove("locked");
+            el.innerText = equipped[s] ? equipped[s].name : s;
+        }
+    });
+
+    const ammo = equipped["ammo"];
+    const sh = equipped["shield"];
+
+    document.getElementById("lbl-dmg").innerText = weapon ? weapon.dmgType + " Damage" : "Damage";
+    document.getElementById("val-dmg").innerText = weapon ? weapon.damage : "-";
+    document.getElementById("val-spd").innerText = weapon ? weapon.speed : "0";
+    document.getElementById("val-rng").innerText = weapon ? weapon.range : "0";
+    document.getElementById("lbl-shield").innerText = sh && !is2H ? (sh.shieldType || "Shield") + " Power" : "Shield Power";
+    document.getElementById("val-shield").innerText = sh && !is2H ? sh.shieldPower : "-";
+
+    let s = { melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0 };
+
+    slots.forEach(slot => {
+        const item = equipped[slot];
+        if(!item) return;
+
+        let isSlotLocked = false;
+        if (is2H && slot === "shield") isSlotLocked = true;
+        if (slot === "ammo" && (isMagic || (is2H && !isBow) || is1H)) isSlotLocked = true;
+
+        if (isSlotLocked) {
+             s.worth += (item.sellPrice || 0); 
+             return;
+        }
+
+        s.melee += (item.meleePower || 0);
+        s.ranged += (item.rangedPower || 0);
+        s.magic += (item.magicPower || 0);
+        s.agi += (item.agi || 0);
+        s.fPow += (item.firePower || 0);
+        s.iPow += (item.icePower || 0);
+        s.lPow += (item.lightPower || 0);
+        s.pDef += (item.defPierce || 0);
+        s.sDef += (item.defSlash || 0);
+        s.fDef += (item.defFire || 0);
+        s.iDef += (item.defIce || 0);
+        s.lDef += (item.defLight || 0);
+        s.worth += (item.sellPrice || 0);
+    });
+
+    let totalPierceAcc = 0;
+    let totalSlashAcc = 0;
+
+    if (weapon) {
+        if (weapon.accType === "Pierce") totalPierceAcc += (weapon.accuracy || 0);
+        if (weapon.accType === "Slash") totalSlashAcc += (weapon.accuracy || 0); 
+    }
+    
+    if (ammo && ammo.pierceBonus && !isMagic && (!is2H || isBow) && !is1H) {
+        totalPierceAcc += ammo.pierceBonus;
+    }
+    
+    document.getElementById("val-acc-pierce").innerText = totalPierceAcc;
+    document.getElementById("val-acc-slash").innerText = totalSlashAcc; 
+
+    document.getElementById("val-melee").innerText = s.melee;
+    document.getElementById("val-ranged").innerText = s.ranged;
+    document.getElementById("val-magic").innerText = s.magic;
+    document.getElementById("val-pow-fire").innerText = s.fPow;
+    document.getElementById("val-pow-ice").innerText = s.iPow;
+    document.getElementById("val-pow-light").innerText = s.lPow;
+    document.getElementById("val-agi").innerText = s.agi;
+    document.getElementById("val-def-pierce").innerText = s.pDef;
+    document.getElementById("val-def-slash").innerText = s.sDef;
+    document.getElementById("val-def-fire").innerText = s.fDef;
+    document.getElementById("val-def-ice").innerText = s.iDef;
+    document.getElementById("val-def-light").innerText = s.lDef;
+    document.getElementById("val-total-worth").innerText = s.worth.toLocaleString() + "g";
+
+    updateInventoryUI();
+}
+
+slots.forEach(s => {
+    document.getElementById(s).addEventListener('click', () => {
+        if (selectedSlot !== s) { selectedSlot = s; selectedWeaponCategory = null; }
+        update();
+    });
+});
+
+update();
+</script>
+</body>
+</html>
