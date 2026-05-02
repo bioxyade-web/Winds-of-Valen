@@ -25,7 +25,6 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* NEW BACKGROUND */
     background: url('https://img.itch.zone/aW1hZ2UvMzk1ODQ1Ny8yNDI3MDEzMS5qcGc=/original/qQvDhM.jpg') no-repeat center center fixed;
     background-size: cover;
     color: var(--text-main);
@@ -33,7 +32,7 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding-bottom: 250px; 
+    padding-bottom: 50px; 
 }
 
 /* TOOLTIP STYLES */
@@ -73,7 +72,6 @@ body {
 .layout {
     display: grid;
     grid-template-columns: 350px 500px 350px; 
-    grid-template-rows: auto auto; 
     gap: 30px;
     padding: 20px;
     justify-content: center;
@@ -95,12 +93,6 @@ body {
 
 .inventory-panel, .character-panel, .stats-panel {
     height: 850px;
-}
-
-.socket-panel {
-    grid-column: 1 / span 3;
-    height: auto;
-    min-height: 180px;
 }
 
 h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px black; }
@@ -133,11 +125,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     box-shadow: -5px 0 15px var(--accent);
 }
 
-.inventory-item:active {
-    transform: scale(0.95);
-    background: var(--accent);
-}
-
 .gem-item {
     background: rgba(0,0,0,0.5);
     padding: 10px;
@@ -145,25 +132,35 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     border: 1px dashed var(--gold);
     margin-bottom: 8px;
     cursor: pointer;
-    font-size: 14px;
-    flex: 1;
-    min-width: 200px;
+    font-size: 13px;
+    width: 100%;
     transition: 0.2s;
 }
 
 .gem-item:hover { background: var(--accent); color: white; }
 
+/* ADJUSTED SOCKET CONTAINER FOR BETTER VISIBILITY */
 .socket-container {
     background: rgba(0,0,0,0.6);
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid var(--accent);
+    border: 2px solid var(--gold);
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+    max-height: 250px; /* Limits height */
 }
 
-.socket-title { color: var(--highlight); font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 10px; }
+.gem-scroll-area {
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.gem-scroll-area::-webkit-scrollbar { width: 6px; }
+.gem-scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+.socket-title { color: var(--highlight); font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid var(--accent); padding-bottom: 5px;}
 
 .unequip-btn {
     background: #450a0a;
@@ -181,7 +178,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 }
 .unequip-btn:hover { background: #7f1d1d; box-shadow: 0 0 15px #ef4444; }
 
-/* Styles for the "Unequip All" button */
 .unequip-all-btn {
     background: #b91c1c;
     border: 2px solid #f87171;
@@ -324,7 +320,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         max-width: 550px;
         height: auto !important;
     }
-    .socket-panel { order: 4; }
     .character-panel { 
         order: 1; 
         height: 700px !important;
@@ -351,6 +346,10 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
             Click a character slot to browse items...
         </div>
+        
+        <!-- NEW RELOCATED SOCKETS AND GEMS AREA -->
+        <div id="socket-area-relocated"></div>
+        
         <div id="unequip-area"></div>
         <div id="inventory-container"></div>
     </div>
@@ -412,14 +411,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
             <h3 style="color: var(--gold);">Economic Stats</h3>
             <div class="stat-row" data-stat="totalItemValue"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
         </div>
-    </div>
-
-    <div class="panel socket-panel">
-        <h2>Gems & Sockets</h2>
-        <div id="socket-instruction" style="font-size:14px; color:#aaa; margin-bottom:15px;">
-            Select a Necklace or Ring from the character to modify its sockets.
-        </div>
-        <div id="socket-area"></div>
     </div>
 </div>
 
@@ -717,9 +708,9 @@ document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
 function updateInventoryUI() {
     const container = document.getElementById("inventory-container");
     const unequipArea = document.getElementById("unequip-area");
-    const socketArea = document.getElementById("socket-area");
+    const socketArea = document.getElementById("socket-area-relocated");
     const instruction = document.getElementById("instruction-text");
-    const socketInstruction = document.getElementById("socket-instruction");
+    
     container.innerHTML = "";
     unequipArea.innerHTML = "";
     socketArea.innerHTML = "";
@@ -727,7 +718,6 @@ function updateInventoryUI() {
     if (!selectedSlot) {
         instruction.innerText = "Click a character slot to browse items...";
         container.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 20px;">NO SLOT SELECTED</div>`;
-        socketInstruction.innerText = "Select a Necklace or Ring from the character to modify its sockets.";
         return;
     }
 
@@ -855,23 +845,23 @@ function updateInventoryUI() {
     if (selectedMagicCategory) displayCategory = selectedMagicCategory;
     if (selectedToolCategory) displayCategory = selectedToolCategory;
 
-    // CHANGED: BROWSING label for weapon slot
     let slotLabel = selectedSlot.toUpperCase();
     if (selectedSlot === "weapon") slotLabel = "Main Hand";
     instruction.innerText = `BROWSING: ${slotLabel.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
+        // RELOCATED SOCKET LOGIC INSIDE INVENTORY PANEL
         if (selectedSlot === "neck" || selectedSlot === "ring") {
-            socketInstruction.innerText = `Socketing options for: ${equipped[selectedSlot].name}`;
             const sBox = document.createElement("div");
             sBox.className = "socket-container";
+            
             const currentGem = sockets[selectedSlot];
             if (currentGem) {
                 sBox.innerHTML = `<div class="socket-title">EQUIPPED GEM (1/1 Max)</div>`;
                 const gDiv = document.createElement("div");
                 gDiv.className = "gem-item";
                 gDiv.style.borderColor = "var(--highlight)";
-                gDiv.innerHTML = `💎 ${currentGem.name} <span style="float:right; color:red">Remove</span>`;
+                gDiv.innerHTML = `💎 ${currentGem.name} <span style="float:right; color:#ef4444; font-weight:bold;">REMOVE</span>`;
                 gDiv.onmouseenter = (e) => showGemTooltip(e, currentGem);
                 gDiv.onmousemove = (e) => moveTooltip(e);
                 gDiv.onmouseleave = () => hideTooltip();
@@ -879,6 +869,11 @@ function updateInventoryUI() {
                 sBox.appendChild(gDiv);
             } else {
                 sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
+                
+                // Add Scrollable Wrapper for Gems
+                const scrollWrapper = document.createElement("div");
+                scrollWrapper.className = "gem-scroll-area";
+                
                 gems.forEach(gem => {
                     const gDiv = document.createElement("div");
                     gDiv.className = "gem-item";
@@ -887,8 +882,9 @@ function updateInventoryUI() {
                     gDiv.onmousemove = (e) => moveTooltip(e);
                     gDiv.onmouseleave = () => hideTooltip();
                     gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = gem; update(); };
-                    sBox.appendChild(gDiv);
+                    scrollWrapper.appendChild(gDiv);
                 });
+                sBox.appendChild(scrollWrapper);
             }
             socketArea.appendChild(sBox);
         }
@@ -1036,7 +1032,7 @@ function update() {
 slots.forEach(s => {
     const el = document.getElementById(s);
     el.addEventListener('click', () => {
-        hideTooltip(); // Immediate hide on click
+        hideTooltip(); 
         if (selectedSlot !== s) { 
             selectedSlot = s; 
             selectedWeaponCategory = null; 
