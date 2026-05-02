@@ -855,7 +855,10 @@ function updateInventoryUI() {
     if (selectedMagicCategory) displayCategory = selectedMagicCategory;
     if (selectedToolCategory) displayCategory = selectedToolCategory;
 
-    instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''}`;
+    // CHANGED: BROWSING label for weapon slot
+    let slotLabel = selectedSlot.toUpperCase();
+    if (selectedSlot === "weapon") slotLabel = "Main Hand";
+    instruction.innerText = `BROWSING: ${slotLabel.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
         if (selectedSlot === "neck" || selectedSlot === "ring") {
