@@ -582,13 +582,52 @@ function showItemTooltip(e, item) {
             let val = item[key];
             if (item.slot && sockets.hasOwnProperty(item.slot)) {
                 const boosted = calculateBoostedStat(item, key);
-                if (boosted !== val) val = `${val}(${boosted})`;
+                if (boosted !== val) val = `${val} (${boosted})`;
             }
             html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${val}</span></div>`;
         }
     });
 
     html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val">${item.sellPrice || 0}g</span></div>`;
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
+// Function to handle showing the total gain of an equipped slot
+function showEquippedSlotTooltip(e, slotId) {
+    const item = equipped[slotId];
+    if (!item) return;
+
+    let html = `<h4>Slot: ${slotId.charAt(0).toUpperCase() + slotId.slice(1)}</h4>`;
+    html += `<div style="color:var(--gold); font-size:12px; margin-bottom:10px;">${item.name}</div>`;
+
+    const statMap = {
+        damage: "Damage", speed: "Speed", range: "Range",
+        shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
+        accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
+        pierceBonus: "Pierce Accuracy", meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", magicPower: "Magic Power",
+        miningPower: "Mining Power", smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power", fishingPower: "Fishing Power",
+        agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", defLight: "Lightning Defense",
+        firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
+    };
+
+    let hasStats = false;
+    Object.keys(item).forEach(key => {
+        if (statMap[key]) {
+            const total = calculateBoostedStat(item, key);
+            html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${total}</span></div>`;
+            hasStats = true;
+        }
+    });
+
+    if (sockets[slotId]) {
+        html += `<div style="border-top:1px solid var(--accent); margin-top:8px; padding-top:5px; font-size:11px; color:var(--highlight)">Gem: ${sockets[slotId].name}</div>`;
+    }
+
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
     moveTooltip(e);
@@ -990,7 +1029,8 @@ function update() {
 }
 
 slots.forEach(s => {
-    document.getElementById(s).addEventListener('click', () => {
+    const el = document.getElementById(s);
+    el.addEventListener('click', () => {
         if (selectedSlot !== s) { 
             selectedSlot = s; 
             selectedWeaponCategory = null; 
@@ -1003,6 +1043,10 @@ slots.forEach(s => {
         }
         update();
     });
+    // Add Tooltip listeners for the equipment slots
+    el.addEventListener('mouseenter', (e) => showEquippedSlotTooltip(e, s));
+    el.addEventListener('mousemove', moveTooltip);
+    el.addEventListener('mouseleave', hideTooltip);
 });
 update();
 </script>
