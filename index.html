@@ -288,7 +288,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
             <div class="slot" id="head">Head</div>
             <div class="slot" id="neck">Neck</div>
             <div class="slot" id="chest">Chest</div>
-            <div class="slot" id="weapon">Weapon</div>
+            <div class="slot" id="weapon">Main Hand</div>
             <div class="slot" id="shield">Shield</div>
             <div class="slot" id="hands">Hands</div>
             <div class="slot" id="ring">Ring</div>
@@ -365,7 +365,8 @@ let selectedMagicCategory = null;
 let selectedShieldCategory = null;
 let selectedChestCategory = null; 
 let selectedLegsCategory = null;
-let selectedHeadCategory = null; // New state for Head selection
+let selectedHeadCategory = null;
+let selectedToolCategory = null; // New state for Tools selection
 
 const items = [
     {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42},
@@ -386,7 +387,7 @@ const items = [
     {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280},
     {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400},
     {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49},
-    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
+    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
     {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490},
     {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28},
     {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28},
@@ -441,7 +442,18 @@ const items = [
     {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100},
     {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000},
     {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400},
-    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280}
+    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280},
+    
+    // TOOLS (with added categories for filtering)
+    {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0},
+    {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28},
+    {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168},
+    {name:"Steel Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:25, sellPrice:672},
+    {name:"Dwarven Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:50, sellPrice:1400},
+    {name:"Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:5, sellPrice:5},
+    {name:"Dwarven Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:15, sellPrice:700},
+    {name:"Crude Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:1, sellPrice:7},
+    {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700}
 ];
 
 const gems = [
@@ -600,10 +612,10 @@ function updateInventoryUI() {
         return;
     }
 
-    // WEAPON CATEGORY LOGIC
+    // MAIN HAND CATEGORY LOGIC
     if (selectedSlot === "weapon" && !selectedWeaponCategory) {
-        instruction.innerText = "SELECT WEAPON CATEGORY";
-        const categories = ["1H Weapon", "2H Weapon", "Bows", "Magic"];
+        instruction.innerText = "SELECT MAIN HAND CATEGORY";
+        const categories = ["1H Weapon", "2H Weapon", "Bows", "Magic", "Tools"];
         categories.forEach(cat => {
             const div = document.createElement("div");
             div.className = "inventory-item";
@@ -619,7 +631,7 @@ function updateInventoryUI() {
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Magic" && !selectedMagicCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
-        backBtn.innerText = `← BACK TO WEAPONS`;
+        backBtn.innerText = `← BACK TO MAIN HAND`;
         backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
         container.appendChild(backBtn);
 
@@ -635,6 +647,26 @@ function updateInventoryUI() {
         return;
     }
 
+    // TOOLS SUB-CATEGORY LOGIC
+    if (selectedSlot === "weapon" && selectedWeaponCategory === "Tools" && !selectedToolCategory) {
+        const backBtn = document.createElement("div");
+        backBtn.className = "back-btn";
+        backBtn.innerText = `← BACK TO MAIN HAND`;
+        backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn);
+
+        instruction.innerText = "SELECT TOOL CATEGORY";
+        ["Fishing tools", "Smithing", "Mining Tools"].forEach(cat => {
+            const div = document.createElement("div");
+            div.className = "inventory-item";
+            div.style.borderLeft = "5px solid var(--highlight)";
+            div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { selectedToolCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
     if (selectedSlot === "weapon" && selectedWeaponCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
@@ -642,6 +674,8 @@ function updateInventoryUI() {
         backBtn.onclick = () => { 
             if (selectedMagicCategory) {
                 selectedMagicCategory = null;
+            } else if (selectedToolCategory) {
+                selectedToolCategory = null;
             } else {
                 selectedWeaponCategory = null;
             }
@@ -744,8 +778,9 @@ function updateInventoryUI() {
 
     let displayCategory = selectedWeaponCategory;
     if (selectedMagicCategory) displayCategory = selectedMagicCategory;
+    if (selectedToolCategory) displayCategory = selectedToolCategory;
 
-    instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''} ${selectedShieldCategory ? '(' + selectedShieldCategory + ')' : ''} ${selectedHeadCategory ? '(' + selectedHeadCategory + ')' : ''} ${selectedChestCategory ? '(' + selectedChestCategory + ')' : ''} ${selectedLegsCategory ? '(' + selectedLegsCategory + ')' : ''}`;
+    instruction.innerText = `BROWSING: ${selectedSlot === 'weapon' ? 'MAIN HAND' : selectedSlot.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''} ${selectedShieldCategory ? '(' + selectedShieldCategory + ')' : ''} ${selectedHeadCategory ? '(' + selectedHeadCategory + ')' : ''} ${selectedChestCategory ? '(' + selectedChestCategory + ')' : ''} ${selectedLegsCategory ? '(' + selectedLegsCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
         if (selectedSlot === "neck" || selectedSlot === "ring") {
@@ -797,6 +832,7 @@ function updateInventoryUI() {
     const validItems = items.filter(i => {
         if (selectedSlot === "weapon") {
             if (selectedMagicCategory) return i.slot === "weapon" && i.subType === selectedMagicCategory;
+            if (selectedToolCategory) return i.slot === "weapon" && i.subType === "Tools" && i.toolType === selectedToolCategory;
             return i.slot === "weapon" && i.subType === selectedWeaponCategory;
         }
         if (selectedSlot === "shield") return i.slot === "shield" && i.shieldType === selectedShieldCategory;
@@ -853,7 +889,7 @@ function update() {
             el.innerText = "LOCKED";
         } else {
             el.classList.remove("locked");
-            let displayText = s;
+            let displayText = s === "weapon" ? "Main Hand" : s;
             if (equipped[s]) {
                 displayText = `<div>${equipped[s].name}</div>`;
                 if (sockets[s]) {
@@ -867,10 +903,10 @@ function update() {
     const ammo = equipped["ammo"];
     const sh = equipped["shield"];
 
-    document.getElementById("lbl-dmg").innerText = weapon ? weapon.dmgType + " Damage" : "Damage";
-    document.getElementById("val-dmg").innerText = weapon ? weapon.damage : "-";
-    document.getElementById("val-spd").innerText = weapon ? weapon.speed : "0";
-    document.getElementById("val-rng").innerText = weapon ? weapon.range : "0";
+    document.getElementById("lbl-dmg").innerText = weapon ? (weapon.dmgType || "Weapon") + " Damage" : "Damage";
+    document.getElementById("val-dmg").innerText = weapon && weapon.damage ? weapon.damage : "-";
+    document.getElementById("val-spd").innerText = weapon && weapon.speed ? weapon.speed : "0";
+    document.getElementById("val-rng").innerText = weapon && weapon.range ? weapon.range : "0";
     document.getElementById("lbl-shield").innerText = sh && !is2H ? (sh.shieldType || "Shield") + " Power" : "Shield Power";
     document.getElementById("val-shield").innerText = sh && !is2H ? sh.shieldPower : "-";
 
@@ -959,7 +995,8 @@ slots.forEach(s => {
             selectedShieldCategory = null; 
             selectedChestCategory = null;
             selectedLegsCategory = null;
-            selectedHeadCategory = null; // Clear head sub-selection
+            selectedHeadCategory = null;
+            selectedToolCategory = null; 
         }
         update();
     });
