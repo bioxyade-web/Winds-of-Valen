@@ -233,6 +233,11 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
             <div class="stat-row"><span class="stat-label">Melee Power</span><span class="stat-val" id="val-melee">0</span></div>
             <div class="stat-row"><span class="stat-label">Ranged Power</span><span class="stat-val" id="val-ranged">0</span></div>
             <div class="stat-row"><span class="stat-label">Magic Power</span><span class="stat-val" id="val-magic">0</span></div>
+            <!-- Added Stats -->
+            <div class="stat-row"><span class="stat-label">Mining Power</span><span class="stat-val" id="val-mining">0</span></div>
+            <div class="stat-row"><span class="stat-label">Smithing Power</span><span class="stat-val" id="val-smithing">0</span></div>
+            <div class="stat-row"><span class="stat-label">Potion Power</span><span class="stat-val" id="val-potion">0</span></div>
+            
             <div class="stat-row"><span class="stat-label">Fire Power</span><span class="stat-val" id="val-pow-fire">0</span></div>
             <div class="stat-row"><span class="stat-label">Ice Power</span><span class="stat-val" id="val-pow-ice">0</span></div>
             <div class="stat-row"><span class="stat-label">Lightning Power</span><span class="stat-val" id="val-pow-light">0</span></div>
@@ -286,8 +291,11 @@ const items = [
     {name:"Pirate Legs", slot:"legs", defPierce:5, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
     {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490},
     {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28},
+    {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28},
     {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70},
     {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210},
+    {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140},
+    {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400},
     {name:"Copper Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0},
     {name:"Bronze Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40},
     {name:"Iron Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105},
@@ -342,7 +350,7 @@ const tooltip = document.getElementById("tooltip");
 function showTooltip(e, item) {
     let html = `<h4>${item.name}</h4>`;
     
-    // Mapping internal keys to display labels without abbreviations[cite: 1]
+    // Mapping internal keys to display labels including new mining/smithing/potion power[cite: 1]
     const statMap = {
         damage: "Damage", 
         speed: "Speed", 
@@ -353,6 +361,9 @@ function showTooltip(e, item) {
         meleePower: "Melee Power", 
         rangedPower: "Ranged Power", 
         magicPower: "Magic Power",
+        miningPower: "Mining Power",
+        smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power",
         agi: "Agility",
         defPierce: "Pierce Defense", 
         defSlash: "Slash Defense",
@@ -437,7 +448,6 @@ function updateInventoryUI() {
         return i.slot === selectedSlot;
     });
 
-    // Sort items by sell price ascending[cite: 1]
     validItems.sort((a, b) => (a.sellPrice || 0) - (b.sellPrice || 0));
     
     validItems.forEach(item => {
@@ -499,7 +509,11 @@ function update() {
     document.getElementById("lbl-shield").innerText = sh && !is2H ? (sh.shieldType || "Shield") + " Power" : "Shield Power";
     document.getElementById("val-shield").innerText = sh && !is2H ? sh.shieldPower : "-";
 
-    let s = { melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0 };
+    // Initialize stat collection including new categories[cite: 1]
+    let s = { 
+        melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0,
+        mining:0, smithing:0, potion:0 
+    };
 
     slots.forEach(slot => {
         const item = equipped[slot];
@@ -517,6 +531,9 @@ function update() {
         s.melee += (item.meleePower || 0);
         s.ranged += (item.rangedPower || 0);
         s.magic += (item.magicPower || 0);
+        s.mining += (item.miningPower || 0);
+        s.smithing += (item.smithingPower || 0);
+        s.potion += (item.potionPower || 0);
         s.agi += (item.agi || 0);
         s.fPow += (item.firePower || 0);
         s.iPow += (item.icePower || 0);
@@ -547,6 +564,9 @@ function update() {
     document.getElementById("val-melee").innerText = s.melee;
     document.getElementById("val-ranged").innerText = s.ranged;
     document.getElementById("val-magic").innerText = s.magic;
+    document.getElementById("val-mining").innerText = s.mining;
+    document.getElementById("val-smithing").innerText = s.smithing;
+    document.getElementById("val-potion").innerText = s.potion;
     document.getElementById("val-pow-fire").innerText = s.fPow;
     document.getElementById("val-pow-ice").innerText = s.iPow;
     document.getElementById("val-pow-light").innerText = s.lPow;
