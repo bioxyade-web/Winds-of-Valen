@@ -15,6 +15,10 @@
     --gem-slot: #1a1a2e;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -61,12 +65,13 @@ body {
 
 .layout {
     display: grid;
-    grid-template-columns: 350px 550px 400px;
-    grid-template-rows: 850px auto; 
-    gap: 50px 30px;
+    grid-template-columns: 350px 500px 350px; /* Reduced middle and side width slightly to prevent overlap */
+    grid-template-rows: auto auto; 
+    gap: 30px;
     padding: 20px;
     justify-content: center;
-    width: fit-content;
+    max-width: 1300px; /* Constrain max width for PC */
+    width: 100%;
 }
 
 .panel {
@@ -77,6 +82,7 @@ body {
     display: flex;
     flex-direction: column;
     border: 1px solid #3b3b5c;
+    overflow: hidden;
 }
 
 .inventory-panel, .character-panel, .stats-panel {
@@ -86,8 +92,7 @@ body {
 .socket-panel {
     grid-column: 1 / span 3;
     height: auto;
-    min-height: 200px;
-    margin-top: 20px;
+    min-height: 180px;
 }
 
 h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
@@ -177,13 +182,15 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     justify-content: center;
     align-items: center;
     background: radial-gradient(circle, #3b3b5c 0%, #1e1e2f 100%);
+    width: 100%;
+    height: 100%;
 }
 
-.character img { max-height: 650px; pointer-events: none; z-index: 1; }
+.character img { max-height: 650px; pointer-events: none; z-index: 1; max-width: 90%; }
 
 .slot {
-    width: 95px;
-    height: 95px;
+    width: 90px;
+    height: 90px;
     background: rgba(15, 15, 25, 0.9);
     border: 3px solid #c28b2c;
     border-radius: 12px;
@@ -191,7 +198,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
     position: absolute;
@@ -201,25 +208,26 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     text-align: center;
     color: #aaa;
     padding: 5px;
-    box-sizing: border-box;
+    transform: translate(-50%, -50%); /* Crucial for percentage positioning */
 }
 
 .slot:hover { border-color: var(--highlight); color: #fff; background: #243c42; }
-.slot.selected { border-color: var(--highlight); box-shadow: 0 0 25px var(--highlight); transform: scale(1.15); z-index: 10; }
+.slot.selected { border-color: var(--highlight); box-shadow: 0 0 25px var(--highlight); transform: translate(-50%, -50%) scale(1.15); z-index: 10; }
 .filled { border-color: var(--accent); background: #3b3b5c; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 .locked { opacity: 0.4; background: #111 !important; border-color: #333 !important; cursor: not-allowed; pointer-events: none; }
 
-#head    { top: 120px;  left: 225px; }
-#neck    { top: 200px; left: 340px; }
-#chest   { top: 320px; left: 225px; }
-#weapon  { top: 320px; left: 40px;  }
-#shield  { top: 320px; right: 40px; }
-#hands   { top: 440px; left: 40px;  }
-#ring    { top: 440px; right: 40px; }
-#legs    { bottom: 360px; left: 225px; }
-#feet    { bottom: 150px;  left: 225px; }
-#trinket { bottom: 160px; left: 80px; }
-#ammo    { bottom: 160px; right: 80px; }
+/* POSITIONING SLOTS BY PERCENTAGE */
+#head    { top: 18%;  left: 50%; }
+#neck    { top: 26%; left: 70%; }
+#chest   { top: 40%; left: 50%; }
+#weapon  { top: 40%; left: 20%;  }
+#shield  { top: 40%; left: 80%; }
+#hands   { top: 55%; left: 20%;  }
+#ring    { top: 55%; left: 80%; }
+#legs    { top: 62%; left: 50%; }
+#feet    { top: 82%;  left: 50%; }
+#trinket { top: 82%; left: 26%; }
+#ammo    { top: 82%; left: 74%; }
 
 .stats-panel { overflow-y: auto; }
 .stat-section { margin-bottom: 15px; }
@@ -231,41 +239,28 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 .val-gold { color: var(--gold) !important; }
 
 /* MOBILE RESPONSIVE FIX */
-@media (max-width: 1300px) {
+@media (max-width: 1200px) {
     .layout {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
         padding: 10px;
-        box-sizing: border-box;
     }
     .panel {
         width: 100%;
-        max-width: 600px;
+        max-width: 550px;
         height: auto !important;
-        box-sizing: border-box;
     }
-    .socket-panel {
-        order: 4;
+    .socket-panel { order: 4; }
+    .character-panel { 
+        order: 1; 
+        height: 700px !important;
     }
-    .character-panel {
-        order: 1;
-        background: none;
-        box-shadow: none;
-        border: none;
-    }
-    .inventory-panel {
-        order: 2;
-        min-height: 400px;
-    }
-    .stats-panel {
-        order: 3;
-    }
-    .character img {
-        max-width: 100%;
-        height: auto;
-    }
+    .inventory-panel { order: 2; min-height: 400px; }
+    .stats-panel { order: 3; }
+    .character img { max-height: 500px; }
+    .slot { width: 80px; height: 80px; font-size: 10px; }
 }
 </style>
 </head>
@@ -276,6 +271,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 <div class="title">WINDS OF VALEN EQUIPPER</div>
 
 <div class="layout">
+    <!-- INVENTORY PANEL -->
     <div class="panel inventory-panel">
         <h2>Inventory</h2>
         <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
@@ -285,21 +281,25 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
         <div id="inventory-container"></div>
     </div>
 
-    <div class="panel character character-panel">
-        <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
-        <div class="slot" id="head">Head</div>
-        <div class="slot" id="neck">Neck</div>
-        <div class="slot" id="chest">Chest</div>
-        <div class="slot" id="weapon">Weapon</div>
-        <div class="slot" id="shield">Shield</div>
-        <div class="slot" id="hands">Hands</div>
-        <div class="slot" id="ring">Ring</div>
-        <div class="slot" id="legs">Legs</div>
-        <div class="slot" id="feet">Feet</div>
-        <div class="slot" id="trinket">Trinket</div>
-        <div class="slot" id="ammo">Ammo</div>
+    <!-- CHARACTER PANEL -->
+    <div class="panel character-panel">
+        <div class="character">
+            <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
+            <div class="slot" id="head">Head</div>
+            <div class="slot" id="neck">Neck</div>
+            <div class="slot" id="chest">Chest</div>
+            <div class="slot" id="weapon">Weapon</div>
+            <div class="slot" id="shield">Shield</div>
+            <div class="slot" id="hands">Hands</div>
+            <div class="slot" id="ring">Ring</div>
+            <div class="slot" id="legs">Legs</div>
+            <div class="slot" id="feet">Feet</div>
+            <div class="slot" id="trinket">Trinket</div>
+            <div class="slot" id="ammo">Ammo</div>
+        </div>
     </div>
 
+    <!-- STATS PANEL -->
     <div class="panel stats-panel">
         <div class="stat-section">
             <h3>Damage Stats</h3>
@@ -342,6 +342,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
         </div>
     </div>
 
+    <!-- SOCKET PANEL -->
     <div class="panel socket-panel">
         <h2>Gems & Sockets</h2>
         <div id="socket-instruction" style="font-size:14px; color:#aaa; margin-bottom:15px;">
@@ -719,7 +720,6 @@ function update() {
             el.classList.remove("locked");
             let displayText = s;
             if (equipped[s]) {
-                // Modified to show the item name and gem name stacked vertically
                 displayText = `<div>${equipped[s].name}</div>`;
                 if (sockets[s]) {
                     displayText += `<div style="color:var(--highlight); font-size:10px; margin-top:4px;">${sockets[s].name}</div>`;
