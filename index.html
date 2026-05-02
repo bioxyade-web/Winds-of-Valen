@@ -390,16 +390,16 @@ const items = [
     {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210},
     {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140},
     {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400},
-    {name:"Copper Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0},
-    {name:"Bronze Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40},
-    {name:"Iron Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105},
-    {name:"Steel Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210},
-    {name:"Mithril Sword", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050},
-    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Sword", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100},
-    {name:"Goblin Axe", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70},
-    {name:"Bandit Spear", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420},
-    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750},
-    {name:"Elven Greatsword", slot:"weapon", subType:"2H Sword", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000},
+    {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0},
+    {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40},
+    {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105},
+    {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210},
+    {name:"Mithril Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050},
+    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100},
+    {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70},
+    {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420},
+    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750},
+    {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000},
     {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5},
     {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80},
     {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100},
@@ -599,7 +599,7 @@ function updateInventoryUI() {
     // WEAPON CATEGORY LOGIC
     if (selectedSlot === "weapon" && !selectedWeaponCategory) {
         instruction.innerText = "SELECT WEAPON CATEGORY";
-        const categories = ["1H Sword", "2H Sword", "Bows", "Magic"];
+        const categories = ["1H Weapon", "2H Weapon", "Bows", "Magic"];
         categories.forEach(cat => {
             const div = document.createElement("div");
             div.className = "inventory-item";
