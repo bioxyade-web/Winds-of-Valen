@@ -181,6 +181,23 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 }
 .unequip-btn:hover { background: #7f1d1d; box-shadow: 0 0 15px #ef4444; }
 
+/* Styles for the "Unequip All" button */
+.unequip-all-btn {
+    background: #b91c1c;
+    border: 2px solid #f87171;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.unequip-all-btn:hover { background: #dc2626; box-shadow: 0 0 10px #f87171; }
+
 .back-btn {
     background: var(--gem-slot);
     border: 1px solid var(--highlight);
@@ -328,6 +345,9 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 <div class="layout">
     <div class="panel inventory-panel">
         <h2>Inventory</h2>
+        <div id="unequip-all-container">
+            <div class="unequip-all-btn" onclick="unequipAll()">Unequip All Items</div>
+        </div>
         <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
             Click a character slot to browse items...
         </div>
@@ -404,7 +424,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 </div>
 
 <script>
-/* LOGIC REMAINS COMPLETELY UNCHANGED AS REQUESTED */
 const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
 let equipped = {};
 slots.forEach(s => equipped[s] = null);
@@ -550,6 +569,23 @@ const tooltipDescriptions = {
 
 const tooltip = document.getElementById("tooltip");
 
+function hideTooltip() { 
+    tooltip.style.display = "none"; 
+}
+
+function moveTooltip(e) {
+    let x = e.clientX + 15;
+    let y = e.clientY + 15;
+    const ttWidth = tooltip.offsetWidth;
+    const ttHeight = tooltip.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    if (x + ttWidth > windowWidth) x = e.clientX - ttWidth - 15;
+    if (y + ttHeight > windowHeight) y = e.clientY - ttHeight - 15;
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+}
+
 function showGemTooltip(e, gem) {
     let html = `<h4>${gem.name}</h4>`;
     const statName = gem.type.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
@@ -560,6 +596,15 @@ function showGemTooltip(e, gem) {
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
     moveTooltip(e);
+}
+
+function unequipAll() {
+    hideTooltip();
+    slots.forEach(s => equipped[s] = null);
+    if (sockets.hasOwnProperty("neck")) sockets.neck = null;
+    if (sockets.hasOwnProperty("ring")) sockets.ring = null;
+    selectedSlot = null;
+    update();
 }
 
 function showItemTooltip(e, item) {
@@ -594,10 +639,12 @@ function showItemTooltip(e, item) {
     moveTooltip(e);
 }
 
-// Function to handle showing the total gain of an equipped slot
 function showEquippedSlotTooltip(e, slotId) {
     const item = equipped[slotId];
-    if (!item) return;
+    if (!item) {
+        hideTooltip();
+        return;
+    }
 
     let html = `<h4>Slot: ${slotId.charAt(0).toUpperCase() + slotId.slice(1)}</h4>`;
     html += `<div style="color:var(--gold); font-size:12px; margin-bottom:10px;">${item.name}</div>`;
@@ -654,21 +701,6 @@ function showStatTooltip(e, statKey) {
     moveTooltip(e);
 }
 
-function moveTooltip(e) {
-    let x = e.clientX + 15;
-    let y = e.clientY + 15;
-    const ttWidth = tooltip.offsetWidth;
-    const ttHeight = tooltip.offsetHeight;
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    if (x + ttWidth > windowWidth) x = e.clientX - ttWidth - 15;
-    if (y + ttHeight > windowHeight) y = e.clientY - ttHeight - 15;
-    tooltip.style.left = x + "px";
-    tooltip.style.top = y + "px";
-}
-
-function hideTooltip() { tooltip.style.display = "none"; }
-
 document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
     row.addEventListener('mouseenter', (e) => {
         const stat = e.currentTarget.getAttribute('data-stat');
@@ -699,6 +731,7 @@ function updateInventoryUI() {
         return;
     }
 
+    // Weapons Root Categories
     if (selectedSlot === "weapon" && !selectedWeaponCategory) {
         instruction.innerText = "SELECT MAIN HAND CATEGORY";
         const categories = ["1H Weapon", "2H Weapon", "Bows", "Magic", "Tools"];
@@ -707,17 +740,18 @@ function updateInventoryUI() {
             div.className = "inventory-item";
             div.style.borderLeft = "5px solid var(--highlight)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedWeaponCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedWeaponCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
     }
 
+    // Magic Sub-Categories
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Magic" && !selectedMagicCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
         backBtn.innerText = `← BACK TO MAIN HAND`;
-        backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
+        backBtn.onclick = () => { hideTooltip(); selectedWeaponCategory = null; updateInventoryUI(); };
         container.appendChild(backBtn);
         instruction.innerText = "SELECT MAGIC TYPE";
         ["Magic 1H", "Magic 2H"].forEach(cat => {
@@ -725,17 +759,18 @@ function updateInventoryUI() {
             div.className = "inventory-item";
             div.style.borderLeft = "5px solid var(--highlight)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedMagicCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedMagicCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
     }
 
+    // Tool Sub-Categories
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Tools" && !selectedToolCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
         backBtn.innerText = `← BACK TO MAIN HAND`;
-        backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
+        backBtn.onclick = () => { hideTooltip(); selectedWeaponCategory = null; updateInventoryUI(); };
         container.appendChild(backBtn);
         instruction.innerText = "SELECT TOOL CATEGORY";
         ["Fishing tools", "Smithing", "Mining Tools"].forEach(cat => {
@@ -743,118 +778,84 @@ function updateInventoryUI() {
             div.className = "inventory-item";
             div.style.borderLeft = "5px solid var(--highlight)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedToolCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedToolCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
     }
 
-    if (selectedSlot === "weapon" && selectedWeaponCategory) {
+    if ((selectedSlot === "weapon" && selectedWeaponCategory) || (selectedSlot === "head" && selectedHeadCategory) || (selectedSlot === "chest" && selectedChestCategory) || (selectedSlot === "legs" && selectedLegsCategory) || (selectedSlot === "shield" && selectedShieldCategory)) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
         backBtn.innerText = `← BACK`;
         backBtn.onclick = () => { 
-            if (selectedMagicCategory) { selectedMagicCategory = null; } 
-            else if (selectedToolCategory) { selectedToolCategory = null; } 
-            else { selectedWeaponCategory = null; }
+            hideTooltip();
+            if (selectedMagicCategory) selectedMagicCategory = null;
+            else if (selectedToolCategory) selectedToolCategory = null;
+            else if (selectedWeaponCategory) selectedWeaponCategory = null;
+            else if (selectedHeadCategory) selectedHeadCategory = null;
+            else if (selectedChestCategory) selectedChestCategory = null;
+            else if (selectedLegsCategory) selectedLegsCategory = null;
+            else if (selectedShieldCategory) selectedShieldCategory = null;
             updateInventoryUI(); 
         };
         container.appendChild(backBtn);
     }
 
+    // Logic for other root categories (Armor, Shields)
     if (selectedSlot === "head" && !selectedHeadCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
-        const hCategories = ["Light armor", "Heavy armor"];
-        hCategories.forEach(cat => {
+        ["Light armor", "Heavy armor"].forEach(cat => {
             const div = document.createElement("div");
             div.className = "inventory-item";
-            div.style.borderLeft = "5px solid var(--accent)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedHeadCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedHeadCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
-    }
-
-    if (selectedSlot === "head" && selectedHeadCategory) {
-        const backBtn = document.createElement("div");
-        backBtn.className = "back-btn";
-        backBtn.innerText = `← BACK TO TYPES`;
-        backBtn.onclick = () => { selectedHeadCategory = null; updateInventoryUI(); };
-        container.appendChild(backBtn);
     }
 
     if (selectedSlot === "chest" && !selectedChestCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
-        const cCategories = ["Light armor", "Heavy armor"];
-        cCategories.forEach(cat => {
+        ["Light armor", "Heavy armor"].forEach(cat => {
             const div = document.createElement("div");
             div.className = "inventory-item";
-            div.style.borderLeft = "5px solid var(--accent)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedChestCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedChestCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
-    }
-
-    if (selectedSlot === "chest" && selectedChestCategory) {
-        const backBtn = document.createElement("div");
-        backBtn.className = "back-btn";
-        backBtn.innerText = `← BACK TO TYPES`;
-        backBtn.onclick = () => { selectedChestCategory = null; updateInventoryUI(); };
-        container.appendChild(backBtn);
     }
 
     if (selectedSlot === "legs" && !selectedLegsCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
-        const lCategories = ["Light armor", "Heavy armor"];
-        lCategories.forEach(cat => {
+        ["Light armor", "Heavy armor"].forEach(cat => {
             const div = document.createElement("div");
             div.className = "inventory-item";
-            div.style.borderLeft = "5px solid var(--accent)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedLegsCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedLegsCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
-    }
-
-    if (selectedSlot === "legs" && selectedLegsCategory) {
-        const backBtn = document.createElement("div");
-        backBtn.className = "back-btn";
-        backBtn.innerText = `← BACK TO TYPES`;
-        backBtn.onclick = () => { selectedLegsCategory = null; updateInventoryUI(); };
-        container.appendChild(backBtn);
     }
 
     if (selectedSlot === "shield" && !selectedShieldCategory) {
         instruction.innerText = "SELECT SHIELD CATEGORY";
-        const sCategories = ["Block", "Ward", "Deflect"];
-        sCategories.forEach(cat => {
+        ["Block", "Ward", "Deflect"].forEach(cat => {
             const div = document.createElement("div");
             div.className = "inventory-item";
-            div.style.borderLeft = "5px solid var(--accent)";
             div.innerHTML = `<strong>${cat}</strong>`;
-            div.onclick = () => { selectedShieldCategory = cat; updateInventoryUI(); };
+            div.onclick = () => { hideTooltip(); selectedShieldCategory = cat; updateInventoryUI(); };
             container.appendChild(div);
         });
         return;
-    }
-
-    if (selectedSlot === "shield" && selectedShieldCategory) {
-        const backBtn = document.createElement("div");
-        backBtn.className = "back-btn";
-        backBtn.innerText = `← BACK TO CATEGORIES`;
-        backBtn.onclick = () => { selectedShieldCategory = null; updateInventoryUI(); };
-        container.appendChild(backBtn);
     }
 
     let displayCategory = selectedWeaponCategory;
     if (selectedMagicCategory) displayCategory = selectedMagicCategory;
     if (selectedToolCategory) displayCategory = selectedToolCategory;
 
-    instruction.innerText = `BROWSING: ${selectedSlot === 'weapon' ? 'MAIN HAND' : selectedSlot.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''} ${selectedShieldCategory ? '(' + selectedShieldCategory + ')' : ''} ${selectedHeadCategory ? '(' + selectedHeadCategory + ')' : ''} ${selectedChestCategory ? '(' + selectedChestCategory + ')' : ''} ${selectedLegsCategory ? '(' + selectedLegsCategory + ')' : ''}`;
+    instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
         if (selectedSlot === "neck" || selectedSlot === "ring") {
@@ -871,7 +872,7 @@ function updateInventoryUI() {
                 gDiv.onmouseenter = (e) => showGemTooltip(e, currentGem);
                 gDiv.onmousemove = (e) => moveTooltip(e);
                 gDiv.onmouseleave = () => hideTooltip();
-                gDiv.onclick = () => { sockets[selectedSlot] = null; hideTooltip(); update(); };
+                gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = null; update(); };
                 sBox.appendChild(gDiv);
             } else {
                 sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
@@ -882,17 +883,17 @@ function updateInventoryUI() {
                     gDiv.onmouseenter = (e) => showGemTooltip(e, gem);
                     gDiv.onmousemove = (e) => moveTooltip(e);
                     gDiv.onmouseleave = () => hideTooltip();
-                    gDiv.onclick = () => { sockets[selectedSlot] = gem; hideTooltip(); update(); };
+                    gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = gem; update(); };
                     sBox.appendChild(gDiv);
                 });
             }
             socketArea.appendChild(sBox);
-        } else { socketInstruction.innerText = "Select a Necklace or Ring from the character to modify its sockets."; }
+        }
 
         const uBtn = document.createElement("div");
         uBtn.className = "unequip-btn";
         uBtn.innerText = `Remove ${equipped[selectedSlot].name}`;
-        uBtn.onclick = () => { equipped[selectedSlot] = null; if(sockets.hasOwnProperty(selectedSlot)) sockets[selectedSlot] = null; update(); };
+        uBtn.onclick = () => { hideTooltip(); equipped[selectedSlot] = null; if(sockets.hasOwnProperty(selectedSlot)) sockets[selectedSlot] = null; update(); };
         unequipArea.appendChild(uBtn);
     }
 
@@ -908,6 +909,7 @@ function updateInventoryUI() {
         if (selectedSlot === "legs") return i.slot === "legs" && i.legsType === selectedLegsCategory;
         return i.slot === selectedSlot;
     });
+
     validItems.sort((a, b) => (a.sellPrice || 0) - (b.sellPrice || 0));
     validItems.forEach(item => {
         const div = document.createElement("div");
@@ -917,7 +919,7 @@ function updateInventoryUI() {
         div.onmouseenter = (e) => showItemTooltip(e, item);
         div.onmousemove = (e) => moveTooltip(e);
         div.onmouseleave = () => hideTooltip();
-        div.onclick = () => { equipped[selectedSlot] = item; update(); };
+        div.onclick = () => { hideTooltip(); equipped[selectedSlot] = item; update(); };
         container.appendChild(div);
     });
 }
@@ -1031,6 +1033,7 @@ function update() {
 slots.forEach(s => {
     const el = document.getElementById(s);
     el.addEventListener('click', () => {
+        hideTooltip(); // Immediate hide on click
         if (selectedSlot !== s) { 
             selectedSlot = s; 
             selectedWeaponCategory = null; 
@@ -1043,11 +1046,11 @@ slots.forEach(s => {
         }
         update();
     });
-    // Add Tooltip listeners for the equipment slots
     el.addEventListener('mouseenter', (e) => showEquippedSlotTooltip(e, s));
     el.addEventListener('mousemove', moveTooltip);
     el.addEventListener('mouseleave', hideTooltip);
 });
+
 update();
 </script>
 </body>
