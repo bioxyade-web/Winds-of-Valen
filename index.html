@@ -12,6 +12,7 @@
     --bg-dark: #1e1e2f;
     --panel-bg: #2a2a40;
     --gold: #ffd700;
+    --gem-slot: #1a1a2e;
 }
 
 body {
@@ -61,7 +62,8 @@ body {
 .layout {
     display: grid;
     grid-template-columns: 350px 550px 400px;
-    gap: 30px;
+    grid-template-rows: 850px auto; 
+    gap: 50px 30px;
     padding: 20px;
     justify-content: center;
     width: fit-content;
@@ -71,11 +73,21 @@ body {
     background: var(--panel-bg);
     border-radius: 16px;
     padding: 25px;
-    height: 850px; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     border: 1px solid #3b3b5c;
+}
+
+.inventory-panel, .character-panel, .stats-panel {
+    height: 850px;
+}
+
+.socket-panel {
+    grid-column: 1 / span 3;
+    height: auto;
+    min-height: 200px;
+    margin-top: 20px;
 }
 
 h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
@@ -106,6 +118,32 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     background: #343452;
     transform: translateX(5px);
 }
+
+.gem-item {
+    background: #252545;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed var(--accent);
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.gem-item:hover { background: #3a3a6b; }
+
+.socket-container {
+    background: #151525;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.socket-title { color: var(--highlight); font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 10px; }
 
 .unequip-btn {
     background: #552222;
@@ -150,6 +188,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     border: 3px solid #c28b2c;
     border-radius: 12px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-size: 12px;
@@ -161,6 +200,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
     color: #aaa;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 .slot:hover { border-color: var(--highlight); color: #fff; background: #243c42; }
@@ -197,7 +238,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 <div class="title">WINDS OF VALEN EQUIPPER</div>
 
 <div class="layout">
-    <div class="panel">
+    <div class="panel inventory-panel">
         <h2>Inventory</h2>
         <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
             Click a character slot to browse items...
@@ -206,7 +247,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
         <div id="inventory-container"></div>
     </div>
 
-    <div class="panel character">
+    <div class="panel character character-panel">
         <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
         <div class="slot" id="head">Head</div>
         <div class="slot" id="neck">Neck</div>
@@ -239,6 +280,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
             <div class="stat-row" data-stat="miningPower"><span class="stat-label">Mining Power</span><span class="stat-val" id="val-mining">0</span></div>
             <div class="stat-row" data-stat="smithingPower"><span class="stat-label">Smithing Power</span><span class="stat-val" id="val-smithing">0</span></div>
             <div class="stat-row" data-stat="potionMakingPower"><span class="stat-label">Potion Making Power</span><span class="stat-val" id="val-potion">0</span></div>
+            <div class="stat-row" data-stat="fishingPower"><span class="stat-label">Fishing Power</span><span class="stat-val" id="val-fishing">0</span></div>
             
             <div class="stat-row" data-stat="fireAccuracy"><span class="stat-label">Fire Accuracy</span><span class="stat-val" id="val-pow-fire">0</span></div>
             <div class="stat-row" data-stat="iceAccuracy"><span class="stat-label">Ice Accuracy</span><span class="stat-val" id="val-pow-ice">0</span></div>
@@ -261,12 +303,22 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
             <div class="stat-row" data-stat="totalItemValue"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
         </div>
     </div>
+
+    <div class="panel socket-panel">
+        <h2>Gems & Sockets</h2>
+        <div id="socket-instruction" style="font-size:14px; color:#aaa; margin-bottom:15px;">
+            Select a Necklace or Ring from the character to modify its sockets.
+        </div>
+        <div id="socket-area"></div>
+    </div>
 </div>
 
 <script>
 const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
 let equipped = {};
 slots.forEach(s => equipped[s] = null);
+
+let sockets = { neck: null, ring: null };
 
 let selectedSlot = null;
 let selectedWeaponCategory = null;
@@ -344,7 +396,21 @@ const items = [
     {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560},
     {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100},
     {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000},
-    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400}
+    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400},
+    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280}
+];
+
+const gems = [
+    { name: "Weak Power Gem", type: "meleePower", multi: 0.20, price: 70 },
+    { name: "Power Gem", type: "meleePower", multi: 0.30, price: 245 },
+    { name: "Strong Power Gem", type: "meleePower", multi: 0.40, price: 840 },
+    { name: "Fishing Power Gem", type: "fishingPower", flat: 5, price: 1400 },
+    { name: "Weak Magic Power Gem", type: "magicPower", multi: 0.20, price: 70 },
+    { name: "Magic Power Gem", type: "magicPower", multi: 0.30, price: 350 },
+    { name: "Strong Magic Power Gem", type: "magicPower", multi: 0.40, price: 840 }, 
+    { name: "Potion Making Power Gem", type: "potionMakingPower", flat: 5, price: 245 },
+    { name: "Smithing Power Gem", type: "smithingPower", flat: 5, price: 1400 },
+    { name: "Mining Power Gem", type: "miningPower", flat: 5, price: 3500 }
 ];
 
 const tooltipDescriptions = {
@@ -359,6 +425,7 @@ const tooltipDescriptions = {
     miningPower: "Increases the speed of mining.",
     smithingPower: "Increases the speed of using an anvil.",
     potionMakingPower: "Increases the speed of using potion making facilities.",
+    fishingPower: "Increases efficiency while fishing.",
     fireAccuracy: "Increases accuracy with fire weapons.",
     iceAccuracy: "Increases accuracy with ice weapons.",
     lightningAccuracy: "Increases accuracy with lightning weapons.",
@@ -392,6 +459,7 @@ function showItemTooltip(e, item) {
         miningPower: "Mining Power",
         smithingPower: "Smithing Power",
         potionPower: "Potion Making Power",
+        fishingPower: "Fishing Power",
         agi: "Agility",
         defPierce: "Pierce Defense", 
         defSlash: "Slash Defense",
@@ -405,7 +473,12 @@ function showItemTooltip(e, item) {
 
     Object.keys(item).forEach(key => {
         if (statMap[key]) {
-            html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${item[key]}</span></div>`;
+            let val = item[key];
+            if (item.slot && sockets.hasOwnProperty(item.slot)) {
+                const boosted = calculateBoostedStat(item, key);
+                if (boosted !== val) val = `${val}(${boosted})`;
+            }
+            html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${val}</span></div>`;
         }
     });
 
@@ -414,6 +487,21 @@ function showItemTooltip(e, item) {
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
     moveTooltip(e);
+}
+
+function calculateBoostedStat(item, statKey) {
+    let base = item[statKey] || 0;
+    const gem = sockets[item.slot];
+    if (!item.slot || !gem) return base;
+    
+    const effectiveStatKey = (statKey === "potionPower") ? "potionMakingPower" : statKey;
+
+    if (gem.type === effectiveStatKey) {
+        if (gem.multi) base *= (1 + gem.multi);
+        if (gem.flat) base += gem.flat;
+    }
+    
+    return Number(base.toFixed(1));
 }
 
 function showStatTooltip(e, statKey) {
@@ -435,7 +523,6 @@ function hideTooltip() {
     tooltip.style.display = "none";
 }
 
-// Add event listeners to all stat rows
 document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
     row.addEventListener('mouseenter', (e) => {
         const stat = e.currentTarget.getAttribute('data-stat');
@@ -454,14 +541,18 @@ document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
 function updateInventoryUI() {
     const container = document.getElementById("inventory-container");
     const unequipArea = document.getElementById("unequip-area");
+    const socketArea = document.getElementById("socket-area");
     const instruction = document.getElementById("instruction-text");
+    const socketInstruction = document.getElementById("socket-instruction");
     
     container.innerHTML = "";
     unequipArea.innerHTML = "";
+    socketArea.innerHTML = "";
 
     if (!selectedSlot) {
         instruction.innerText = "Click a character slot to browse items...";
         container.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 20px;">NO SLOT SELECTED</div>`;
+        socketInstruction.innerText = "Select a Necklace or Ring from the character to modify its sockets.";
         return;
     }
 
@@ -490,10 +581,49 @@ function updateInventoryUI() {
     instruction.innerText = `BROWSING: ${selectedSlot.toUpperCase()} ${selectedWeaponCategory ? '(' + selectedWeaponCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
+        if (selectedSlot === "neck" || selectedSlot === "ring") {
+            socketInstruction.innerText = `Socketing options for: ${equipped[selectedSlot].name}`;
+            const sBox = document.createElement("div");
+            sBox.className = "socket-container";
+            
+            const currentGem = sockets[selectedSlot];
+            if (currentGem) {
+                sBox.innerHTML = `<div class="socket-title">EQUIPPED GEM (1/1 Max)</div>`;
+                const gDiv = document.createElement("div");
+                gDiv.className = "gem-item";
+                gDiv.style.borderColor = "var(--highlight)";
+                gDiv.innerHTML = `💎 ${currentGem.name} <span style="float:right; color:red">Remove</span>`;
+                gDiv.onclick = () => {
+                    sockets[selectedSlot] = null;
+                    update();
+                };
+                sBox.appendChild(gDiv);
+            } else {
+                sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
+                gems.forEach(gem => {
+                    const gDiv = document.createElement("div");
+                    gDiv.className = "gem-item";
+                    gDiv.innerText = `+ ${gem.name} (+${gem.multi ? gem.multi*100+'%' : gem.flat})`;
+                    gDiv.onclick = () => {
+                        sockets[selectedSlot] = gem; 
+                        update();
+                    };
+                    sBox.appendChild(gDiv);
+                });
+            }
+            socketArea.appendChild(sBox);
+        } else {
+            socketInstruction.innerText = "Select a Necklace or Ring from the character to modify its sockets.";
+        }
+
         const uBtn = document.createElement("div");
         uBtn.className = "unequip-btn";
         uBtn.innerText = `Remove ${equipped[selectedSlot].name}`;
-        uBtn.onclick = () => { equipped[selectedSlot] = null; update(); };
+        uBtn.onclick = () => { 
+            equipped[selectedSlot] = null; 
+            if(sockets.hasOwnProperty(selectedSlot)) sockets[selectedSlot] = null; 
+            update(); 
+        };
         unequipArea.appendChild(uBtn);
     }
 
@@ -549,7 +679,15 @@ function update() {
             el.innerText = "LOCKED";
         } else {
             el.classList.remove("locked");
-            el.innerText = equipped[s] ? equipped[s].name : s;
+            let displayText = s;
+            if (equipped[s]) {
+                // Modified to show the item name and gem name stacked vertically
+                displayText = `<div>${equipped[s].name}</div>`;
+                if (sockets[s]) {
+                    displayText += `<div style="color:var(--highlight); font-size:10px; margin-top:4px;">${sockets[s].name}</div>`;
+                }
+            }
+            el.innerHTML = displayText;
         }
     });
 
@@ -565,7 +703,7 @@ function update() {
 
     let s = { 
         melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0,
-        mining:0, smithing:0, potion:0 
+        mining:0, smithing:0, potion:0, fishing:0 
     };
 
     slots.forEach(slot => {
@@ -581,12 +719,14 @@ function update() {
              return;
         }
 
-        s.melee += (item.meleePower || 0);
-        s.ranged += (item.rangedPower || 0);
-        s.magic += (item.magicPower || 0);
-        s.mining += (item.miningPower || 0);
-        s.smithing += (item.smithingPower || 0);
-        s.potion += (item.potionPower || 0);
+        s.melee += calculateBoostedStat(item, "meleePower");
+        s.ranged += calculateBoostedStat(item, "rangedPower");
+        s.magic += calculateBoostedStat(item, "magicPower");
+        s.mining += calculateBoostedStat(item, "miningPower");
+        s.smithing += calculateBoostedStat(item, "smithingPower");
+        s.potion += calculateBoostedStat(item, "potionPower"); 
+        s.fishing += calculateBoostedStat(item, "fishingPower");
+
         s.agi += (item.agi || 0);
         s.fPow += (item.firePower || 0);
         s.iPow += (item.icePower || 0);
@@ -597,6 +737,8 @@ function update() {
         s.iDef += (item.defIce || 0);
         s.lDef += (item.defLight || 0);
         s.worth += (item.sellPrice || 0);
+
+        if (sockets[slot]) s.worth += sockets[slot].price;
     });
 
     let totalPierceAcc = 0;
@@ -614,12 +756,13 @@ function update() {
     document.getElementById("val-acc-pierce").innerText = totalPierceAcc;
     document.getElementById("val-acc-slash").innerText = totalSlashAcc; 
 
-    document.getElementById("val-melee").innerText = s.melee;
-    document.getElementById("val-ranged").innerText = s.ranged;
-    document.getElementById("val-magic").innerText = s.magic;
-    document.getElementById("val-mining").innerText = s.mining;
-    document.getElementById("val-smithing").innerText = s.smithing;
-    document.getElementById("val-potion").innerText = s.potion;
+    document.getElementById("val-melee").innerText = Number(s.melee.toFixed(1));
+    document.getElementById("val-ranged").innerText = Number(s.ranged.toFixed(1));
+    document.getElementById("val-magic").innerText = Number(s.magic.toFixed(1));
+    document.getElementById("val-mining").innerText = Number(s.mining.toFixed(1));
+    document.getElementById("val-smithing").innerText = Number(s.smithing.toFixed(1));
+    document.getElementById("val-potion").innerText = Number(s.potion.toFixed(1));
+    document.getElementById("val-fishing").innerText = Number(s.fishing.toFixed(1));
     document.getElementById("val-pow-fire").innerText = s.fPow;
     document.getElementById("val-pow-ice").innerText = s.iPow;
     document.getElementById("val-pow-light").innerText = s.lPow;
