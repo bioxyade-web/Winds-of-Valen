@@ -28,6 +28,8 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    /* ADDED: Extra space at the bottom so tooltips on the last items don't hit the edge */
+    padding-bottom: 250px; 
 }
 
 /* TOOLTIP STYLES */
@@ -65,12 +67,12 @@ body {
 
 .layout {
     display: grid;
-    grid-template-columns: 350px 500px 350px; /* Reduced middle and side width slightly to prevent overlap */
+    grid-template-columns: 350px 500px 350px; 
     grid-template-rows: auto auto; 
     gap: 30px;
     padding: 20px;
     justify-content: center;
-    max-width: 1300px; /* Constrain max width for PC */
+    max-width: 1300px; 
     width: 100%;
 }
 
@@ -208,7 +210,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     text-align: center;
     color: #aaa;
     padding: 5px;
-    transform: translate(-50%, -50%); /* Crucial for percentage positioning */
+    transform: translate(-50%, -50%); 
 }
 
 .slot:hover { border-color: var(--highlight); color: #fff; background: #243c42; }
@@ -216,7 +218,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 .filled { border-color: var(--accent); background: #3b3b5c; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 .locked { opacity: 0.4; background: #111 !important; border-color: #333 !important; cursor: not-allowed; pointer-events: none; }
 
-/* POSITIONING SLOTS BY PERCENTAGE */
 #head    { top: 18%;  left: 50%; }
 #neck    { top: 26%; left: 70%; }
 #chest   { top: 40%; left: 50%; }
@@ -238,7 +239,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 .stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
 .val-gold { color: var(--gold) !important; }
 
-/* MOBILE RESPONSIVE FIX */
 @media (max-width: 1200px) {
     .layout {
         display: flex;
@@ -271,7 +271,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 <div class="title">WINDS OF VALEN EQUIPPER</div>
 
 <div class="layout">
-    <!-- INVENTORY PANEL -->
     <div class="panel inventory-panel">
         <h2>Inventory</h2>
         <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
@@ -281,7 +280,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
         <div id="inventory-container"></div>
     </div>
 
-    <!-- CHARACTER PANEL -->
     <div class="panel character-panel">
         <div class="character">
             <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
@@ -299,7 +297,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
         </div>
     </div>
 
-    <!-- STATS PANEL -->
     <div class="panel stats-panel">
         <div class="stat-section">
             <h3>Damage Stats</h3>
@@ -342,7 +339,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
         </div>
     </div>
 
-    <!-- SOCKET PANEL -->
     <div class="panel socket-panel">
         <h2>Gems & Sockets</h2>
         <div id="socket-instruction" style="font-size:14px; color:#aaa; margin-bottom:15px;">
@@ -366,7 +362,7 @@ let selectedShieldCategory = null;
 let selectedChestCategory = null; 
 let selectedLegsCategory = null;
 let selectedHeadCategory = null;
-let selectedToolCategory = null; // New state for Tools selection
+let selectedToolCategory = null; 
 
 const items = [
     {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42},
@@ -444,7 +440,6 @@ const items = [
     {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400},
     {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280},
     
-    // TOOLS (with added categories for filtering)
     {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0},
     {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28},
     {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168},
@@ -498,6 +493,22 @@ const tooltipDescriptions = {
 };
 
 const tooltip = document.getElementById("tooltip");
+
+function showGemTooltip(e, gem) {
+    let html = `<h4>${gem.name}</h4>`;
+    
+    // Format the stat type for display
+    const statName = gem.type.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    const valueStr = gem.multi ? `+${(gem.multi * 100).toFixed(0)}%` : `+${gem.flat}`;
+    
+    html += `<div class="tt-row"><span class="tt-label">Boost</span><span class="tt-val" style="color:var(--highlight)">${valueStr} ${statName}</span></div>`;
+    html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Worth</span><span class="tt-val">${gem.price}g</span></div>`;
+    html += `<div class="tt-desc" style="margin-top:8px;">Attach this gem to a ring or amulet to enhance your stats.</div>`;
+
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
 
 function showItemTooltip(e, item) {
     let html = `<h4>${item.name}</h4>`;
@@ -571,8 +582,27 @@ function showStatTooltip(e, statKey) {
 }
 
 function moveTooltip(e) {
-    tooltip.style.left = (e.clientX + 15) + "px";
-    tooltip.style.top = (e.clientY + 15) + "px";
+    // UPDATED logic to keep tooltip on screen
+    let x = e.clientX + 15;
+    let y = e.clientY + 15;
+    
+    const ttWidth = tooltip.offsetWidth;
+    const ttHeight = tooltip.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // Flip to left side if overflowing right
+    if (x + ttWidth > windowWidth) {
+        x = e.clientX - ttWidth - 15;
+    }
+    
+    // Flip to top side if overflowing bottom
+    if (y + ttHeight > windowHeight) {
+        y = e.clientY - ttHeight - 15;
+    }
+
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
 }
 
 function hideTooltip() {
@@ -612,7 +642,6 @@ function updateInventoryUI() {
         return;
     }
 
-    // MAIN HAND CATEGORY LOGIC
     if (selectedSlot === "weapon" && !selectedWeaponCategory) {
         instruction.innerText = "SELECT MAIN HAND CATEGORY";
         const categories = ["1H Weapon", "2H Weapon", "Bows", "Magic", "Tools"];
@@ -627,7 +656,6 @@ function updateInventoryUI() {
         return;
     }
 
-    // MAGIC SUB-CATEGORY LOGIC
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Magic" && !selectedMagicCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
@@ -647,7 +675,6 @@ function updateInventoryUI() {
         return;
     }
 
-    // TOOLS SUB-CATEGORY LOGIC
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Tools" && !selectedToolCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
@@ -684,7 +711,6 @@ function updateInventoryUI() {
         container.appendChild(backBtn);
     }
 
-    // HEAD CATEGORY LOGIC
     if (selectedSlot === "head" && !selectedHeadCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
         const hCategories = ["Light armor", "Heavy armor"];
@@ -707,7 +733,6 @@ function updateInventoryUI() {
         container.appendChild(backBtn);
     }
 
-    // CHEST CATEGORY LOGIC
     if (selectedSlot === "chest" && !selectedChestCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
         const cCategories = ["Light armor", "Heavy armor"];
@@ -730,7 +755,6 @@ function updateInventoryUI() {
         container.appendChild(backBtn);
     }
 
-    // LEGS CATEGORY LOGIC
     if (selectedSlot === "legs" && !selectedLegsCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
         const lCategories = ["Light armor", "Heavy armor"];
@@ -753,7 +777,6 @@ function updateInventoryUI() {
         container.appendChild(backBtn);
     }
 
-    // SHIELD CATEGORY LOGIC
     if (selectedSlot === "shield" && !selectedShieldCategory) {
         instruction.innerText = "SELECT SHIELD CATEGORY";
         const sCategories = ["Block", "Ward", "Deflect"];
@@ -795,8 +818,15 @@ function updateInventoryUI() {
                 gDiv.className = "gem-item";
                 gDiv.style.borderColor = "var(--highlight)";
                 gDiv.innerHTML = `💎 ${currentGem.name} <span style="float:right; color:red">Remove</span>`;
+                
+                // Tooltip for already equipped gem
+                gDiv.onmouseenter = (e) => showGemTooltip(e, currentGem);
+                gDiv.onmousemove = (e) => moveTooltip(e);
+                gDiv.onmouseleave = () => hideTooltip();
+
                 gDiv.onclick = () => {
                     sockets[selectedSlot] = null;
+                    hideTooltip();
                     update();
                 };
                 sBox.appendChild(gDiv);
@@ -806,8 +836,15 @@ function updateInventoryUI() {
                     const gDiv = document.createElement("div");
                     gDiv.className = "gem-item";
                     gDiv.innerText = `+ ${gem.name} (+${gem.multi ? gem.multi*100+'%' : gem.flat})`;
+                    
+                    // Tooltip for gem browser
+                    gDiv.onmouseenter = (e) => showGemTooltip(e, gem);
+                    gDiv.onmousemove = (e) => moveTooltip(e);
+                    gDiv.onmouseleave = () => hideTooltip();
+
                     gDiv.onclick = () => {
                         sockets[selectedSlot] = gem; 
+                        hideTooltip();
                         update();
                     };
                     sBox.appendChild(gDiv);
