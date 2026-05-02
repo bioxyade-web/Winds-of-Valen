@@ -7,12 +7,15 @@
 
 <style>
 :root {
-    --accent: #7c3aed;
-    --highlight: #00d1ff;
-    --bg-dark: #1e1e2f;
-    --panel-bg: #2a2a40;
-    --gold: #ffd700;
-    --gem-slot: #1a1a2e;
+    /* Winds of Valen Color Palette */
+    --accent: #b45309; /* Warm Amber/Rust */
+    --highlight: #fbbf24; /* Golden Sunlight */
+    --bg-dark: #0f172a; 
+    --panel-bg: rgba(30, 20, 10, 0.85); /* Dark Sepia Transparent */
+    --gold: #f59e0b;
+    --gem-slot: #1a120b;
+    --border-color: #78350f;
+    --text-main: #fef3c7;
 }
 
 * {
@@ -22,13 +25,14 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--bg-dark);
-    color: #e0e0e0;
+    /* NEW BACKGROUND */
+    background: url('https://img.itch.zone/aW1hZ2UvMzk1ODQ1Ny8yNDI3MDEzMS5qcGc=/original/qQvDhM.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-main);
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    /* ADDED: Extra space at the bottom so tooltips on the last items don't hit the edge */
     padding-bottom: 250px; 
 }
 
@@ -36,22 +40,22 @@ body {
 #tooltip {
     position: fixed;
     display: none;
-    background: rgba(10, 10, 20, 0.95);
-    border: 2px solid var(--accent);
+    background: rgba(20, 10, 5, 0.95);
+    border: 2px solid var(--gold);
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 4px;
     z-index: 1000;
     pointer-events: none;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
     min-width: 200px;
     max-width: 300px;
 }
 
-#tooltip h4 { margin: 0 0 8px 0; color: var(--highlight); border-bottom: 1px solid #444; padding-bottom: 5px; }
+#tooltip h4 { margin: 0 0 8px 0; color: var(--highlight); border-bottom: 1px solid var(--accent); padding-bottom: 5px; }
 .tt-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
-.tt-label { color: #aaa; margin-right: 20px; }
+.tt-label { color: #d97706; margin-right: 20px; }
 .tt-val { color: #fff; font-weight: bold; }
-.tt-desc { color: #ddd; font-style: italic; font-size: 12px; line-height: 1.4; }
+.tt-desc { color: #d6d3d1; font-style: italic; font-size: 12px; line-height: 1.4; }
 
 .title {
     width: 100%;
@@ -60,9 +64,10 @@ body {
     font-size: 32px;
     font-weight: bold;
     border-bottom: 4px solid var(--accent);
-    background: #252538;
+    background: rgba(0, 0, 0, 0.6);
     margin-bottom: 20px;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px var(--gold);
 }
 
 .layout {
@@ -78,13 +83,14 @@ body {
 
 .panel {
     background: var(--panel-bg);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
-    border: 1px solid #3b3b5c;
+    border: 2px solid var(--border-color);
     overflow: hidden;
+    backdrop-filter: blur(5px);
 }
 
 .inventory-panel, .character-panel, .stats-panel {
@@ -97,7 +103,7 @@ body {
     min-height: 180px;
 }
 
-h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px black; }
 
 #inventory-container {
     flex-grow: 1;
@@ -110,38 +116,45 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 #inventory-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
 .inventory-item {
-    background: #1e1e2f;
+    background: rgba(0, 0, 0, 0.4);
     padding: 18px;
-    border-radius: 10px;
-    border: 1px solid #444;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     margin-bottom: 12px;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 18px;
 }
 
 .inventory-item:hover {
     border-color: var(--highlight);
-    background: #343452;
-    transform: translateX(5px);
+    background: rgba(120, 53, 15, 0.4);
+    transform: translateX(8px);
+    box-shadow: -5px 0 15px var(--accent);
+}
+
+.inventory-item:active {
+    transform: scale(0.95);
+    background: var(--accent);
 }
 
 .gem-item {
-    background: #252545;
+    background: rgba(0,0,0,0.5);
     padding: 10px;
-    border-radius: 8px;
-    border: 1px dashed var(--accent);
+    border-radius: 4px;
+    border: 1px dashed var(--gold);
     margin-bottom: 8px;
     cursor: pointer;
     font-size: 14px;
     flex: 1;
     min-width: 200px;
+    transition: 0.2s;
 }
 
-.gem-item:hover { background: #3a3a6b; }
+.gem-item:hover { background: var(--accent); color: white; }
 
 .socket-container {
-    background: #151525;
+    background: rgba(0,0,0,0.6);
     padding: 15px;
     border-radius: 8px;
     border: 1px solid var(--accent);
@@ -153,49 +166,54 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 .socket-title { color: var(--highlight); font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 10px; }
 
 .unequip-btn {
-    background: #552222;
-    border: 2px solid #ff4d4d;
-    color: #ff4d4d;
+    background: #450a0a;
+    border: 2px solid #ef4444;
+    color: #fecaca;
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: pointer;
     margin-bottom: 20px;
     text-align: center;
     font-weight: bold;
     font-size: 16px;
     text-transform: uppercase;
+    transition: 0.2s;
 }
+.unequip-btn:hover { background: #7f1d1d; box-shadow: 0 0 15px #ef4444; }
 
 .back-btn {
-    background: #3b3b5c;
+    background: var(--gem-slot);
     border: 1px solid var(--highlight);
     color: var(--highlight);
     padding: 10px;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
     margin-bottom: 15px;
     text-align: center;
     font-size: 14px;
+    transition: 0.2s;
 }
+.back-btn:hover { background: var(--accent); color: white; }
 
 .character {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle, #3b3b5c 0%, #1e1e2f 100%);
+    background: radial-gradient(circle, rgba(180, 83, 9, 0.2) 0%, rgba(0,0,0,0.5) 100%);
     width: 100%;
     height: 100%;
+    border-radius: 8px;
 }
 
-.character img { max-height: 650px; pointer-events: none; z-index: 1; max-width: 90%; }
+.character img { max-height: 650px; pointer-events: none; z-index: 1; max-width: 90%; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
 
 .slot {
     width: 90px;
     height: 90px;
-    background: rgba(15, 15, 25, 0.9);
-    border: 3px solid #c28b2c;
-    border-radius: 12px;
+    background: rgba(15, 10, 5, 0.85);
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -208,15 +226,34 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
     z-index: 5;
     transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
-    color: #aaa;
+    color: #a8a29e;
     padding: 5px;
     transform: translate(-50%, -50%); 
 }
 
-.slot:hover { border-color: var(--highlight); color: #fff; background: #243c42; }
-.slot.selected { border-color: var(--highlight); box-shadow: 0 0 25px var(--highlight); transform: translate(-50%, -50%) scale(1.15); z-index: 10; }
-.filled { border-color: var(--accent); background: #3b3b5c; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-.locked { opacity: 0.4; background: #111 !important; border-color: #333 !important; cursor: not-allowed; pointer-events: none; }
+.slot:hover { 
+    border-color: var(--highlight); 
+    color: #fff; 
+    background: var(--accent); 
+    box-shadow: 0 0 20px var(--highlight);
+}
+
+.slot.selected { 
+    border-color: var(--highlight); 
+    box-shadow: 0 0 30px var(--gold); 
+    transform: translate(-50%, -50%) scale(1.1); 
+    z-index: 10;
+    background: rgba(180, 83, 9, 0.6);
+}
+
+.filled { 
+    border-color: var(--gold); 
+    background: rgba(69, 26, 3, 0.8); 
+    color: #fff; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6); 
+}
+
+.locked { opacity: 0.3; background: #000 !important; border-color: #222 !important; cursor: not-allowed; pointer-events: none; }
 
 #head    { top: 18%;  left: 50%; }
 #neck    { top: 26%; left: 70%; }
@@ -232,12 +269,30 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 
 .stats-panel { overflow-y: auto; }
 .stat-section { margin-bottom: 15px; }
-.stat-section h3 { color: var(--accent); font-size: 20px; border-bottom: 2px solid #444; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
-.stat-row { display: flex; justify-content: space-between; padding: 8px 12px; background: #1e1e2f; margin-bottom: 4px; border-radius: 6px; font-size: 14px; cursor: help; transition: background 0.2s; }
-.stat-row:hover { background: #2a2a40; }
-.stat-label { color: #ccc; }
+.stat-section h3 { color: var(--highlight); font-size: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
+
+.stat-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 8px 12px; 
+    background: rgba(0,0,0,0.3); 
+    margin-bottom: 4px; 
+    border-radius: 4px; 
+    font-size: 14px; 
+    cursor: help; 
+    transition: all 0.2s; 
+    border: 1px solid transparent;
+}
+
+.stat-row:hover { 
+    background: rgba(180, 83, 9, 0.3); 
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+.stat-label { color: #d6d3d1; }
 .stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
-.val-gold { color: var(--gold) !important; }
+.val-gold { color: var(--gold) !important; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
 
 @media (max-width: 1200px) {
     .layout {
@@ -349,6 +404,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 </div>
 
 <script>
+/* LOGIC REMAINS COMPLETELY UNCHANGED AS REQUESTED */
 const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
 let equipped = {};
 slots.forEach(s => equipped[s] = null);
@@ -496,15 +552,11 @@ const tooltip = document.getElementById("tooltip");
 
 function showGemTooltip(e, gem) {
     let html = `<h4>${gem.name}</h4>`;
-    
-    // Format the stat type for display
     const statName = gem.type.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
     const valueStr = gem.multi ? `+${(gem.multi * 100).toFixed(0)}%` : `+${gem.flat}`;
-    
     html += `<div class="tt-row"><span class="tt-label">Boost</span><span class="tt-val" style="color:var(--highlight)">${valueStr} ${statName}</span></div>`;
     html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Worth</span><span class="tt-val">${gem.price}g</span></div>`;
     html += `<div class="tt-desc" style="margin-top:8px;">Attach this gem to a ring or amulet to enhance your stats.</div>`;
-
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
     moveTooltip(e);
@@ -512,30 +564,17 @@ function showGemTooltip(e, gem) {
 
 function showItemTooltip(e, item) {
     let html = `<h4>${item.name}</h4>`;
-    
     const statMap = {
-        damage: "Damage", 
-        speed: "Speed", 
-        range: "Range",
+        damage: "Damage", speed: "Speed", range: "Range",
         shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
         accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
-        pierceBonus: "Pierce Accuracy",
-        meleePower: "Melee Power", 
-        rangedPower: "Ranged Power", 
-        magicPower: "Magic Power",
-        miningPower: "Mining Power",
-        smithingPower: "Smithing Power",
-        potionPower: "Potion Making Power",
-        fishingPower: "Fishing Power",
-        agi: "Agility",
-        defPierce: "Pierce Defense", 
-        defSlash: "Slash Defense",
-        defFire: "Fire Defense", 
-        defIce: "Ice Defense", 
-        defLight: "Lightning Defense",
-        firePower: "Fire Accuracy", 
-        icePower: "Ice Accuracy", 
-        lightPower: "Lightning Accuracy"
+        pierceBonus: "Pierce Accuracy", meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", magicPower: "Magic Power",
+        miningPower: "Mining Power", smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power", fishingPower: "Fishing Power",
+        agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", defLight: "Lightning Defense",
+        firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
     };
 
     Object.keys(item).forEach(key => {
@@ -550,7 +589,6 @@ function showItemTooltip(e, item) {
     });
 
     html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val">${item.sellPrice || 0}g</span></div>`;
-    
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
     moveTooltip(e);
@@ -560,21 +598,17 @@ function calculateBoostedStat(item, statKey) {
     let base = item[statKey] || 0;
     const gem = sockets[item.slot];
     if (!item.slot || !gem) return base;
-    
     const effectiveStatKey = (statKey === "potionPower") ? "potionMakingPower" : statKey;
-
     if (gem.type === effectiveStatKey) {
         if (gem.multi) base *= (1 + gem.multi);
         if (gem.flat) base += gem.flat;
     }
-    
     return Number(base.toFixed(1));
 }
 
 function showStatTooltip(e, statKey) {
     const desc = tooltipDescriptions[statKey];
     if (!desc) return;
-    
     const label = e.currentTarget.querySelector('.stat-label').innerText;
     tooltip.innerHTML = `<h4>${label}</h4><div class="tt-desc">${desc}</div>`;
     tooltip.style.display = "block";
@@ -582,32 +616,19 @@ function showStatTooltip(e, statKey) {
 }
 
 function moveTooltip(e) {
-    // UPDATED logic to keep tooltip on screen
     let x = e.clientX + 15;
     let y = e.clientY + 15;
-    
     const ttWidth = tooltip.offsetWidth;
     const ttHeight = tooltip.offsetHeight;
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
-
-    // Flip to left side if overflowing right
-    if (x + ttWidth > windowWidth) {
-        x = e.clientX - ttWidth - 15;
-    }
-    
-    // Flip to top side if overflowing bottom
-    if (y + ttHeight > windowHeight) {
-        y = e.clientY - ttHeight - 15;
-    }
-
+    if (x + ttWidth > windowWidth) x = e.clientX - ttWidth - 15;
+    if (y + ttHeight > windowHeight) y = e.clientY - ttHeight - 15;
     tooltip.style.left = x + "px";
     tooltip.style.top = y + "px";
 }
 
-function hideTooltip() {
-    tooltip.style.display = "none";
-}
+function hideTooltip() { tooltip.style.display = "none"; }
 
 document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
     row.addEventListener('mouseenter', (e) => {
@@ -616,9 +637,7 @@ document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
             const shield = equipped["shield"];
             const type = (shield && shield.shieldType) ? shield.shieldType.toLowerCase() : "block";
             showStatTooltip(e, type + "Power");
-        } else {
-            showStatTooltip(e, stat);
-        }
+        } else { showStatTooltip(e, stat); }
     });
     row.addEventListener('mousemove', moveTooltip);
     row.addEventListener('mouseleave', hideTooltip);
@@ -630,7 +649,6 @@ function updateInventoryUI() {
     const socketArea = document.getElementById("socket-area");
     const instruction = document.getElementById("instruction-text");
     const socketInstruction = document.getElementById("socket-instruction");
-    
     container.innerHTML = "";
     unequipArea.innerHTML = "";
     socketArea.innerHTML = "";
@@ -662,7 +680,6 @@ function updateInventoryUI() {
         backBtn.innerText = `← BACK TO MAIN HAND`;
         backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
         container.appendChild(backBtn);
-
         instruction.innerText = "SELECT MAGIC TYPE";
         ["Magic 1H", "Magic 2H"].forEach(cat => {
             const div = document.createElement("div");
@@ -681,7 +698,6 @@ function updateInventoryUI() {
         backBtn.innerText = `← BACK TO MAIN HAND`;
         backBtn.onclick = () => { selectedWeaponCategory = null; updateInventoryUI(); };
         container.appendChild(backBtn);
-
         instruction.innerText = "SELECT TOOL CATEGORY";
         ["Fishing tools", "Smithing", "Mining Tools"].forEach(cat => {
             const div = document.createElement("div");
@@ -699,13 +715,9 @@ function updateInventoryUI() {
         backBtn.className = "back-btn";
         backBtn.innerText = `← BACK`;
         backBtn.onclick = () => { 
-            if (selectedMagicCategory) {
-                selectedMagicCategory = null;
-            } else if (selectedToolCategory) {
-                selectedToolCategory = null;
-            } else {
-                selectedWeaponCategory = null;
-            }
+            if (selectedMagicCategory) { selectedMagicCategory = null; } 
+            else if (selectedToolCategory) { selectedToolCategory = null; } 
+            else { selectedWeaponCategory = null; }
             updateInventoryUI(); 
         };
         container.appendChild(backBtn);
@@ -810,7 +822,6 @@ function updateInventoryUI() {
             socketInstruction.innerText = `Socketing options for: ${equipped[selectedSlot].name}`;
             const sBox = document.createElement("div");
             sBox.className = "socket-container";
-            
             const currentGem = sockets[selectedSlot];
             if (currentGem) {
                 sBox.innerHTML = `<div class="socket-title">EQUIPPED GEM (1/1 Max)</div>`;
@@ -818,17 +829,10 @@ function updateInventoryUI() {
                 gDiv.className = "gem-item";
                 gDiv.style.borderColor = "var(--highlight)";
                 gDiv.innerHTML = `💎 ${currentGem.name} <span style="float:right; color:red">Remove</span>`;
-                
-                // Tooltip for already equipped gem
                 gDiv.onmouseenter = (e) => showGemTooltip(e, currentGem);
                 gDiv.onmousemove = (e) => moveTooltip(e);
                 gDiv.onmouseleave = () => hideTooltip();
-
-                gDiv.onclick = () => {
-                    sockets[selectedSlot] = null;
-                    hideTooltip();
-                    update();
-                };
+                gDiv.onclick = () => { sockets[selectedSlot] = null; hideTooltip(); update(); };
                 sBox.appendChild(gDiv);
             } else {
                 sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
@@ -836,33 +840,20 @@ function updateInventoryUI() {
                     const gDiv = document.createElement("div");
                     gDiv.className = "gem-item";
                     gDiv.innerText = `+ ${gem.name} (+${gem.multi ? gem.multi*100+'%' : gem.flat})`;
-                    
-                    // Tooltip for gem browser
                     gDiv.onmouseenter = (e) => showGemTooltip(e, gem);
                     gDiv.onmousemove = (e) => moveTooltip(e);
                     gDiv.onmouseleave = () => hideTooltip();
-
-                    gDiv.onclick = () => {
-                        sockets[selectedSlot] = gem; 
-                        hideTooltip();
-                        update();
-                    };
+                    gDiv.onclick = () => { sockets[selectedSlot] = gem; hideTooltip(); update(); };
                     sBox.appendChild(gDiv);
                 });
             }
             socketArea.appendChild(sBox);
-        } else {
-            socketInstruction.innerText = "Select a Necklace or Ring from the character to modify its sockets.";
-        }
+        } else { socketInstruction.innerText = "Select a Necklace or Ring from the character to modify its sockets."; }
 
         const uBtn = document.createElement("div");
         uBtn.className = "unequip-btn";
         uBtn.innerText = `Remove ${equipped[selectedSlot].name}`;
-        uBtn.onclick = () => { 
-            equipped[selectedSlot] = null; 
-            if(sockets.hasOwnProperty(selectedSlot)) sockets[selectedSlot] = null; 
-            update(); 
-        };
+        uBtn.onclick = () => { equipped[selectedSlot] = null; if(sockets.hasOwnProperty(selectedSlot)) sockets[selectedSlot] = null; update(); };
         unequipArea.appendChild(uBtn);
     }
 
@@ -878,24 +869,16 @@ function updateInventoryUI() {
         if (selectedSlot === "legs") return i.slot === "legs" && i.legsType === selectedLegsCategory;
         return i.slot === selectedSlot;
     });
-
     validItems.sort((a, b) => (a.sellPrice || 0) - (b.sellPrice || 0));
-    
     validItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "inventory-item";
         if (equipped[selectedSlot] === item) div.style.borderColor = "var(--accent)";
-        
         div.innerHTML = `<strong>${item.name}</strong>`;
-        
         div.onmouseenter = (e) => showItemTooltip(e, item);
         div.onmousemove = (e) => moveTooltip(e);
         div.onmouseleave = () => hideTooltip();
-        
-        div.onclick = () => {
-            equipped[selectedSlot] = item;
-            update();
-        };
+        div.onclick = () => { equipped[selectedSlot] = item; update(); };
         container.appendChild(div);
     });
 }
@@ -911,16 +894,13 @@ function update() {
         const el = document.getElementById(s);
         el.classList.toggle("filled", !!equipped[s]);
         el.classList.toggle("selected", selectedSlot === s);
-        
         let shouldLock = false;
         if (is2H && s === "shield") shouldLock = true;
-        
         if (s === "ammo") {
             if (isMagic) shouldLock = true;
             if (is2H && !isBow) shouldLock = true;
             if (is1H) shouldLock = true; 
         }
-
         if (shouldLock) {
             el.classList.add("locked");
             el.innerText = "LOCKED";
@@ -955,16 +935,10 @@ function update() {
     slots.forEach(slot => {
         const item = equipped[slot];
         if(!item) return;
-
         let isSlotLocked = false;
         if (is2H && slot === "shield") isSlotLocked = true;
         if (slot === "ammo" && (isMagic || (is2H && !isBow) || is1H)) isSlotLocked = true;
-
-        if (isSlotLocked) {
-             s.worth += (item.sellPrice || 0); 
-             return;
-        }
-
+        if (isSlotLocked) { s.worth += (item.sellPrice || 0); return; }
         s.melee += calculateBoostedStat(item, "meleePower");
         s.ranged += calculateBoostedStat(item, "rangedPower");
         s.magic += calculateBoostedStat(item, "magicPower");
@@ -972,7 +946,6 @@ function update() {
         s.smithing += calculateBoostedStat(item, "smithingPower");
         s.potion += calculateBoostedStat(item, "potionPower"); 
         s.fishing += calculateBoostedStat(item, "fishingPower");
-
         s.agi += (item.agi || 0);
         s.fPow += (item.firePower || 0);
         s.iPow += (item.icePower || 0);
@@ -983,25 +956,19 @@ function update() {
         s.iDef += (item.defIce || 0);
         s.lDef += (item.defLight || 0);
         s.worth += (item.sellPrice || 0);
-
         if (sockets[slot]) s.worth += sockets[slot].price;
     });
 
     let totalPierceAcc = 0;
     let totalSlashAcc = 0;
-
     if (weapon) {
         if (weapon.accType === "Pierce") totalPierceAcc += (weapon.accuracy || 0);
         if (weapon.accType === "Slash") totalSlashAcc += (weapon.accuracy || 0); 
     }
-    
-    if (ammo && ammo.pierceBonus && !isMagic && (!is2H || isBow) && !is1H) {
-        totalPierceAcc += ammo.pierceBonus;
-    }
+    if (ammo && ammo.pierceBonus && !isMagic && (!is2H || isBow) && !is1H) { totalPierceAcc += ammo.pierceBonus; }
     
     document.getElementById("val-acc-pierce").innerText = totalPierceAcc;
     document.getElementById("val-acc-slash").innerText = totalSlashAcc; 
-
     document.getElementById("val-melee").innerText = Number(s.melee.toFixed(1));
     document.getElementById("val-ranged").innerText = Number(s.ranged.toFixed(1));
     document.getElementById("val-magic").innerText = Number(s.magic.toFixed(1));
@@ -1019,7 +986,6 @@ function update() {
     document.getElementById("val-def-ice").innerText = s.iDef;
     document.getElementById("val-def-light").innerText = s.lDef;
     document.getElementById("val-total-worth").innerText = s.worth.toLocaleString() + "g";
-
     updateInventoryUI();
 }
 
@@ -1038,7 +1004,6 @@ slots.forEach(s => {
         update();
     });
 });
-
 update();
 </script>
 </body>
