@@ -229,6 +229,44 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: #fff; text-transform: uppercase
 .stat-label { color: #ccc; }
 .stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
 .val-gold { color: var(--gold) !important; }
+
+/* MOBILE RESPONSIVE FIX */
+@media (max-width: 1300px) {
+    .layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    .panel {
+        width: 100%;
+        max-width: 600px;
+        height: auto !important;
+        box-sizing: border-box;
+    }
+    .socket-panel {
+        order: 4;
+    }
+    .character-panel {
+        order: 1;
+        background: none;
+        box-shadow: none;
+        border: none;
+    }
+    .inventory-panel {
+        order: 2;
+        min-height: 400px;
+    }
+    .stats-panel {
+        order: 3;
+    }
+    .character img {
+        max-width: 100%;
+        height: auto;
+    }
+}
 </style>
 </head>
 <body>
