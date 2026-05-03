@@ -47,7 +47,7 @@ body {
     pointer-events: none;
     box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
     min-width: 200px;
-    max-width: 300px;
+    max-width: 320px;
 }
 
 #tooltip h4 { margin: 0 0 8px 0; color: var(--highlight); border-bottom: 1px solid var(--accent); padding-bottom: 5px; }
@@ -55,6 +55,11 @@ body {
 .tt-label { color: #d97706; margin-right: 20px; }
 .tt-val { color: #fff; font-weight: bold; }
 .tt-desc { color: #d6d3d1; font-style: italic; font-size: 12px; line-height: 1.4; }
+
+/* SOURCE STYLING */
+.tt-source { font-size: 11px; margin-top: 2px; border-top: 1px solid rgba(180, 83, 9, 0.3); padding-top: 2px; }
+.tt-source-drop { color: #ef4444; } /* Red for drops */
+.tt-source-vendor { color: #add8e6; } /* Light Blue for Stall/Anvil */
 
 .title {
     width: 100%;
@@ -598,90 +603,90 @@ function toggleFavourite(itemName, event) {
 }
 
 const items = [
-    {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42},
-    {name:"Bronze Helmet", slot:"head", headType: "Heavy armor", defPierce:6, defSlash:6, sellPrice:35},
-    {name:"Iron Helmet", slot:"head", headType: "Heavy armor", defPierce:10, defSlash:10, sellPrice:105},
-    {name:"Steel Helmet", slot:"head", headType: "Heavy armor", defPierce:16, defSlash:16, sellPrice:210},
-    {name:"Mithril Helmet", slot:"head", headType: "Heavy armor", defPierce:25, defSlash:25, sellPrice:700},
-    {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35},
-    {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210},
-    {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70},
-    {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175},
-    {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350},
-    {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750},
-    {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70},
-    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175},
-    {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49},
-    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140},
-    {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280},
-    {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400},
-    {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49},
-    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140},
-    {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490},
-    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28},
-    {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28},
-    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70},
-    {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210},
-    {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140},
-    {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400},
-    {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0},
-    {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40},
-    {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105},
-    {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210},
-    {name:"Mithril Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050},
-    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100},
-    {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70},
-    {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420},
-    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750},
-    {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000},
-    {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5},
-    {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80},
-    {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100},
-    {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250},
-    {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000},
-    {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420},
-    {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2},
-    {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42},
-    {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140},
-    {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140},
-    {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700},
-    {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700},
-    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700},
-    {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000},
-    {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42},
-    {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350},
-    {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750},
-    {name:"Elven Shield", slot:"shield", shieldType:"Block", shieldPower:70, sellPrice:7000},
-    {name:"Novice Ward", slot:"shield", shieldType:"Ward", shieldPower:35, sellPrice:350},
-    {name:"Apprentice Ward", slot:"shield", shieldType:"Ward", shieldPower:50, sellPrice:1750},
-    {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000},
-    {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400},
-    {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000},
-    {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1},
-    {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3},
-    {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14},
-    {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28},
-    {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14},
-    {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14},
-    {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70},
-    {name:"Titanium Ring", slot:"ring", meleePower:11, rangedPower:9, magicPower:9, sellPrice:350},
-    {name:"Elven Ring", slot:"ring", meleePower:16, rangedPower:13, magicPower:13, sellPrice:1400},
-    {name:"Copper Amulet", slot:"neck", meleePower:10, rangedPower:10, magicPower:10, sellPrice:175},
-    {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560},
-    {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100},
-    {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000},
-    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400},
-    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280},
+    {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42, drops:[{u:"Skeleton",l:6}]},
+    {name:"Bronze Helmet", slot:"head", headType: "Heavy armor", defPierce:6, defSlash:6, sellPrice:35, source:"Anvil"},
+    {name:"Iron Helmet", slot:"head", headType: "Heavy armor", defPierce:10, defSlash:10, sellPrice:105, source:"Anvil"},
+    {name:"Steel Helmet", slot:"head", headType: "Heavy armor", defPierce:16, defSlash:16, sellPrice:210, source:"Anvil"},
+    {name:"Mithril Helmet", slot:"head", headType: "Heavy armor", defPierce:25, defSlash:25, sellPrice:700, source:"Anvil"},
+    {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35, source:"Stall"},
+    {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210, drops:[{u:"Pirate Captain",l:25}]},
+    {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70, source:"Anvil", alsoSource:"Stall"},
+    {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175, source:"Anvil", alsoSource:"Stall"},
+    {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350, source:"Anvil", alsoSource:"Stall"},
+    {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750, source:"Anvil"},
+    {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Stall"},
+    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10}]},
+    {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Stall"},
+    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Stall"},
+    {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Stall"},
+    {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400, source:"Anvil"},
+    {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Stall"},
+    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10}]},
+    {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30}]},
+    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28, source:"Stall"},
+    {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13}]},
+    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10}]},
+    {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15}]},
+    {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140, source:"Anvil"},
+    {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400, drops:[{u:"Elf Scholar",l:37}]},
+    {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0, source:"Stall"},
+    {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40, source:"Anvil", alsoSource:"Stall"},
+    {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105, source:"Anvil", alsoSource:"Stall", drops:[{u:"Bandit Mercenary",l:30}]},
+    {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210, source:"Anvil", alsoSource:"Stall"},
+    {name:"Mithril Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050, source:"Anvil"},
+    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100, drops:[{u:"Skeleton Pioneer",l:90}]},
+    {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70, drops:[{u:"Goblin Berserker",l:9}]},
+    {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420, drops:[{u:"Bandit Leader",l:25}]},
+    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750, drops:[{u:"Skeleton Knight",l:26}]},
+    {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000, drops:[{u:"Elf Warden",l:120}]},
+    {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5, source:"Stall"},
+    {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80, source:"Stall"},
+    {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100, drops:[{u:"Goblin Watcher",l:9}]},
+    {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250, source:"Stall"},
+    {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000, source:"Stall"},
+    {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420, drops:[{u:"Pirate Captain",l:25}]},
+    {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2, source:"Stall"},
+    {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42, source:"Stall"},
+    {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140, source:"Stall"},
+    {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140, source:"Stall"},
+    {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700, source:"Stall"},
+    {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700, source:"Stall"},
+    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700, source:"Stall"},
+    {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000, drops:[{u:"Fire Lich",l:120}]},
+    {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42, drops:[{u:"Skeleton",l:6}]},
+    {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350, source:"Stall"},
+    {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750, source:"Stall"},
+    {name:"Elven Shield", slot:"shield", shieldType:"Block", shieldPower:70, sellPrice:7000, source:"Stall"},
+    {name:"Novice Ward", slot:"shield", shieldType:"Ward", shieldPower:35, sellPrice:350, source:"Stall"},
+    {name:"Apprentice Ward", slot:"shield", shieldType:"Ward", shieldPower:50, sellPrice:1750, source:"Stall"},
+    {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000, source:"Stall"},
+    {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400, drops:[{u:"Highwayman",l:28}]},
+    {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000, source:"Stall"},
+    {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1, source:"Stall"},
+    {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3, source:"Stall"},
+    {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14, source:"Stall", drops:[{u:"Pirate Deckhand",l:10},{u:"Pirate Rigger",l:10},{u:"Pirate Corsair",l:10}]},
+    {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28, source:"Stall"},
+    {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14, drops:[{u:"Cow",l:5}]},
+    {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14, drops:[{u:"Goblin",l:1},{u:"Skeleton",l:6}]},
+    {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70, drops:[{u:"Bandit",l:10}]},
+    {name:"Titanium Ring", slot:"ring", meleePower:11, rangedPower:9, magicPower:9, sellPrice:350, drops:[{u:"Skeleton Knight",l:26},{u:"Skeleton Knight (Darklands)",l:67}]},
+    {name:"Elven Ring", slot:"ring", meleePower:16, rangedPower:13, magicPower:13, sellPrice:1400, drops:[{u:"Elf",l:37}]},
+    {name:"Copper Amulet", slot:"neck", meleePower:10, rangedPower:10, magicPower:10, sellPrice:175, source:"Stall"},
+    {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560, source:"Stall"},
+    {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100, source:"Stall"},
+    {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000, source:"Stall"},
+    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400, drops:[{u:"Fire Lich",l:120}]},
+    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280, drops:[{u:"Hen",l:1},{u:"Rooster",l:1}]},
     
-    {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0},
-    {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28},
-    {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168},
-    {name:"Steel Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:25, sellPrice:672},
-    {name:"Dwarven Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:50, sellPrice:1400},
-    {name:"Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:5, sellPrice:5},
-    {name:"Dwarven Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:15, sellPrice:700},
-    {name:"Crude Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:1, sellPrice:7},
-    {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700}
+    {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0, source:"Stall"},
+    {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28, source:"Stall", drops:[{u:"Skeleton Miner",l:13}]},
+    {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168, source:"Stall"},
+    {name:"Steel Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:25, sellPrice:672, source:"Stall"},
+    {name:"Dwarven Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:50, sellPrice:1400, drops:[{u:"Bandit Mercenary Boss",l:74}]},
+    {name:"Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:5, sellPrice:5, source:"Stall"},
+    {name:"Dwarven Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:15, sellPrice:700, drops:[{u:"Goblin Chieftain",l:40}]},
+    {name:"Crude Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:1, sellPrice:7, source:"Stall"},
+    {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700, source:"Stall"}
 ];
 
 const gems = [
@@ -792,6 +797,22 @@ function showItemTooltip(e, item) {
     });
 
     html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val">${item.sellPrice || 0}g</span></div>`;
+    
+    // DROPS DATA (Color: Red)
+    if (item.drops) {
+        item.drops.forEach(d => {
+            html += `<div class="tt-source tt-source-drop">Dropped by ${d.u}, level ${d.l}</div>`;
+        });
+    }
+
+    // SOURCE DATA (Color: Light Blue)
+    if (item.source) {
+        html += `<div class="tt-source tt-source-vendor">Source: ${item.source}</div>`;
+    }
+    if (item.alsoSource) {
+        html += `<div class="tt-source tt-source-vendor">Source: ${item.alsoSource}</div>`;
+    }
+
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
     moveTooltip(e);
