@@ -438,6 +438,39 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .display-label { color: #d97706; font-weight: bold; }
 .display-val { color: #fff; }
 
+/* ENHANCED DISPLAY WINDOW STYLES FOR SOURCE/DROPS */
+.display-source-box {
+    margin-top: 12px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.display-drop-header {
+    background: rgba(127, 29, 29, 0.6);
+    color: #fca5a5;
+    border: 1px solid #ef4444;
+    padding: 4px 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.display-vendor-header {
+    background: rgba(30, 58, 138, 0.6);
+    color: #bfdbfe;
+    border: 1px solid #3b82f6;
+    padding: 4px 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    margin-top: 8px;
+}
+
 @media (max-width: 1200px) {
     .layout {
         display: flex;
@@ -795,7 +828,7 @@ function moveTooltip(e) {
     tooltip.style.top = y + "px";
 }
 
-// UPDATED FUNCTION: UPDATE THE PERMANENT DISPLAY TABLE (INCLUDING LOCATIONS)
+// UPDATED FUNCTION: ENHANCED "SOURCE" AND "DROPPED BY" VISIBILITY
 function updateItemDisplay(item) {
     const display = document.getElementById("item-display-table");
     if (!item) return;
@@ -828,17 +861,23 @@ function updateItemDisplay(item) {
 
     html += `<div class="display-row" style="border-top:1px solid var(--gold); margin-top:10px;"><span class="display-label" style="color:var(--gold)">Sell Value</span><span class="display-val" style="color:var(--gold)">${item.sellPrice || 0}g</span></div>`;
     
+    // ENHANCED DROPS SECTION
     if (item.drops) {
+        html += `<div class="display-drop-header">Dropped By</div>`;
         item.drops.forEach(d => {
-            html += `<div style="font-size:12px; color:#ef4444; margin-top:8px; font-weight:bold; border-bottom:1px solid rgba(239, 68, 68, 0.2); padding-bottom:2px;">DROPPED BY: ${d.u} (Lvl ${d.l})</div>`;
+            html += `<div style="font-size:14px; color:#fff; font-weight:bold; margin-bottom:2px;">• ${d.u} (Lvl ${d.l})</div>`;
             if(d.loc) {
-                html += `<div style="font-size:11px; color:#fca5a5; margin-bottom:5px; font-style:italic;">Location: ${d.loc}</div>`;
+                html += `<div style="font-size:12px; color:#fca5a5; margin-bottom:10px; padding-left:12px; font-style:italic;">Loc: ${d.loc}</div>`;
             }
         });
     }
 
-    if (item.source) html += `<div style="font-size:12px; color:#add8e6; margin-top:5px;">Source: ${item.source}</div>`;
-    if (item.alsoSource) html += `<div style="font-size:12px; color:#add8e6; margin-top:2px;">Alt Source: ${item.alsoSource}</div>`;
+    // ENHANCED SOURCE SECTION
+    if (item.source || item.alsoSource) {
+        html += `<div class="display-vendor-header">Vendor / Crafting</div>`;
+        if (item.source) html += `<div style="font-size:14px; color:#fff; font-weight:bold; margin-bottom:4px;">• ${item.source}</div>`;
+        if (item.alsoSource) html += `<div style="font-size:14px; color:#fff; font-weight:bold; margin-bottom:4px;">• ${item.alsoSource}</div>`;
+    }
 
     display.innerHTML = html;
 }
