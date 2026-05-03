@@ -347,7 +347,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     padding: 20px;
     border: 2px solid var(--border-color);
     box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-    height: 420px; /* INCREASED HEIGHT FOR 6 SLOTS */
+    height: 550px; /* INCREASED HEIGHT */
     display: flex;
     flex-direction: column;
 }
@@ -552,7 +552,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 
     <!-- BOTTOM SECTION: PRESETS, FAVOURITES & ITEM DISPLAY -->
     <div class="preset-favourites-container">
-        <!-- PRESETS PANEL (EXPANDED TO 6) -->
+        <!-- PRESETS PANEL (EXPANDED) -->
         <div class="bottom-panel">
             <h2 style="font-size: 20px;">Presets</h2>
             <table class="preset-table">
@@ -586,10 +586,20 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
                     <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
                     <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
                 </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-7" class="preset-input" placeholder="Slot 7 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(7)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(7)">Load</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-8" class="preset-input" placeholder="Slot 8 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(8)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(8)">Load</button></td>
+                </tr>
             </table>
         </div>
 
-        <!-- FAVOURITES PANEL (STRETCHED TO MATCH PRESET HEIGHT) -->
+        <!-- FAVOURITES PANEL -->
         <div class="bottom-panel">
             <h2 style="font-size: 20px;">Selected Favourites</h2>
             <div id="favourites-list" class="fav-list">
@@ -639,90 +649,90 @@ function toggleFavourite(itemName, event) {
 }
 
 const items = [
-    {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42, drops:[{u:"Skeleton",l:6}]},
+    {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
     {name:"Bronze Helmet", slot:"head", headType: "Heavy armor", defPierce:6, defSlash:6, sellPrice:35, source:"Anvil"},
     {name:"Iron Helmet", slot:"head", headType: "Heavy armor", defPierce:10, defSlash:10, sellPrice:105, source:"Anvil"},
     {name:"Steel Helmet", slot:"head", headType: "Heavy armor", defPierce:16, defSlash:16, sellPrice:210, source:"Anvil"},
     {name:"Mithril Helmet", slot:"head", headType: "Heavy armor", defPierce:25, defSlash:25, sellPrice:700, source:"Anvil"},
-    {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35, source:"Stall"},
-    {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210, drops:[{u:"Pirate Captain",l:25}]},
-    {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70, source:"Anvil", alsoSource:"Stall"},
-    {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175, source:"Anvil", alsoSource:"Stall"},
-    {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350, source:"Anvil", alsoSource:"Stall"},
+    {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35, source:"Archery Stall in Valen Gate"},
+    {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210, drops:[{u:"Pirate Captain",l:25, loc:"Valen Port"}]},
+    {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
+    {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
+    {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
     {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750, source:"Anvil"},
-    {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Stall"},
-    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10}]},
-    {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Stall"},
-    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Stall"},
-    {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Stall"},
+    {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Archery Stall in Valen Gate"},
+    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
+    {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
+    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
+    {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
     {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400, source:"Anvil"},
-    {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Stall"},
-    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10}]},
-    {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30}]},
-    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28, source:"Stall"},
-    {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13}]},
-    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10}]},
-    {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15}]},
+    {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Archery Stall in Valen Gate"},
+    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10, loc:"Valen Port"}]},
+    {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}]},
+    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28, source:"Archery Stall in Valen Gate"},
+    {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
+    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"}]},
+    {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15, loc:"Goblin village south of Valen Gate"}]},
     {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140, source:"Anvil"},
-    {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400, drops:[{u:"Elf Scholar",l:37}]},
-    {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0, source:"Stall"},
-    {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40, source:"Anvil", alsoSource:"Stall"},
-    {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105, source:"Anvil", alsoSource:"Stall", drops:[{u:"Bandit Mercenary",l:30}]},
-    {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210, source:"Anvil", alsoSource:"Stall"},
+    {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400, drops:[{u:"Elf Scholar",l:37, loc:"Elven Haven east of Valen Gate"}]},
+    {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0, source:"Sword Stall in Valen Gate"},
+    {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40, source:"Anvil", alsoSource:"Sword Stall in Valen Gate"},
+    {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}]},
+    {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210, source:"Anvil", alsoSource:"Sword Stall in Valen Gate"},
     {name:"Mithril Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050, source:"Anvil"},
-    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100, drops:[{u:"Skeleton Pioneer",l:90}]},
-    {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70, drops:[{u:"Goblin Berserker",l:9}]},
-    {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420, drops:[{u:"Bandit Leader",l:25}]},
-    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750, drops:[{u:"Skeleton Knight",l:26}]},
-    {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000, drops:[{u:"Elf Warden",l:120}]},
-    {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5, source:"Stall"},
-    {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80, source:"Stall"},
-    {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100, drops:[{u:"Goblin Watcher",l:9}]},
-    {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250, source:"Stall"},
-    {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000, source:"Stall"},
-    {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420, drops:[{u:"Pirate Captain",l:25}]},
-    {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2, source:"Stall"},
-    {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42, source:"Stall"},
-    {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140, source:"Stall"},
-    {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140, source:"Stall"},
-    {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700, source:"Stall"},
-    {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700, source:"Stall"},
-    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700, source:"Stall"},
-    {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000, drops:[{u:"Fire Lich",l:120}]},
-    {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42, drops:[{u:"Skeleton",l:6}]},
-    {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350, source:"Stall"},
-    {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750, source:"Stall"},
-    {name:"Elven Shield", slot:"shield", shieldType:"Block", shieldPower:70, sellPrice:7000, source:"Stall"},
-    {name:"Novice Ward", slot:"shield", shieldType:"Ward", shieldPower:35, sellPrice:350, source:"Stall"},
-    {name:"Apprentice Ward", slot:"shield", shieldType:"Ward", shieldPower:50, sellPrice:1750, source:"Stall"},
-    {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000, source:"Stall"},
-    {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400, drops:[{u:"Highwayman",l:28}]},
-    {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000, source:"Stall"},
-    {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1, source:"Stall"},
-    {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3, source:"Stall"},
-    {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14, source:"Stall", drops:[{u:"Pirate Deckhand",l:10},{u:"Pirate Rigger",l:10},{u:"Pirate Corsair",l:10}]},
-    {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28, source:"Stall"},
-    {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14, drops:[{u:"Cow",l:5}]},
-    {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14, drops:[{u:"Goblin",l:1},{u:"Skeleton",l:6}]},
-    {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70, drops:[{u:"Bandit",l:10}]},
-    {name:"Titanium Ring", slot:"ring", meleePower:11, rangedPower:9, magicPower:9, sellPrice:350, drops:[{u:"Skeleton Knight",l:26},{u:"Skeleton Knight (Darklands)",l:67}]},
-    {name:"Elven Ring", slot:"ring", meleePower:16, rangedPower:13, magicPower:13, sellPrice:1400, drops:[{u:"Elf",l:37}]},
-    {name:"Copper Amulet", slot:"neck", meleePower:10, rangedPower:10, magicPower:10, sellPrice:175, source:"Stall"},
-    {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560, source:"Stall"},
-    {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100, source:"Stall"},
-    {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000, source:"Stall"},
-    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400, drops:[{u:"Fire Lich",l:120}]},
-    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280, drops:[{u:"Hen",l:1},{u:"Rooster",l:1}]},
+    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100, drops:[{u:"Skeleton Pioneer",l:90, loc:"West Mine deeper sections"}]},
+    {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70, drops:[{u:"Goblin Berserker",l:9, loc:"Broken village south of Valen Gate"}]},
+    {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420, drops:[{u:"Bandit Leader",l:25, loc:"Forest east of Valen Gate"}]},
+    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750, drops:[{u:"Skeleton Knight",l:26, loc:"West Mine"}]},
+    {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000, drops:[{u:"Elf Warden",l:120, loc:"Elven Haven east of Valen Gate"}]},
+    {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5, source:"Archery Stall in Valen Gate"},
+    {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80, source:"Archery Stall in Valen Gate"},
+    {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100, drops:[{u:"Goblin Watcher",l:9, loc:"Goblin Cave south-west of Valen Gate"}]},
+    {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250, source:"Archery Stall in Valen Gate"},
+    {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000, source:"Archery Stall in Valen Gate"},
+    {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420, drops:[{u:"Pirate Captain",l:25, loc:"Valen Port"}]},
+    {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2, source:"Wand Stall in Valen Gate"},
+    {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42, source:"Wand Stall in Valen Gate"},
+    {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140, source:"Wand Stall in Valen Gate"},
+    {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140, source:"Wand Stall in Valen Gate"},
+    {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
+    {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
+    {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350, source:"Armour Stall in Valen Gate", alsoSource:"Shield Stall in Valen Port"},
+    {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750, source:"Shield Stall in Valen Port"},
+    {name:"Elven Shield", slot:"shield", shieldType:"Block", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+    {name:"Novice Ward", slot:"shield", shieldType:"Ward", shieldPower:35, sellPrice:350, source:"Armour Stall in Valen Gate", alsoSource:"Shield Stall in Valen Port"},
+    {name:"Apprentice Ward", slot:"shield", shieldType:"Ward", shieldPower:50, sellPrice:1750, source:"Shield Stall in Valen Port"},
+    {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+    {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400, drops:[{u:"Highwayman",l:28, loc:"West Mine"}]},
+    {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+    {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1, source:"Archery Stall in Valen Gate"},
+    {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3, source:"Archery Stall in Valen Gate"},
+    {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14, source:"Archery Stall in Valen Gate", drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"},{u:"Pirate Rigger",l:10, loc:"Valen Port"},{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
+    {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28, source:"Archery Stall in Valen Gate"},
+    {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14, drops:[{u:"Cow",l:5, loc:"Farmlands south-east of Valen Gate"}]},
+    {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14, drops:[{u:"Goblin",l:1, loc:"Goblin Cave south-east of Valen Gate"},{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
+    {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70, drops:[{u:"Bandit",l:10, loc:"Forest east of Valen Gate"}]},
+    {name:"Titanium Ring", slot:"ring", meleePower:11, rangedPower:9, magicPower:9, sellPrice:350, drops:[{u:"Skeleton Knight",l:26, loc:"West Mine"},{u:"Skeleton Knight (Darklands)",l:67, loc:"Darklands"}]},
+    {name:"Elven Ring", slot:"ring", meleePower:16, rangedPower:13, magicPower:13, sellPrice:1400, drops:[{u:"Elf",l:37, loc:"Elven Haven east of Valen Gate"}]},
+    {name:"Copper Amulet", slot:"neck", meleePower:10, rangedPower:10, magicPower:10, sellPrice:175, source:"Jewellery Stall in Valen Gate"},
+    {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560, source:"Jewellery Stall in Valen Gate"},
+    {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100, source:"Jewellery Stall in Valen Gate"},
+    {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000, source:"Jewellery Stall in Valen Gate"},
+    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
+    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:280, drops:[{u:"Hen",l:1, loc:"Farmlands south-east of Valen Gate"},{u:"Rooster",l:1, loc:"Farmlands south-east of Valen Gate"}]},
     
-    {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0, source:"Stall"},
-    {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28, source:"Stall", drops:[{u:"Skeleton Miner",l:13}]},
-    {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168, source:"Stall"},
-    {name:"Steel Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:25, sellPrice:672, source:"Stall"},
-    {name:"Dwarven Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:50, sellPrice:1400, drops:[{u:"Bandit Mercenary Boss",l:74}]},
-    {name:"Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:5, sellPrice:5, source:"Stall"},
-    {name:"Dwarven Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:15, sellPrice:700, drops:[{u:"Goblin Chieftain",l:40}]},
-    {name:"Crude Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:1, sellPrice:7, source:"Stall"},
-    {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700, source:"Stall"}
+    {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0, source:"Mining Stall in Valen gate"},
+    {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28, source:"Mining Stall in Valen gate", drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
+    {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168, source:"Mining Stall in Valen gate", alsoSource:"Mining Stall in Valen gate"},
+    {name:"Steel Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:25, sellPrice:672, source:"Mining Stall in Grave Town"},
+    {name:"Dwarven Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:50, sellPrice:1400, drops:[{u:"Bandit Mercenary Boss",l:74, loc:"Bandit Camp north-east of Valen Gate"}]},
+    {name:"Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:5, sellPrice:5, source:"Blacksmithing Stall in Valen Gate", alsoSource:"Mining Stall in Grave Town"},
+    {name:"Dwarven Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:15, sellPrice:700, drops:[{u:"Goblin Chieftain",l:40, loc:"Goblin village south of Valen Gate"}]},
+    {name:"Crude Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:1, sellPrice:7, source:"Fishing Stall in Valen Port"},
+    {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700, source:"Fishing Stall in Valen port"}
 ];
 
 const gems = [
@@ -785,7 +795,7 @@ function moveTooltip(e) {
     tooltip.style.top = y + "px";
 }
 
-// NEW FUNCTION: UPDATE THE PERMANENT DISPLAY TABLE
+// UPDATED FUNCTION: UPDATE THE PERMANENT DISPLAY TABLE (INCLUDING LOCATIONS)
 function updateItemDisplay(item) {
     const display = document.getElementById("item-display-table");
     if (!item) return;
@@ -820,7 +830,10 @@ function updateItemDisplay(item) {
     
     if (item.drops) {
         item.drops.forEach(d => {
-            html += `<div style="font-size:12px; color:#ef4444; margin-top:5px;">Dropped by: ${d.u} (Lvl ${d.l})</div>`;
+            html += `<div style="font-size:12px; color:#ef4444; margin-top:8px; font-weight:bold; border-bottom:1px solid rgba(239, 68, 68, 0.2); padding-bottom:2px;">DROPPED BY: ${d.u} (Lvl ${d.l})</div>`;
+            if(d.loc) {
+                html += `<div style="font-size:11px; color:#fca5a5; margin-bottom:5px; font-style:italic;">Location: ${d.loc}</div>`;
+            }
         });
     }
 
@@ -1342,8 +1355,9 @@ function update() {
 
 function savePresetNames() {
     const names = [];
-    for (let i = 1; i <= 6; i++) {
-        names.push(document.getElementById(`preset-name-${i}`).value);
+    for (let i = 1; i <= 8; i++) {
+        const input = document.getElementById(`preset-name-${i}`);
+        if(input) names.push(input.value);
     }
     localStorage.setItem("vEquipper_presetNames", JSON.stringify(names));
 }
