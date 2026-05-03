@@ -104,8 +104,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     padding-right: 10px;
 }
 
-#inventory-container::-webkit-scrollbar { width: 8px; }
-#inventory-container::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+#inventory-container::-webkit-scrollbar, .fav-list::-webkit-scrollbar { width: 8px; }
+#inventory-container::-webkit-scrollbar-thumb, .fav-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
 .inventory-item {
     background: rgba(0, 0, 0, 0.4);
@@ -159,7 +159,6 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 
 .gem-item:hover { background: var(--accent); color: white; }
 
-/* ADJUSTED SOCKET CONTAINER FOR BETTER VISIBILITY */
 .socket-container {
     background: rgba(0,0,0,0.6);
     padding: 15px;
@@ -169,7 +168,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     flex-direction: column;
     gap: 8px;
     margin-bottom: 15px;
-    max-height: 250px; /* Limits height */
+    max-height: 250px; 
 }
 
 .gem-scroll-area {
@@ -327,14 +326,25 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
 .val-gold { color: var(--gold) !important; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
 
-/* PRESET STYLES */
-.preset-panel {
+/* BOTTOM GRID FOR PRESETS AND FAVS */
+.preset-favourites-container {
     grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
     margin-top: 20px;
+    width: 100%;
+}
+
+.bottom-panel {
+    background: var(--panel-bg);
+    border-radius: 8px;
     padding: 20px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    height: 300px;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 .preset-table {
@@ -343,7 +353,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 }
 
 .preset-table td {
-    padding: 10px;
+    padding: 8px;
     border: 1px solid var(--border-color);
     background: rgba(0,0,0,0.3);
 }
@@ -352,26 +362,48 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     background: rgba(0,0,0,0.5);
     border: 1px solid var(--accent);
     color: var(--highlight);
-    padding: 8px;
+    padding: 6px;
     width: 100%;
     font-family: inherit;
 }
 
 .preset-btn {
-    padding: 8px 15px;
+    padding: 6px 10px;
     cursor: pointer;
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 12px;
+    font-size: 11px;
     border-radius: 4px;
     width: 100%;
-    margin: 2px 0;
 }
 
 .btn-save { background: #166534; color: #bbf7d0; border: 1px solid #22c55e; }
 .btn-save:hover { background: #15803d; }
 .btn-load { background: #1e3a8a; color: #bfdbfe; border: 1px solid #3b82f6; }
 .btn-load:hover { background: #1e40af; }
+
+.fav-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.fav-item {
+    background: rgba(0,0,0,0.4);
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.fav-item:hover {
+    border-color: var(--gold);
+}
 
 @media (max-width: 1200px) {
     .layout {
@@ -386,12 +418,17 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         max-width: 550px;
         height: auto !important;
     }
+    .preset-favourites-container {
+        grid-template-columns: 1fr;
+        max-width: 550px;
+    }
     .character-panel { 
         order: 1; 
         height: 700px !important;
     }
     .inventory-panel { order: 2; min-height: 400px; }
     .stats-panel { order: 3; }
+    .preset-favourites-container { order: 4; }
     .character img { max-height: 500px; }
     .slot { width: 80px; height: 80px; font-size: 10px; }
 }
@@ -404,6 +441,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 <div class="title">WINDS OF VALEN EQUIPPER</div>
 
 <div class="layout">
+    <!-- LEFT PANEL: INVENTORY -->
     <div class="panel inventory-panel">
         <h2>Inventory</h2>
         <div id="unequip-all-container">
@@ -418,6 +456,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         <div id="inventory-container"></div>
     </div>
 
+    <!-- MIDDLE PANEL: CHARACTER -->
     <div class="panel character-panel">
         <div class="character">
             <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
@@ -435,6 +474,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         </div>
     </div>
 
+    <!-- RIGHT PANEL: STATS -->
     <div class="panel stats-panel">
         <div class="stat-section">
             <h3>Damage Stats</h3>
@@ -477,26 +517,37 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         </div>
     </div>
 
-    <!-- PRESET TABLE SEPARATE FROM OTHER PANELS -->
-    <div class="panel preset-panel">
-        <h2 style="font-size: 20px;">Equipment Presets</h2>
-        <table class="preset-table">
-            <tr>
-                <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
-                <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save Slot 1</button></td>
-                <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load Slot 1</button></td>
-            </tr>
-            <tr>
-                <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
-                <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save Slot 2</button></td>
-                <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load Slot 2</button></td>
-            </tr>
-            <tr>
-                <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
-                <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save Slot 3</button></td>
-                <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load Slot 3</button></td>
-            </tr>
-        </table>
+    <!-- BOTTOM SECTION: PRESETS & FAVOURITES -->
+    <div class="preset-favourites-container">
+        <!-- PRESETS PANEL -->
+        <div class="bottom-panel">
+            <h2 style="font-size: 20px;">Presets</h2>
+            <table class="preset-table">
+                <tr>
+                    <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- FAVOURITES PANEL -->
+        <div class="bottom-panel">
+            <h2 style="font-size: 20px;">Selected Favourites</h2>
+            <div id="favourites-list" class="fav-list">
+                <!-- Favourites will be injected here -->
+            </div>
+        </div>
     </div>
 </div>
 
@@ -520,7 +571,7 @@ let selectedToolCategory = null;
 let favourites = JSON.parse(localStorage.getItem("vEquipper_favourites")) || [];
 
 function toggleFavourite(itemName, event) {
-    event.stopPropagation(); // Don't equip item when clicking star
+    if(event) event.stopPropagation(); // Don't equip item when clicking star
     const index = favourites.indexOf(itemName);
     if (index > -1) {
         favourites.splice(index, 1);
@@ -528,7 +579,7 @@ function toggleFavourite(itemName, event) {
         favourites.push(itemName);
     }
     localStorage.setItem("vEquipper_favourites", JSON.stringify(favourites));
-    updateInventoryUI();
+    update();
 }
 
 const items = [
@@ -822,7 +873,6 @@ function updateInventoryUI() {
         return;
     }
 
-    // Weapons Root Categories
     if (selectedSlot === "weapon" && !selectedWeaponCategory) {
         instruction.innerText = "SELECT MAIN HAND CATEGORY";
         const categories = ["1H Weapon", "2H Weapon", "Bows", "Magic", "Tools"];
@@ -837,7 +887,6 @@ function updateInventoryUI() {
         return;
     }
 
-    // Magic Sub-Categories
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Magic" && !selectedMagicCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
@@ -856,7 +905,6 @@ function updateInventoryUI() {
         return;
     }
 
-    // Tool Sub-Categories
     if (selectedSlot === "weapon" && selectedWeaponCategory === "Tools" && !selectedToolCategory) {
         const backBtn = document.createElement("div");
         backBtn.className = "back-btn";
@@ -893,7 +941,6 @@ function updateInventoryUI() {
         container.appendChild(backBtn);
     }
 
-    // Logic for other root categories (Armor, Shields)
     if (selectedSlot === "head" && !selectedHeadCategory) {
         instruction.innerText = "SELECT ARMOR TYPE";
         ["Light armor", "Heavy armor"].forEach(cat => {
@@ -951,7 +998,6 @@ function updateInventoryUI() {
     instruction.innerText = `BROWSING: ${slotLabel.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''}`;
 
     if (equipped[selectedSlot]) {
-        // RELOCATED SOCKET LOGIC INSIDE INVENTORY PANEL
         if (selectedSlot === "neck" || selectedSlot === "ring") {
             const sBox = document.createElement("div");
             sBox.className = "socket-container";
@@ -970,11 +1016,8 @@ function updateInventoryUI() {
                 sBox.appendChild(gDiv);
             } else {
                 sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
-                
-                // Add Scrollable Wrapper for Gems
                 const scrollWrapper = document.createElement("div");
                 scrollWrapper.className = "gem-scroll-area";
-                
                 gems.forEach(gem => {
                     const gDiv = document.createElement("div");
                     gDiv.className = "gem-item";
@@ -1010,7 +1053,6 @@ function updateInventoryUI() {
         return i.slot === selectedSlot;
     });
 
-    // Modified sort: Favourites first, then by price
     validItems.sort((a, b) => {
         const aFav = favourites.includes(a.name) ? 1 : 0;
         const bFav = favourites.includes(b.name) ? 1 : 0;
@@ -1022,18 +1064,48 @@ function updateInventoryUI() {
         const div = document.createElement("div");
         div.className = "inventory-item";
         if (equipped[selectedSlot] === item) div.style.borderColor = "var(--accent)";
-        
         const isFav = favourites.includes(item.name);
-        
-        div.innerHTML = `
-            <strong>${item.name}</strong>
-            <span class="fav-star ${isFav ? 'active' : ''}" onclick="toggleFavourite('${item.name}', event)">★</span>
-        `;
+        div.innerHTML = `<strong>${item.name}</strong><span class="fav-star ${isFav ? 'active' : ''}" onclick="toggleFavourite('${item.name}', event)">★</span>`;
         div.onmouseenter = (e) => showItemTooltip(e, item);
         div.onmousemove = (e) => moveTooltip(e);
         div.onmouseleave = () => hideTooltip();
         div.onclick = () => { hideTooltip(); equipped[selectedSlot] = item; update(); };
         container.appendChild(div);
+    });
+}
+
+function updateFavouritesWindow() {
+    const favList = document.getElementById("favourites-list");
+    favList.innerHTML = "";
+    
+    if (favourites.length === 0) {
+        favList.innerHTML = `<div style="text-align:center; opacity:0.5; font-size:12px; margin-top:50px;">No Favourites Selected</div>`;
+        return;
+    }
+
+    favourites.forEach(favName => {
+        const item = items.find(i => i.name === favName);
+        if (!item) return;
+
+        const div = document.createElement("div");
+        div.className = "fav-item";
+        div.innerHTML = `
+            <div>
+                <strong style="color:var(--highlight)">${item.name}</strong>
+                <div style="font-size:10px; color:var(--accent)">${item.slot.toUpperCase()}</div>
+            </div>
+            <span class="fav-star active" onclick="toggleFavourite('${favName}', event)">★</span>
+        `;
+        div.onmouseenter = (e) => showItemTooltip(e, item);
+        div.onmousemove = (e) => moveTooltip(e);
+        div.onmouseleave = () => hideTooltip();
+        div.onclick = () => {
+            hideTooltip();
+            selectedSlot = item.slot;
+            equipped[item.slot] = item;
+            update();
+        };
+        favList.appendChild(div);
     });
 }
 
@@ -1140,10 +1212,11 @@ function update() {
     document.getElementById("val-def-ice").innerText = s.iDef;
     document.getElementById("val-def-light").innerText = s.lDef;
     document.getElementById("val-total-worth").innerText = s.worth.toLocaleString() + "g";
+    
     updateInventoryUI();
+    updateFavouritesWindow();
 }
 
-// PRESET LOGIC
 function savePresetNames() {
     const names = [
         document.getElementById("preset-name-1").value,
@@ -1158,51 +1231,32 @@ function loadPresetNames() {
     if (saved) {
         const names = JSON.parse(saved);
         names.forEach((name, i) => {
-            document.getElementById(`preset-name-${i+1}`).value = name || "";
+            const input = document.getElementById(`preset-name-${i+1}`);
+            if(input) input.value = name || "";
         });
     }
 }
 
 function savePreset(slotIndex) {
-    const presetData = {
-        equipped: {},
-        sockets: {}
-    };
-    
-    // Store names instead of full objects to avoid circular references/bloat
-    slots.forEach(s => {
-        presetData.equipped[s] = equipped[s] ? equipped[s].name : null;
-    });
-    
-    Object.keys(sockets).forEach(s => {
-        presetData.sockets[s] = sockets[s] ? sockets[s].name : null;
-    });
-    
+    const presetData = { equipped: {}, sockets: {} };
+    slots.forEach(s => { presetData.equipped[s] = equipped[s] ? equipped[s].name : null; });
+    Object.keys(sockets).forEach(s => { presetData.sockets[s] = sockets[s] ? sockets[s].name : null; });
     localStorage.setItem(`vEquipper_preset_${slotIndex}`, JSON.stringify(presetData));
     alert(`Preset saved to Slot ${slotIndex}!`);
 }
 
 function loadPreset(slotIndex) {
     const saved = localStorage.getItem(`vEquipper_preset_${slotIndex}`);
-    if (!saved) {
-        alert("Slot is empty!");
-        return;
-    }
-    
+    if (!saved) { alert("Slot is empty!"); return; }
     const presetData = JSON.parse(saved);
-    
-    // Match names back to item objects
     slots.forEach(s => {
         const itemName = presetData.equipped[s];
         equipped[s] = itemName ? items.find(i => i.name === itemName) : null;
     });
-    
-    // Match names back to gem objects
     Object.keys(sockets).forEach(s => {
         const gemName = presetData.sockets[s];
         sockets[s] = gemName ? gems.find(g => g.name === gemName) : null;
     });
-    
     update();
 }
 
@@ -1227,7 +1281,6 @@ slots.forEach(s => {
     el.addEventListener('mouseleave', hideTooltip);
 });
 
-// Initial Load
 loadPresetNames();
 update();
 </script>
