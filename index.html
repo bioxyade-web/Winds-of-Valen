@@ -342,7 +342,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     padding: 20px;
     border: 2px solid var(--border-color);
     box-shadow: 0 10px 40px rgba(0,0,0,0.7);
-    height: 300px;
+    height: 420px; /* INCREASED HEIGHT FOR 6 SLOTS */
     display: flex;
     flex-direction: column;
 }
@@ -519,7 +519,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 
     <!-- BOTTOM SECTION: PRESETS & FAVOURITES -->
     <div class="preset-favourites-container">
-        <!-- PRESETS PANEL -->
+        <!-- PRESETS PANEL (EXPANDED TO 6) -->
         <div class="bottom-panel">
             <h2 style="font-size: 20px;">Presets</h2>
             <table class="preset-table">
@@ -538,10 +538,25 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
                     <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
                     <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
                 </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-4" class="preset-input" placeholder="Slot 4 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(4)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(4)">Load</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-5" class="preset-input" placeholder="Slot 5 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(5)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(5)">Load</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" id="preset-name-6" class="preset-input" placeholder="Slot 6 Name" onchange="savePresetNames()"></td>
+                    <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
+                    <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
+                </tr>
             </table>
         </div>
 
-        <!-- FAVOURITES PANEL -->
+        <!-- FAVOURITES PANEL (STRETCHED TO MATCH PRESET HEIGHT) -->
         <div class="bottom-panel">
             <h2 style="font-size: 20px;">Selected Favourites</h2>
             <div id="favourites-list" class="fav-list">
@@ -1218,11 +1233,10 @@ function update() {
 }
 
 function savePresetNames() {
-    const names = [
-        document.getElementById("preset-name-1").value,
-        document.getElementById("preset-name-2").value,
-        document.getElementById("preset-name-3").value
-    ];
+    const names = [];
+    for (let i = 1; i <= 6; i++) {
+        names.push(document.getElementById(`preset-name-${i}`).value);
+    }
     localStorage.setItem("vEquipper_presetNames", JSON.stringify(names));
 }
 
