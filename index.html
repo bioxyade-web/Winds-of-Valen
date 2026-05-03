@@ -1405,7 +1405,12 @@ function updateInventoryUI() {
                 gDiv.onmouseenter = (e) => showGemTooltip(e, currentGem);
                 gDiv.onmousemove = (e) => moveTooltip(e);
                 gDiv.onmouseleave = () => hideTooltip();
-                gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = null; update(); };
+                gDiv.onclick = () => { 
+                    hideTooltip(); 
+                    sockets[selectedSlot] = null; 
+                    updateItemDisplay(equipped[selectedSlot]); // Refresh display when gem removed
+                    update(); 
+                };
                 sBox.appendChild(gDiv);
             } else {
                 sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
@@ -1418,7 +1423,12 @@ function updateInventoryUI() {
                     gDiv.onmouseenter = (e) => showGemTooltip(e, gem);
                     gDiv.onmousemove = (e) => moveTooltip(e);
                     gDiv.onmouseleave = () => hideTooltip();
-                    gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = gem; update(); };
+                    gDiv.onclick = () => { 
+                        hideTooltip(); 
+                        sockets[selectedSlot] = gem; 
+                        updateItemDisplay(equipped[selectedSlot]); // Refresh display when gem equipped
+                        update(); 
+                    };
                     scrollWrapper.appendChild(gDiv);
                 });
                 sBox.appendChild(scrollWrapper);
