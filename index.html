@@ -141,8 +141,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     padding-right: 10px;
 }
 
-#inventory-container::-webkit-scrollbar, .fav-list::-webkit-scrollbar, .display-content::-webkit-scrollbar { width: 8px; }
-#inventory-container::-webkit-scrollbar-thumb, .fav-list::-webkit-scrollbar-thumb, .display-content::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+#inventory-container::-webkit-scrollbar, .fav-list::-webkit-scrollbar, .display-content::-webkit-scrollbar, .hunt-list::-webkit-scrollbar { width: 8px; }
+#inventory-container::-webkit-scrollbar-thumb, .fav-list::-webkit-scrollbar-thumb, .display-content::-webkit-scrollbar-thumb, .hunt-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
 .inventory-item {
     background: rgba(0, 0, 0, 0.4);
@@ -367,8 +367,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .preset-favourites-container {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: 350px 1fr 1fr; /* Fixed preset width, others expand */
-    gap: 30px;
+    grid-template-columns: 350px 350px 1fr 1fr; /* ADDED EXTRA COLUMN FOR HUNTING LOG */
+    gap: 20px;
     margin-top: 20px;
     width: 100%;
 }
@@ -441,6 +441,26 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .fav-item:hover {
     border-color: var(--gold);
 }
+
+/* HUNTING LOG STYLES */
+.hunt-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hunt-entry {
+    background: rgba(127, 29, 29, 0.2);
+    border: 1px solid #ef4444;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.hunt-enemy { color: #fca5a5; font-weight: bold; font-size: 14px; }
+.hunt-loc { color: #fecaca; font-size: 11px; font-style: italic; margin-top: 2px; }
+.hunt-item-ref { color: var(--highlight); font-size: 10px; text-transform: uppercase; margin-top: 4px; opacity: 0.8; }
 
 /* NEW DISPLAY TABLE STYLES */
 .display-content {
@@ -594,6 +614,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     <a href="#stats-anchor" class="nav-link">Stats</a>
     <a href="#preset-anchor" class="nav-link">Presets</a>
     <a href="#favourites-anchor" class="nav-link">Favourites</a>
+    <a href="#hunt-anchor" class="nav-link">Hunt Log</a>
     <a href="#display-anchor" class="nav-link">Item Display</a>
 </div>
 
@@ -733,6 +754,14 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
             </div>
         </div>
 
+        <!-- NEW HUNTING LOG PANEL -->
+        <div class="bottom-panel" id="hunt-anchor">
+            <h2 style="font-size: 20px;">Hunting Log</h2>
+            <div id="hunting-log-list" class="hunt-list">
+                <!-- Hunting info injected here -->
+            </div>
+        </div>
+
         <!-- NEW ITEM DISPLAY PANEL -->
         <div class="bottom-panel" id="display-anchor">
             <h2 style="font-size: 20px;">Item Display</h2>
@@ -767,8 +796,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
                         <p>Click the star (★) on any item to add it to your Favourites. These items stay pinned at the top of their respective categories and appear in the quick-access panel below.</p>
                     </div>
                     <div class="info-card">
-                        <h4>Quick Equip Favourites</h4>
-                        <p>You can equip items by clicking them in the favourites window directly. This allows for rapid gear swaps without having to navigate through the category menus.</p>
+                        <h4>Hunting Log</h4>
+                        <p>The Hunting Log automatically identifies which monsters drop your currently equipped gear. It provides the enemy name, level, and map location to help you track your progression sources.</p>
                     </div>
                 </div>
             </div>
@@ -1440,6 +1469,35 @@ function updateFavouritesWindow() {
     });
 }
 
+// NEW FUNCTION: UPDATE HUNTING LOG
+function updateHuntingLog() {
+    const logList = document.getElementById("hunting-log-list");
+    logList.innerHTML = "";
+    
+    let dropFound = false;
+
+    slots.forEach(slot => {
+        const item = equipped[slot];
+        if (item && item.drops) {
+            item.drops.forEach(d => {
+                dropFound = true;
+                const div = document.createElement("div");
+                div.className = "hunt-entry";
+                div.innerHTML = `
+                    <div class="hunt-enemy">${d.u} (Lvl ${d.l})</div>
+                    <div class="hunt-loc">Location: ${d.loc || "Unknown"}</div>
+                    <div class="hunt-item-ref">Drops: ${item.name}</div>
+                `;
+                logList.appendChild(div);
+            });
+        }
+    });
+
+    if (!dropFound) {
+        logList.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">No monsters found for current gear.<br>(Gear may be crafted or bought)</div>`;
+    }
+}
+
 function update() {
     const weapon = equipped["weapon"];
     const is2H = weapon && weapon.isTwoHanded;
@@ -1546,6 +1604,7 @@ function update() {
     
     updateInventoryUI();
     updateFavouritesWindow();
+    updateHuntingLog();
 }
 
 function savePresetNames() {
