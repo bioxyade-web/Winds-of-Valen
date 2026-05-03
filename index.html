@@ -56,6 +56,10 @@ body {
 .tt-val { color: #fff; font-weight: bold; }
 .tt-desc { color: #d6d3d1; font-style: italic; font-size: 12px; line-height: 1.4; }
 
+/* COMPARISON STYLES */
+.comp-pos { color: #22c55e !important; } /* Green */
+.comp-neg { color: #ef4444 !important; } /* Red */
+
 /* SOURCE STYLING */
 .tt-source { font-size: 11px; margin-top: 2px; border-top: 1px solid rgba(180, 83, 9, 0.3); padding-top: 2px; }
 .tt-source-drop { color: #ef4444; } /* Red for drops */
@@ -438,7 +442,51 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .display-label { color: #d97706; font-weight: bold; }
 .display-val { color: #fff; }
 
-/* ENHANCED DISPLAY WINDOW STYLES FOR SOURCE/DROPS */
+/* INFO WINDOW STYLES */
+.info-container {
+    grid-column: 1 / -1;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.info-panel {
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.info-card {
+    background: rgba(120, 53, 15, 0.1);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.info-card h4 {
+    margin: 0 0 10px 0;
+    color: var(--highlight);
+    text-transform: uppercase;
+    font-size: 16px;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 5px;
+}
+
+.info-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+    color: #e2e8f0;
+}
+
 .display-source-box {
     margin-top: 12px;
     padding: 8px;
@@ -647,6 +695,35 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
                 <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats</div>
             </div>
         </div>
+
+        <!-- INFO WINDOW: APP OPTIONS & MANUAL -->
+        <div class="info-container">
+            <div class="info-panel">
+                <h2 style="font-size: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px;">App Guide & Equipper Features</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Item Comparison</h4>
+                        <p>Hover over items in the inventory to see a live comparison against your currently equipped gear. Green values indicate improvements, while red indicates a stat decrease.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Presets & Storage</h4>
+                        <p>Save up to 8 unique equipment setups. Name your presets and use "Save" to store your current loadout (including gems) or "Load" to quickly switch back. Data is saved locally.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Gem Sockets</h4>
+                        <p>Neck and Ring slots support Gem Sockets. Equip a base item first, then select a gem from the available list to apply powerful percentage or flat stat multipliers.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Dynamic Item Display</h4>
+                        <p>Clicking an item (or a filled slot) updates the "Item Display" panel. This provides a permanent view of the item's stats, merchant value, and detailed drop locations.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Favourites System</h4>
+                        <p>Click the star (★) on any item to add it to your Favourites. These items stay pinned at the top of their respective categories and appear in the quick-access panel below.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -704,7 +781,7 @@ const items = [
     {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}]},
     {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28, source:"Archery Stall in Valen Gate"},
     {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
-    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, defLight:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"}]},
+    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, Platform:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"}]},
     {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15, loc:"Goblin village south of Valen Gate"}]},
     {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140, source:"Anvil"},
     {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400, drops:[{u:"Elf Scholar",l:37, loc:"Elven Haven east of Valen Gate"}]},
@@ -903,8 +980,11 @@ function unequipAll() {
     update();
 }
 
+// FULL COMPARATOR LOGIC INTEGRATED HERE
 function showItemTooltip(e, item) {
     let html = `<h4>${item.name}</h4>`;
+    const curEquipped = equipped[item.slot];
+
     const statMap = {
         damage: "Damage", speed: "Speed", range: "Range",
         shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
@@ -918,33 +998,62 @@ function showItemTooltip(e, item) {
         firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
     };
 
-    Object.keys(item).forEach(key => {
-        if (statMap[key]) {
-            let val = item[key];
+    // ITEM COMPARATOR TABLE
+    if (curEquipped && curEquipped !== item) {
+        html += `<div style="font-size: 11px; color: var(--highlight); margin-bottom: 5px; border-bottom: 1px solid var(--accent);">vs ${curEquipped.name}</div>`;
+    }
+
+    Object.keys(statMap).forEach(key => {
+        if (item[key] !== undefined || (curEquipped && curEquipped[key] !== undefined)) {
+            let val = item[key] || 0;
+            let compClass = "";
+            let diffStr = "";
+
             if (item.slot && sockets.hasOwnProperty(item.slot)) {
-                const boosted = calculateBoostedStat(item, key);
-                if (boosted !== val) val = `${val} (${boosted})`;
+                val = calculateBoostedStat(item, key);
             }
-            html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${val}</span></div>`;
+
+            if (curEquipped && curEquipped !== item) {
+                let oldVal = curEquipped[key] || 0;
+                if (curEquipped.slot && sockets.hasOwnProperty(curEquipped.slot)) {
+                    oldVal = calculateBoostedStat(curEquipped, key);
+                }
+                
+                let diff = val - oldVal;
+                // Special handling for Speed (lower is better)
+                if (key === "speed") {
+                    if (diff < 0) { compClass = "comp-pos"; diffStr = ` (${diff})`; }
+                    else if (diff > 0) { compClass = "comp-neg"; diffStr = ` (+${diff})`; }
+                } else {
+                    if (diff > 0) { compClass = "comp-pos"; diffStr = ` (+${diff})`; }
+                    else if (diff < 0) { compClass = "comp-neg"; diffStr = ` (${diff})`; }
+                }
+            }
+
+            if (item[key] !== undefined || diffStr !== "") {
+                html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val ${compClass}">${val}${diffStr}</span></div>`;
+            }
         }
     });
 
-    html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val">${item.sellPrice || 0}g</span></div>`;
+    // Sell Price Comparison
+    let priceClass = "";
+    let priceDiff = "";
+    if (curEquipped && curEquipped !== item) {
+        let diff = (item.sellPrice || 0) - (curEquipped.sellPrice || 0);
+        if (diff > 0) { priceClass = "comp-pos"; priceDiff = ` (+${diff})`; }
+        else if (diff < 0) { priceClass = "comp-neg"; priceDiff = ` (${diff})`; }
+    }
+    html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val ${priceClass}">${item.sellPrice || 0}g${priceDiff}</span></div>`;
     
-    // DROPS DATA (Color: Red)
     if (item.drops) {
         item.drops.forEach(d => {
             html += `<div class="tt-source tt-source-drop">Dropped by ${d.u}, level ${d.l}</div>`;
         });
     }
 
-    // SOURCE DATA (Color: Light Blue)
-    if (item.source) {
-        html += `<div class="tt-source tt-source-vendor">Source: ${item.source}</div>`;
-    }
-    if (item.alsoSource) {
-        html += `<div class="tt-source tt-source-vendor">Source: ${item.alsoSource}</div>`;
-    }
+    if (item.source) html += `<div class="tt-source tt-source-vendor">Source: ${item.source}</div>`;
+    if (item.alsoSource) html += `<div class="tt-source tt-source-vendor">Source: ${item.alsoSource}</div>`;
 
     tooltip.innerHTML = html;
     tooltip.style.display = "block";
@@ -974,12 +1083,10 @@ function showEquippedSlotTooltip(e, slotId) {
         firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
     };
 
-    let hasStats = false;
     Object.keys(item).forEach(key => {
         if (statMap[key]) {
             const total = calculateBoostedStat(item, key);
             html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${total}</span></div>`;
-            hasStats = true;
         }
     });
 
