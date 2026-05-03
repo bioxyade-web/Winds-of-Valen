@@ -116,6 +116,9 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     margin-bottom: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .inventory-item:hover {
@@ -123,6 +126,23 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     background: rgba(120, 53, 15, 0.4);
     transform: translateX(8px);
     box-shadow: -5px 0 15px var(--accent);
+}
+
+.fav-star {
+    font-size: 20px;
+    color: #4b5563; /* Gray */
+    transition: transform 0.2s, color 0.2s;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.fav-star:hover {
+    transform: scale(1.3);
+}
+
+.fav-star.active {
+    color: var(--gold);
+    text-shadow: 0 0 8px var(--gold);
 }
 
 .gem-item {
@@ -307,6 +327,52 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
 .val-gold { color: var(--gold) !important; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
 
+/* PRESET STYLES */
+.preset-panel {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.preset-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.preset-table td {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    background: rgba(0,0,0,0.3);
+}
+
+.preset-input {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--accent);
+    color: var(--highlight);
+    padding: 8px;
+    width: 100%;
+    font-family: inherit;
+}
+
+.preset-btn {
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    border-radius: 4px;
+    width: 100%;
+    margin: 2px 0;
+}
+
+.btn-save { background: #166534; color: #bbf7d0; border: 1px solid #22c55e; }
+.btn-save:hover { background: #15803d; }
+.btn-load { background: #1e3a8a; color: #bfdbfe; border: 1px solid #3b82f6; }
+.btn-load:hover { background: #1e40af; }
+
 @media (max-width: 1200px) {
     .layout {
         display: flex;
@@ -347,9 +413,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
             Click a character slot to browse items...
         </div>
         
-        <!-- NEW RELOCATED SOCKETS AND GEMS AREA -->
         <div id="socket-area-relocated"></div>
-        
         <div id="unequip-area"></div>
         <div id="inventory-container"></div>
     </div>
@@ -412,6 +476,28 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
             <div class="stat-row" data-stat="totalItemValue"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
         </div>
     </div>
+
+    <!-- PRESET TABLE SEPARATE FROM OTHER PANELS -->
+    <div class="panel preset-panel">
+        <h2 style="font-size: 20px;">Equipment Presets</h2>
+        <table class="preset-table">
+            <tr>
+                <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
+                <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save Slot 1</button></td>
+                <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load Slot 1</button></td>
+            </tr>
+            <tr>
+                <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
+                <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save Slot 2</button></td>
+                <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load Slot 2</button></td>
+            </tr>
+            <tr>
+                <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
+                <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save Slot 3</button></td>
+                <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load Slot 3</button></td>
+            </tr>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -429,6 +515,21 @@ let selectedChestCategory = null;
 let selectedLegsCategory = null;
 let selectedHeadCategory = null;
 let selectedToolCategory = null; 
+
+// Favourite System Logic
+let favourites = JSON.parse(localStorage.getItem("vEquipper_favourites")) || [];
+
+function toggleFavourite(itemName, event) {
+    event.stopPropagation(); // Don't equip item when clicking star
+    const index = favourites.indexOf(itemName);
+    if (index > -1) {
+        favourites.splice(index, 1);
+    } else {
+        favourites.push(itemName);
+    }
+    localStorage.setItem("vEquipper_favourites", JSON.stringify(favourites));
+    updateInventoryUI();
+}
 
 const items = [
     {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42},
@@ -909,12 +1010,25 @@ function updateInventoryUI() {
         return i.slot === selectedSlot;
     });
 
-    validItems.sort((a, b) => (a.sellPrice || 0) - (b.sellPrice || 0));
+    // Modified sort: Favourites first, then by price
+    validItems.sort((a, b) => {
+        const aFav = favourites.includes(a.name) ? 1 : 0;
+        const bFav = favourites.includes(b.name) ? 1 : 0;
+        if (aFav !== bFav) return bFav - aFav;
+        return (a.sellPrice || 0) - (b.sellPrice || 0);
+    });
+
     validItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "inventory-item";
         if (equipped[selectedSlot] === item) div.style.borderColor = "var(--accent)";
-        div.innerHTML = `<strong>${item.name}</strong>`;
+        
+        const isFav = favourites.includes(item.name);
+        
+        div.innerHTML = `
+            <strong>${item.name}</strong>
+            <span class="fav-star ${isFav ? 'active' : ''}" onclick="toggleFavourite('${item.name}', event)">★</span>
+        `;
         div.onmouseenter = (e) => showItemTooltip(e, item);
         div.onmousemove = (e) => moveTooltip(e);
         div.onmouseleave = () => hideTooltip();
@@ -1029,6 +1143,69 @@ function update() {
     updateInventoryUI();
 }
 
+// PRESET LOGIC
+function savePresetNames() {
+    const names = [
+        document.getElementById("preset-name-1").value,
+        document.getElementById("preset-name-2").value,
+        document.getElementById("preset-name-3").value
+    ];
+    localStorage.setItem("vEquipper_presetNames", JSON.stringify(names));
+}
+
+function loadPresetNames() {
+    const saved = localStorage.getItem("vEquipper_presetNames");
+    if (saved) {
+        const names = JSON.parse(saved);
+        names.forEach((name, i) => {
+            document.getElementById(`preset-name-${i+1}`).value = name || "";
+        });
+    }
+}
+
+function savePreset(slotIndex) {
+    const presetData = {
+        equipped: {},
+        sockets: {}
+    };
+    
+    // Store names instead of full objects to avoid circular references/bloat
+    slots.forEach(s => {
+        presetData.equipped[s] = equipped[s] ? equipped[s].name : null;
+    });
+    
+    Object.keys(sockets).forEach(s => {
+        presetData.sockets[s] = sockets[s] ? sockets[s].name : null;
+    });
+    
+    localStorage.setItem(`vEquipper_preset_${slotIndex}`, JSON.stringify(presetData));
+    alert(`Preset saved to Slot ${slotIndex}!`);
+}
+
+function loadPreset(slotIndex) {
+    const saved = localStorage.getItem(`vEquipper_preset_${slotIndex}`);
+    if (!saved) {
+        alert("Slot is empty!");
+        return;
+    }
+    
+    const presetData = JSON.parse(saved);
+    
+    // Match names back to item objects
+    slots.forEach(s => {
+        const itemName = presetData.equipped[s];
+        equipped[s] = itemName ? items.find(i => i.name === itemName) : null;
+    });
+    
+    // Match names back to gem objects
+    Object.keys(sockets).forEach(s => {
+        const gemName = presetData.sockets[s];
+        sockets[s] = gemName ? gems.find(g => g.name === gemName) : null;
+    });
+    
+    update();
+}
+
 slots.forEach(s => {
     const el = document.getElementById(s);
     el.addEventListener('click', () => {
@@ -1050,6 +1227,8 @@ slots.forEach(s => {
     el.addEventListener('mouseleave', hideTooltip);
 });
 
+// Initial Load
+loadPresetNames();
 update();
 </script>
 </body>
