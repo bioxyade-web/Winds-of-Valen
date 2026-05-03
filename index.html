@@ -888,15 +888,15 @@ const items = [
     {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
     {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750, source:"Anvil"},
     {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Archery Stall in Valen Gate"},
-    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, defLight:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
+    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, Platform:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
     {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
     {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
     {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Armour Stall in Valen Gate"},
     {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400, source:"Anvil"},
     {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Archery Stall in Valen Gate"},
-    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, defLight:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10, loc:"Valen Port"}]},
+    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, Platform:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10, loc:"Valen Port"}]},
     {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}]},
-    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, defLight:2, defIce:1, agi:5, sellPrice:28, source:"Archery Stall in Valen Gate"},
+    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, Platform:2, defIce:1, agi:5, sellPrice:28, source:"Archery Stall in Valen Gate"},
     {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
     {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, Platform:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"}]},
     {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15, loc:"Goblin village south of Valen Gate"}]},
@@ -924,7 +924,7 @@ const items = [
     {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140, source:"Wand Stall in Valen Gate"},
     {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
     {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
-    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, lightPower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, Platform:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
     {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
     {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
     {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350, source:"Armour Stall in Valen Gate", alsoSource:"Shield Stall in Valen Port"},
@@ -963,16 +963,16 @@ const items = [
 ];
 
 const gems = [
-    { name: "Weak Power Gem", type: "meleePower", multi: 0.20, price: 70 },
-    { name: "Power Gem", type: "meleePower", multi: 0.30, price: 245 },
-    { name: "Strong Power Gem", type: "meleePower", multi: 0.40, price: 840 },
-    { name: "Fishing Power Gem", type: "fishingPower", flat: 5, price: 1400 },
-    { name: "Weak Magic Power Gem", type: "magicPower", multi: 0.20, price: 70 },
-    { name: "Magic Power Gem", type: "magicPower", multi: 0.30, price: 350 },
-    { name: "Strong Magic Power Gem", type: "magicPower", multi: 0.40, price: 840 }, 
-    { name: "Potion Making Power Gem", type: "potionMakingPower", flat: 5, price: 245 },
-    { name: "Smithing Power Gem", type: "smithingPower", flat: 5, price: 1400 },
-    { name: "Mining Power Gem", type: "miningPower", flat: 5, price: 3500 }
+    { name: "Weak Power Gem", type: "meleePower", multi: 0.20, price: 70, loc: "Mining Tin Rock or Copper Rock" },
+    { name: "Power Gem", type: "meleePower", multi: 0.30, price: 245, loc: "Mining Iron Rock" },
+    { name: "Strong Power Gem", type: "meleePower", multi: 0.40, price: 840, loc: "Mining Coal Rock" },
+    { name: "Fishing Power Gem", type: "fishingPower", flat: 5, price: 1400, loc: "Mining Mithril Rock" },
+    { name: "Weak Magic Power Gem", type: "magicPower", multi: 0.20, price: 70, loc: "Cut out of Rare Trout using Bait Knife" },
+    { name: "Magic Power Gem", type: "magicPower", multi: 0.30, price: 350, loc: "Cut out of Rare Bass using Bait Knife" },
+    { name: "Strong Magic Power Gem", type: "magicPower", multi: 0.40, price: 840, loc: "Cut out of Rare Carp using Bait Knife" }, 
+    { name: "Potion Making Power Gem", type: "potionMakingPower", flat: 5, price: 245, loc: "Cut out of Rare Perch using Bait Knife" },
+    { name: "Smithing Power Gem", type: "smithingPower", flat: 5, price: 1400, loc: "Cut out of Rare Elder Trout using Bait Knife" },
+    { name: "Mining Power Gem", type: "miningPower", flat: 5, price: 3500, loc: "Mining Gold Rock or Volcanic Gold Rock" }
 ];
 
 const tooltipDescriptions = {
@@ -1038,7 +1038,7 @@ function updateItemDisplay(item) {
         miningPower: "Mining Power", smithingPower: "Smithing Power",
         potionPower: "Potion Making Power", fishingPower: "Fishing Power",
         agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
-        defFire: "Fire Defense", defIce: "Ice Defense", defLight: "Lightning Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", Platform: "Lightning Defense",
         firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
     };
 
@@ -1111,7 +1111,7 @@ function showItemTooltip(e, item) {
         miningPower: "Mining Power", smithingPower: "Smithing Power",
         potionPower: "Potion Making Power", fishingPower: "Fishing Power",
         agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
-        defFire: "Fire Defense", defIce: "Ice Defense", defLight: "Lightning Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", Platform: "Lightning Defense",
         firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
     };
 
@@ -1196,7 +1196,7 @@ function showEquippedSlotTooltip(e, slotId) {
         miningPower: "Mining Power", smithingPower: "Smithing Power",
         potionPower: "Potion Making Power", fishingPower: "Fishing Power",
         agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
-        defFire: "Fire Defense", defIce: "Ice Defense", defLight: "Lightning Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", Platform: "Lightning Defense",
         firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
     };
 
@@ -1530,6 +1530,22 @@ function updateHuntingLog() {
                 logList.appendChild(div);
             });
         }
+        
+        // ADD SOCKETED GEMS TO HUNTING LOG
+        if (sockets[slot]) {
+            dropFound = true;
+            const gem = sockets[slot];
+            const div = document.createElement("div");
+            div.className = "hunt-entry";
+            div.style.borderColor = "var(--gold)";
+            div.style.background = "rgba(245, 158, 11, 0.1)";
+            div.innerHTML = `
+                <div class="hunt-enemy" style="color:var(--gold)">${gem.name} (Socketed)</div>
+                <div class="hunt-loc" style="color:var(--highlight)">Source: ${gem.loc}</div>
+                <div class="hunt-item-ref" style="opacity:1">Equipped in: ${item ? item.name : slot.toUpperCase()}</div>
+            `;
+            logList.appendChild(div);
+        }
     });
 
     if (!dropFound) {
@@ -1582,7 +1598,7 @@ function update() {
     document.getElementById("val-shield").innerText = sh && !is2H ? sh.shieldPower : "-";
 
     let s = { 
-        melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0,
+        melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, Platform:0,
         mining:0, smithing:0, potion:0, fishing:0 
     };
 
