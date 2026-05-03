@@ -109,8 +109,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     padding-right: 10px;
 }
 
-#inventory-container::-webkit-scrollbar, .fav-list::-webkit-scrollbar { width: 8px; }
-#inventory-container::-webkit-scrollbar-thumb, .fav-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+#inventory-container::-webkit-scrollbar, .fav-list::-webkit-scrollbar, .display-content::-webkit-scrollbar { width: 8px; }
+#inventory-container::-webkit-scrollbar-thumb, .fav-list::-webkit-scrollbar-thumb, .display-content::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
 
 .inventory-item {
     background: rgba(0, 0, 0, 0.4);
@@ -335,7 +335,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .preset-favourites-container {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 350px 1fr 1fr; /* Fixed preset width, others expand */
     gap: 30px;
     margin-top: 20px;
     width: 100%;
@@ -409,6 +409,34 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 .fav-item:hover {
     border-color: var(--gold);
 }
+
+/* NEW DISPLAY TABLE STYLES */
+.display-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.display-title {
+    font-size: 22px;
+    color: var(--highlight);
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 5px;
+}
+
+.display-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(120, 53, 15, 0.3);
+}
+
+.display-label { color: #d97706; font-weight: bold; }
+.display-val { color: #fff; }
 
 @media (max-width: 1200px) {
     .layout {
@@ -522,7 +550,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         </div>
     </div>
 
-    <!-- BOTTOM SECTION: PRESETS & FAVOURITES -->
+    <!-- BOTTOM SECTION: PRESETS, FAVOURITES & ITEM DISPLAY -->
     <div class="preset-favourites-container">
         <!-- PRESETS PANEL (EXPANDED TO 6) -->
         <div class="bottom-panel">
@@ -566,6 +594,14 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
             <h2 style="font-size: 20px;">Selected Favourites</h2>
             <div id="favourites-list" class="fav-list">
                 <!-- Favourites will be injected here -->
+            </div>
+        </div>
+
+        <!-- NEW ITEM DISPLAY PANEL -->
+        <div class="bottom-panel">
+            <h2 style="font-size: 20px;">Item Display</h2>
+            <div id="item-display-table" class="display-content">
+                <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats</div>
             </div>
         </div>
     </div>
@@ -747,6 +783,51 @@ function moveTooltip(e) {
     if (y + ttHeight > windowHeight) y = e.clientY - ttHeight - 15;
     tooltip.style.left = x + "px";
     tooltip.style.top = y + "px";
+}
+
+// NEW FUNCTION: UPDATE THE PERMANENT DISPLAY TABLE
+function updateItemDisplay(item) {
+    const display = document.getElementById("item-display-table");
+    if (!item) return;
+
+    let html = `<div class="display-title">${item.name}</div>`;
+    
+    const statMap = {
+        damage: "Damage", speed: "Speed", range: "Range",
+        shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
+        accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
+        pierceBonus: "Pierce Accuracy", meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", magicPower: "Magic Power",
+        miningPower: "Mining Power", smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power", fishingPower: "Fishing Power",
+        agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", defLight: "Lightning Defense",
+        firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
+    };
+
+    Object.keys(item).forEach(key => {
+        if (statMap[key]) {
+            let val = item[key];
+            if (item.slot && sockets.hasOwnProperty(item.slot)) {
+                const boosted = calculateBoostedStat(item, key);
+                if (boosted !== val) val = `${val} (${boosted})`;
+            }
+            html += `<div class="display-row"><span class="display-label">${statMap[key]}</span><span class="display-val">${val}</span></div>`;
+        }
+    });
+
+    html += `<div class="display-row" style="border-top:1px solid var(--gold); margin-top:10px;"><span class="display-label" style="color:var(--gold)">Sell Value</span><span class="display-val" style="color:var(--gold)">${item.sellPrice || 0}g</span></div>`;
+    
+    if (item.drops) {
+        item.drops.forEach(d => {
+            html += `<div style="font-size:12px; color:#ef4444; margin-top:5px;">Dropped by: ${d.u} (Lvl ${d.l})</div>`;
+        });
+    }
+
+    if (item.source) html += `<div style="font-size:12px; color:#add8e6; margin-top:5px;">Source: ${item.source}</div>`;
+    if (item.alsoSource) html += `<div style="font-size:12px; color:#add8e6; margin-top:2px;">Alt Source: ${item.alsoSource}</div>`;
+
+    display.innerHTML = html;
 }
 
 function showGemTooltip(e, gem) {
@@ -1105,7 +1186,12 @@ function updateInventoryUI() {
         div.onmouseenter = (e) => showItemTooltip(e, item);
         div.onmousemove = (e) => moveTooltip(e);
         div.onmouseleave = () => hideTooltip();
-        div.onclick = () => { hideTooltip(); equipped[selectedSlot] = item; update(); };
+        div.onclick = () => { 
+            hideTooltip(); 
+            equipped[selectedSlot] = item; 
+            updateItemDisplay(item); // Update permanent display
+            update(); 
+        };
         container.appendChild(div);
     });
 }
@@ -1139,6 +1225,7 @@ function updateFavouritesWindow() {
             hideTooltip();
             selectedSlot = item.slot;
             equipped[item.slot] = item;
+            updateItemDisplay(item); // Update permanent display
             update();
         };
         favList.appendChild(div);
@@ -1309,6 +1396,7 @@ slots.forEach(s => {
             selectedHeadCategory = null;
             selectedToolCategory = null; 
         }
+        if (equipped[s]) updateItemDisplay(equipped[s]); // Display clicked equipped item
         update();
     });
     el.addEventListener('mouseenter', (e) => showEquippedSlotTooltip(e, s));
