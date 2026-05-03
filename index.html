@@ -591,6 +591,37 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     margin-top: 8px;
 }
 
+/* PHONE FRIENDLY COLLAPSE STYLES */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.collapsible-header:hover {
+    opacity: 0.8;
+}
+.collapse-icon {
+    font-family: monospace;
+    font-size: 24px;
+    color: var(--gold);
+}
+.collapsible-content {
+    transition: max-height 0.3s ease-out, opacity 0.2s;
+    overflow: hidden;
+}
+.collapsed .collapsible-content {
+    max-height: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+}
+.collapsed .collapse-icon::before {
+    content: "[+]";
+}
+.collapse-icon::before {
+    content: "[-]";
+}
+
 @media (max-width: 1200px) {
     .mobile-nav {
         display: block; 
@@ -616,7 +647,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     .bottom-panel {
         scroll-margin-top: 60px;
         height: auto !important;
-        min-height: 400px;
+        min-height: 0 !important;
+        padding: 15px;
     }
     .character-panel { 
         order: 1; 
@@ -730,80 +762,105 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         
         <!-- ROW 2: PRESETS -->
         <div class="bottom-panel" id="preset-anchor">
-            <h2 style="font-size: 20px;">Presets</h2>
-            <table class="preset-table">
-                <tr>
-                    <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-4" class="preset-input" placeholder="Slot 4 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(4)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(4)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-5" class="preset-input" placeholder="Slot 5 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(5)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(5)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-6" class="preset-input" placeholder="Slot 6 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-7" class="preset-input" placeholder="Slot 7 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(7)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(7)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-8" class="preset-input" placeholder="Slot 8 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(8)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(8)">Load</button></td>
-                </tr>
-            </table>
+            <div class="collapsible-header" onclick="togglePanel('preset-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Presets</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px;">
+                <table class="preset-table" style="margin-top:10px;">
+                    <tr>
+                        <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-4" class="preset-input" placeholder="Slot 4 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(4)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(4)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-5" class="preset-input" placeholder="Slot 5 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(5)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(5)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-6" class="preset-input" placeholder="Slot 6 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-7" class="preset-input" placeholder="Slot 7 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(7)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(7)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-8" class="preset-input" placeholder="Slot 8 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(8)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(8)">Load</button></td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <!-- ROW 2: ITEM DISPLAY -->
         <div class="bottom-panel" id="display-anchor">
-            <h2 style="font-size: 20px;">Item Display</h2>
-            <div id="item-display-table" class="display-content">
-                <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats and drop/buy location</div>
+            <div class="collapsible-header" onclick="togglePanel('display-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Item Display</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="item-display-table" class="display-content" style="margin-top:10px; height: 450px;">
+                    <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats and drop/buy location</div>
+                </div>
             </div>
         </div>
 
         <!-- ROW 2: FAVOURITES -->
         <div class="bottom-panel" id="favourites-anchor">
-            <h2 style="font-size: 20px;">Selected Favourites</h2>
-            <div id="favourites-list" class="fav-list">
-                <!-- Favourites will be injected here -->
+            <div class="collapsible-header" onclick="togglePanel('favourites-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Selected Favourites</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="favourites-list" class="fav-list" style="margin-top:10px; height: 450px;">
+                    <!-- Favourites will be injected here -->
+                </div>
             </div>
         </div>
 
         <!-- ROW 3: HUNTING LOG -->
         <div class="bottom-panel" id="hunt-anchor">
-            <h2 style="font-size: 20px;">Hunting Log</h2>
-            <div id="hunting-log-list" class="hunt-list">
-                <!-- Hunting info injected here -->
+            <div class="collapsible-header" onclick="togglePanel('hunt-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Hunting Log</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="hunting-log-list" class="hunt-list" style="margin-top:10px; height: 450px;">
+                    <!-- Hunting info injected here -->
+                </div>
             </div>
         </div>
 
         <!-- ROW 3: CRAFTING LOG -->
         <div class="bottom-panel" id="craft-anchor">
-            <h2 style="font-size: 20px;">Crafting Log</h2>
-            <div id="crafting-log-list" class="hunt-list">
-                <!-- Crafting info injected here -->
+            <div class="collapsible-header" onclick="togglePanel('craft-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Crafting Log</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="crafting-log-list" class="hunt-list" style="margin-top:10px; height: 450px;">
+                    <!-- Crafting info injected here -->
+                </div>
             </div>
         </div>
 
@@ -852,6 +909,12 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 </div>
 
 <script>
+// COLLAPSE LOGIC FOR MOBILE FRIENDLINESS
+function togglePanel(id) {
+    const panel = document.getElementById(id);
+    panel.classList.toggle('collapsed');
+}
+
 // ALL ORIGINAL LOGIC KEPT 100% UNCHANGED BELOW
 const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
 let equipped = {};
