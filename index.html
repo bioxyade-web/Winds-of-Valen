@@ -134,6 +134,19 @@ body {
 
 h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px black; }
 
+/* COLLAPSIBLE LOGIC CSS */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+.collapsible-header:hover { opacity: 0.8; }
+.collapse-content { transition: max-height 0.3s ease-out; overflow: hidden; }
+.collapsed .collapse-content { display: none; }
+.toggle-icon { font-size: 16px; color: var(--gold); }
+
 #inventory-container {
     flex-grow: 1;
     overflow-y: auto;
@@ -616,7 +629,8 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     .bottom-panel {
         scroll-margin-top: 60px;
         height: auto !important;
-        min-height: 400px;
+        min-height: 50px; /* Reduced for collapsed state */
+        margin-bottom: 10px;
     }
     .character-panel { 
         order: 1; 
@@ -730,119 +744,149 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
         
         <!-- ROW 2: PRESETS -->
         <div class="bottom-panel" id="preset-anchor">
-            <h2 style="font-size: 20px;">Presets</h2>
-            <table class="preset-table">
-                <tr>
-                    <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-4" class="preset-input" placeholder="Slot 4 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(4)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(4)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-5" class="preset-input" placeholder="Slot 5 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(5)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(5)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-6" class="preset-input" placeholder="Slot 6 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-7" class="preset-input" placeholder="Slot 7 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(7)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(7)">Load</button></td>
-                </tr>
-                <tr>
-                    <td><input type="text" id="preset-name-8" class="preset-input" placeholder="Slot 8 Name" onchange="savePresetNames()"></td>
-                    <td><button class="preset-btn btn-save" onclick="savePreset(8)">Save</button></td>
-                    <td><button class="preset-btn btn-load" onclick="loadPreset(8)">Load</button></td>
-                </tr>
-            </table>
+            <div class="collapsible-header" onclick="togglePanel('preset-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Presets</h2>
+                <span class="toggle-icon">➖</span>
+            </div>
+            <div class="collapse-content">
+                <table class="preset-table" style="margin-top:15px;">
+                    <tr>
+                        <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-4" class="preset-input" placeholder="Slot 4 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(4)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(4)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-5" class="preset-input" placeholder="Slot 5 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(5)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(5)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-6" class="preset-input" placeholder="Slot 6 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-7" class="preset-input" placeholder="Slot 7 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(7)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(7)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-8" class="preset-input" placeholder="Slot 8 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(8)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(8)">Load</button></td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <!-- ROW 2: ITEM DISPLAY -->
         <div class="bottom-panel" id="display-anchor">
-            <h2 style="font-size: 20px;">Item Display</h2>
-            <div id="item-display-table" class="display-content">
-                <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats and drop/buy location</div>
+            <div class="collapsible-header" onclick="togglePanel('display-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Item Display</h2>
+                <span class="toggle-icon">➖</span>
+            </div>
+            <div class="collapse-content" style="flex-grow:1; display:flex; flex-direction:column; margin-top:15px;">
+                <div id="item-display-table" class="display-content">
+                    <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats and drop/buy location</div>
+                </div>
             </div>
         </div>
 
         <!-- ROW 2: FAVOURITES -->
         <div class="bottom-panel" id="favourites-anchor">
-            <h2 style="font-size: 20px;">Selected Favourites</h2>
-            <div id="favourites-list" class="fav-list">
-                <!-- Favourites will be injected here -->
+            <div class="collapsible-header" onclick="togglePanel('favourites-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Selected Favourites</h2>
+                <span class="toggle-icon">➖</span>
+            </div>
+            <div class="collapse-content" style="flex-grow:1; display:flex; flex-direction:column; margin-top:15px;">
+                <div id="favourites-list" class="fav-list">
+                    <!-- Favourites will be injected here -->
+                </div>
             </div>
         </div>
 
         <!-- ROW 3: HUNTING LOG -->
         <div class="bottom-panel" id="hunt-anchor">
-            <h2 style="font-size: 20px;">Hunting Log</h2>
-            <div id="hunting-log-list" class="hunt-list">
-                <!-- Hunting info injected here -->
+            <div class="collapsible-header" onclick="togglePanel('hunt-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Hunting Log</h2>
+                <span class="toggle-icon">➖</span>
+            </div>
+            <div class="collapse-content" style="flex-grow:1; display:flex; flex-direction:column; margin-top:15px;">
+                <div id="hunting-log-list" class="hunt-list">
+                    <!-- Hunting info injected here -->
+                </div>
             </div>
         </div>
 
         <!-- ROW 3: CRAFTING LOG -->
         <div class="bottom-panel" id="craft-anchor">
-            <h2 style="font-size: 20px;">Crafting Log</h2>
-            <div id="crafting-log-list" class="hunt-list">
-                <!-- Crafting info injected here -->
+            <div class="collapsible-header" onclick="togglePanel('craft-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Crafting Log</h2>
+                <span class="toggle-icon">➖</span>
+            </div>
+            <div class="collapse-content" style="flex-grow:1; display:flex; flex-direction:column; margin-top:15px;">
+                <div id="crafting-log-list" class="hunt-list">
+                    <!-- Crafting info injected here -->
+                </div>
             </div>
         </div>
 
         <!-- ROW 4: INFO WINDOW -->
-        <div class="info-container">
+        <div class="info-container" id="info-anchor">
             <div class="info-panel">
-                <h2 style="font-size: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px;">App Guide & Equipper Features</h2>
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>Item Comparison</h4>
-                        <p>Hover over items in the inventory to see a live comparison against your currently equipped gear. Green values indicate improvements, while red indicates a stat decrease.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Presets & Storage</h4>
-                        <p>Save up to 8 unique equipment setups. Name your presets and use "Save" to store your current loadout (including gems) or "Load" to quickly switch back. Data is saved locally.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Gem Sockets</h4>
-                        <p>Neck and Ring slots support Gem Sockets. Equip a base item first, then select a gem from the available list to apply powerful percentage or flat stat multipliers.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Dynamic Item Display</h4>
-                        <p>Clicking an item (or a filled slot) updates the "Item Display" panel. This provides a permanent view of the item's stats, merchant value, and detailed drop locations.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Favourites System</h4>
-                        <p>Click the star (★) on any item to add it to your Favourites. These items stay pinned at the top of their respective categories and appear in the quick-access panel below.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Instant Equipping</h4>
-                        <p>You can instant equip items by pressing them in the favourites panel. This allows for rapid gear swaps without needing to navigate the main inventory categories.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Hunting Log</h4>
-                        <p>The Hunting Log automatically identifies which monsters/resources drop your currently equipped gear. It provides the enemy/resource name, level, and map location to help you track your progression sources.</p>
-                    </div>
-                    <div class="info-card">
-                        <h4>Crafting Log</h4>
-                        <p>The Crafting Log displays the materials and requirements for equipped gear created at an Anvil. It also provides a "Total Materials" summary at the bottom, calculating exactly what you need to craft your full equipped set.</p>
+                <div class="collapsible-header" onclick="togglePanel('info-anchor')">
+                    <h2 style="font-size: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin:0; flex-grow:1;">App Guide & Equipper Features</h2>
+                    <span class="toggle-icon">➖</span>
+                </div>
+                <div class="collapse-content">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h4>Item Comparison</h4>
+                            <p>Hover over items in the inventory to see a live comparison against your currently equipped gear. Green values indicate improvements, while red indicates a stat decrease.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Presets & Storage</h4>
+                            <p>Save up to 8 unique equipment setups. Name your presets and use "Save" to store your current loadout (including gems) or "Load" to quickly switch back. Data is saved locally.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Gem Sockets</h4>
+                            <p>Neck and Ring slots support Gem Sockets. Equip a base item first, then select a gem from the available list to apply powerful percentage or flat stat multipliers.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Dynamic Item Display</h4>
+                            <p>Clicking an item (or a filled slot) updates the "Item Display" panel. This provides a permanent view of the item's stats, merchant value, and detailed drop locations.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Favourites System</h4>
+                            <p>Click the star (★) on any item to add it to your Favourites. These items stay pinned at the top of their respective categories and appear in the quick-access panel below.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Instant Equipping</h4>
+                            <p>You can instant equip items by pressing them in the favourites panel. This allows for rapid gear swaps without needing to navigate the main inventory categories.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Hunting Log</h4>
+                            <p>The Hunting Log automatically identifies which monsters/resources drop your currently equipped gear. It provides the enemy/resource name, level, and map location to help you track your progression sources.</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Crafting Log</h4>
+                            <p>The Crafting Log displays the materials and requirements for equipped gear created at an Anvil. It also provides a "Total Materials" summary at the bottom, calculating exactly what you need to craft your full equipped set.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -852,6 +896,24 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
 </div>
 
 <script>
+// COLLAPSE LOGIC
+function togglePanel(id) {
+    const el = document.getElementById(id);
+    const icon = el.querySelector('.toggle-icon');
+    el.classList.toggle('collapsed');
+    if (el.classList.contains('collapsed')) {
+        icon.innerText = "➕";
+    } else {
+        icon.innerText = "➖";
+    }
+}
+
+// Initial collapse for mobile
+if (window.innerWidth < 1200) {
+    const panelsToCollapse = ['preset-anchor', 'display-anchor', 'favourites-anchor', 'hunt-anchor', 'craft-anchor', 'info-anchor'];
+    panelsToCollapse.forEach(id => togglePanel(id));
+}
+
 // ALL ORIGINAL LOGIC KEPT 100% UNCHANGED BELOW
 const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
 let equipped = {};
