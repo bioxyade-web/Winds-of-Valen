@@ -550,8 +550,7 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
     font-weight: bold;
     text-transform: uppercase;
     font-size: 11px;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
+    letter-spacing: 1px; margin-bottom: 4px;
 }
 
 .display-vendor-header {
@@ -824,6 +823,32 @@ let selectedChestCategory = null;
 let selectedLegsCategory = null;
 let selectedHeadCategory = null;
 let selectedToolCategory = null; 
+
+// UNSELECT ON BLANK SPOT CLICK
+document.addEventListener('click', function(event) {
+    // Check if the click was inside any slot, inventory item, or interactive element
+    const isClickInside = event.target.closest('.slot') || 
+                          event.target.closest('.inventory-item') || 
+                          event.target.closest('.preset-btn') || 
+                          event.target.closest('.unequip-btn') ||
+                          event.target.closest('.unequip-all-btn') ||
+                          event.target.closest('.back-btn') ||
+                          event.target.closest('.fav-item') ||
+                          event.target.closest('.gem-item') ||
+                          event.target.closest('.preset-input');
+
+    if (!isClickInside && selectedSlot !== null) {
+        selectedSlot = null;
+        selectedWeaponCategory = null; 
+        selectedMagicCategory = null;
+        selectedShieldCategory = null; 
+        selectedChestCategory = null;
+        selectedLegsCategory = null;
+        selectedHeadCategory = null;
+        selectedToolCategory = null; 
+        update();
+    }
+});
 
 // Favourite System Logic
 let favourites = JSON.parse(localStorage.getItem("vEquipper_favourites")) || [];
@@ -1656,7 +1681,8 @@ function loadPreset(slotIndex) {
 
 slots.forEach(s => {
     const el = document.getElementById(s);
-    el.addEventListener('click', () => {
+    el.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent the body click listener from firing immediately
         hideTooltip(); 
         if (selectedSlot !== s) { 
             selectedSlot = s; 
