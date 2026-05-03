@@ -840,6 +840,10 @@ h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transfor
                         <h4>Hunting Log</h4>
                         <p>The Hunting Log automatically identifies which monsters/resources drop your currently equipped gear. It provides the enemy/resource name, level, and map location to help you track your progression sources.</p>
                     </div>
+                    <div class="info-card">
+                        <h4>Crafting Log</h4>
+                        <p>The Crafting Log displays the materials and requirements for equipped gear created at an Anvil. It also provides a "Total Materials" summary at the bottom, calculating exactly what you need to craft your full equipped set.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -921,7 +925,7 @@ const items = [
     {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Archery Stall in Valen Gate"},
     {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, Platform:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
     {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Bronze Bar", smLevel: 2, smXP: 120, dur: "16s" }},
-    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Iron Bar", smLevel: 12, smXP: 240, dur: "24s" }},
+    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Iron Bar", smLevel: 12, Capability: 240, Platform: "24s" }},
     {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Steel Bar", smLevel: 22, smXP: 440, dur: "32s" }},
     {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400, source:"Anvil", craftData: { ingredients: "8 Mithril Bar", smLevel: 32, smXP: 1240, dur: "40s" }},
     {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Archery Stall in Valen Gate"},
