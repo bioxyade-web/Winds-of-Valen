@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winds of Valen Equipper</title>
+
+<style>
+:root {
+    /* Winds of Valen Color Palette */
+    --accent: #b45309; /* Warm Amber/Rust */
+    --highlight: #fbbf24; /* Golden Sunlight */
+    --bg-dark: #0f172a; 
+    --panel-bg: rgba(30, 20, 10, 0.85); /* Dark Sepia Transparent */
+    --gold: #f59e0b;
+    --gem-slot: #1a120b;
+    --border-color: #78350f;
+    --text-main: #fef3c7;
+}
+
+* {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://img.itch.zone/aW1hZ2UvMzk1ODQ1Ny8yNDI3MDEzMS5qcGc=/original/qQvDhM.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 50px; 
+}
+
+/* MOBILE NAVIGATION BAR */
+.mobile-nav {
+    display: none; /* Hidden on desktop */
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: #1a120b;
+    border-bottom: 2px solid var(--gold);
+    z-index: 2000;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 5px;
+}
+
+.nav-link {
+    color: var(--highlight);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border: 1px solid var(--accent);
+    margin: 0 4px;
+    background: rgba(180, 83, 9, 0.2);
+    border-radius: 4px;
+}
+
+/* TOOLTIP STYLES */
+#tooltip {
+    position: fixed;
+    display: none;
+    background: rgba(20, 10, 5, 0.95);
+    border: 2px solid var(--gold);
+    padding: 12px;
+    border-radius: 4px;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+    min-width: 200px;
+    max-width: 320px;
+}
+
+#tooltip h4 { margin: 0 0 8px 0; color: var(--highlight); border-bottom: 1px solid var(--accent); padding-bottom: 5px; }
+.tt-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 3px; }
+.tt-label { color: #d97706; margin-right: 20px; }
+.tt-val { color: #fff; font-weight: bold; }
+.tt-desc { color: #d6d3d1; font-style: italic; font-size: 12px; line-height: 1.4; }
+
+/* COMPARISON STYLES */
+.comp-pos { color: #22c55e !important; } /* Green */
+.comp-neg { color: #ef4444 !important; } /* Red */
+
+/* SOURCE STYLING */
+.tt-source { font-size: 11px; margin-top: 2px; border-top: 1px solid rgba(180, 83, 9, 0.3); padding-top: 2px; }
+.tt-source-drop { color: #ef4444; } /* Red for drops */
+.tt-source-vendor { color: #add8e6; } /* Light Blue for Stall/Anvil */
+
+.title {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+    font-size: 32px;
+    font-weight: bold;
+    border-bottom: 4px solid var(--accent);
+    background: rgba(0, 0, 0, 0.6);
+    margin-bottom: 20px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px var(--gold);
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 350px 500px 350px; 
+    gap: 30px;
+    padding: 20px;
+    justify-content: center;
+    max-width: 1300px; 
+    width: 100%;
+}
+
+.panel {
+    background: var(--panel-bg);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+}
+
+.inventory-panel, .character-panel, .stats-panel {
+    height: 850px;
+}
+
+h2 { font-size: 28px; margin: 0 0 15px 0; color: var(--highlight); text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px black; }
+
+#inventory-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 10px;
+}
+
+#inventory-container::-webkit-scrollbar, .fav-list::-webkit-scrollbar, .display-content::-webkit-scrollbar, .hunt-list::-webkit-scrollbar { width: 8px; }
+#inventory-container::-webkit-scrollbar-thumb, .fav-list::-webkit-scrollbar-thumb, .display-content::-webkit-scrollbar-thumb, .hunt-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+.inventory-item {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 18px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inventory-item:hover {
+    border-color: var(--highlight);
+    background: rgba(120, 53, 15, 0.4);
+    transform: translateX(8px);
+    box-shadow: -5px 0 15px var(--accent);
+}
+
+.fav-star {
+    font-size: 20px;
+    color: #4b5563; /* Gray */
+    transition: transform 0.2s, color 0.2s;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.fav-star:hover {
+    transform: scale(1.3);
+}
+
+.fav-star.active {
+    color: var(--gold);
+    text-shadow: 0 0 8px var(--gold);
+}
+
+.gem-item {
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px dashed var(--gold);
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    width: 100%;
+    transition: 0.2s;
+}
+
+.gem-item:hover { background: var(--accent); color: white; }
+
+.socket-container {
+    background: rgba(0,0,0,0.6);
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid var(--gold);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+    max-height: 250px; 
+}
+
+.gem-scroll-area {
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.gem-scroll-area::-webkit-scrollbar { width: 6px; }
+.gem-scroll-area::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+.socket-title { color: var(--highlight); font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid var(--accent); padding-bottom: 5px;}
+
+.unequip-btn {
+    background: #450a0a;
+    border: 2px solid #ef4444;
+    color: #fecaca;
+    padding: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.unequip-btn:hover { background: #7f1d1d; box-shadow: 0 0 15px #ef4444; }
+
+.unequip-all-btn {
+    background: #b91c1c;
+    border: 2px solid #f87171;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.unequip-all-btn:hover { background: #dc2626; box-shadow: 0 0 10px #f87171; }
+
+.back-btn {
+    background: var(--gem-slot);
+    border: 1px solid var(--highlight);
+    color: var(--highlight);
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+    transition: 0.2s;
+}
+.back-btn:hover { background: var(--accent); color: white; }
+
+.character {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, rgba(180, 83, 9, 0.2) 0%, rgba(0,0,0,0.5) 100%);
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.character img { max-height: 650px; pointer-events: none; z-index: 1; max-width: 90%; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
+
+.slot {
+    width: 90px;
+    height: 90px;
+    background: rgba(15, 10, 5, 0.85);
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: absolute;
+    cursor: pointer;
+    z-index: 5;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    color: #a8a29e;
+    padding: 5px;
+    transform: translate(-50%, -50%); 
+}
+
+.slot:hover { 
+    border-color: var(--highlight); 
+    color: #fff; 
+    background: var(--accent); 
+    box-shadow: 0 0 20px var(--highlight);
+}
+
+.slot.selected { 
+    border-color: var(--highlight); 
+    box-shadow: 0 0 30px var(--gold); 
+    transform: translate(-50%, -50%) scale(1.1); 
+    z-index: 10;
+    background: rgba(180, 83, 9, 0.6);
+}
+
+.filled { 
+    border-color: var(--gold); 
+    background: rgba(69, 26, 3, 0.8); 
+    color: #fff; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6); 
+}
+
+.locked { opacity: 0.3; background: #000 !important; border-color: #222 !important; cursor: not-allowed; pointer-events: none; }
+
+#head    { top: 18%;  left: 50%; }
+#neck    { top: 26%; left: 70%; }
+#chest   { top: 40%; left: 50%; }
+#weapon  { top: 40%; left: 20%;  }
+#shield  { top: 40%; left: 80%; }
+#hands   { top: 55%; left: 20%;  }
+#ring    { top: 55%; left: 80%; }
+#legs    { top: 62%; left: 50%; }
+#feet    { top: 82%;  left: 50%; }
+#trinket { top: 82%; left: 26%; }
+#ammo    { top: 82%; left: 74%; }
+
+.stats-panel { overflow-y: auto; }
+.stat-section { margin-bottom: 15px; }
+.stat-section h3 { color: var(--highlight); font-size: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
+
+.stat-row { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 8px 12px; 
+    background: rgba(0,0,0,0.3); 
+    margin-bottom: 4px; 
+    border-radius: 4px; 
+    font-size: 14px; 
+    cursor: help; 
+    transition: all 0.2s; 
+    border: 1px solid transparent;
+}
+
+.stat-row:hover { 
+    background: rgba(180, 83, 9, 0.3); 
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+.stat-label { color: #d6d3d1; }
+.stat-val { font-weight: bold; color: var(--highlight); font-family: 'Courier New', Courier, monospace; }
+.val-gold { color: var(--gold) !important; text-shadow: 0 0 5px rgba(245, 158, 11, 0.5); }
+
+/* REORGANIZED GRID FOR SPECIFIC ROW ORDER */
+.preset-favourites-container {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Higher base column count to allow flexible spans */
+    gap: 20px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1300px;
+}
+
+/* ROW 2: PRESETS, ITEM DISPLAY, FAVOURITES */
+#preset-anchor { grid-column: span 2; }
+#display-anchor { grid-column: span 2; }
+#favourites-anchor { grid-column: span 2; }
+
+/* ROW 3: HUNTING LOG, CRAFTING LOG */
+#hunt-anchor { grid-column: span 3; }
+#craft-anchor { grid-column: span 3; }
+
+/* ROW 4: INFO PANEL */
+.info-container { grid-column: span 6; }
+
+.bottom-panel {
+    background: var(--panel-bg);
+    border-radius: 8px;
+    padding: 20px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    height: 550px; 
+    display: flex;
+    flex-direction: column;
+    min-width: 0; 
+}
+
+.preset-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.preset-table td {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    background: rgba(0,0,0,0.3);
+}
+
+.preset-input {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--accent);
+    color: var(--highlight);
+    padding: 6px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.preset-btn {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.btn-save { background: #166534; color: #bbf7d0; border: 1px solid #22c55e; }
+.btn-save:hover { background: #15803d; }
+.btn-load { background: #1e3a8a; color: #bfdbfe; border: 1px solid #3b82f6; }
+.btn-load:hover { background: #1e40af; }
+
+.fav-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.fav-item {
+    background: rgba(0,0,0,0.4);
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.fav-item:hover {
+    border-color: var(--gold);
+}
+
+/* HUNTING LOG STYLES */
+.hunt-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hunt-entry {
+    background: rgba(127, 29, 29, 0.2);
+    border: 1px solid #ef4444;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.hunt-enemy { color: #fca5a5; font-weight: bold; font-size: 14px; }
+.hunt-loc { color: #fecaca; font-size: 11px; font-style: italic; margin-top: 2px; }
+.hunt-item-ref { color: var(--highlight); font-size: 10px; text-transform: uppercase; margin-top: 4px; opacity: 0.8; }
+
+/* CRAFTING LOG STYLES */
+.craft-entry {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+.craft-ingredients { color: #a7f3d0; font-size: 12px; font-weight: bold; margin-bottom: 2px; }
+.craft-details { color: #6ee7b7; font-size: 10px; margin-top: 2px; }
+
+/* NEW DISPLAY TABLE STYLES */
+.display-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.display-title {
+    font-size: 22px;
+    color: var(--highlight);
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 5px;
+}
+
+.display-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(120, 53, 15, 0.3);
+}
+
+.display-label { color: #d97706; font-weight: bold; }
+.display-val { color: #fff; }
+
+/* INFO WINDOW STYLES */
+.info-container {
+    margin-top: 30px;
+    width: 100%;
+}
+
+.info-panel {
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.info-card {
+    background: rgba(120, 53, 15, 0.1);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.info-card h4 {
+    margin: 0 0 10px 0;
+    color: var(--highlight);
+    text-transform: uppercase;
+    font-size: 16px;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 5px;
+}
+
+.info-card p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+    color: #e2e8f0;
+}
+
+.display-source-box {
+    margin-top: 12px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.display-drop-header {
+    background: rgba(127, 29, 29, 0.6);
+    color: #fca5a5;
+    border: 1px solid #ef4444;
+    padding: 4px 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px; margin-bottom: 4px;
+}
+
+.display-vendor-header {
+    background: rgba(30, 58, 138, 0.6);
+    color: #bfdbfe;
+    border: 1px solid #3b82f6;
+    padding: 4px 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    margin-top: 8px;
+}
+
+/* PHONE FRIENDLY COLLAPSE STYLES */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.collapsible-header:hover {
+    opacity: 0.8;
+}
+.collapse-icon {
+    font-family: monospace;
+    font-size: 24px;
+    color: var(--gold);
+}
+.collapsible-content {
+    transition: max-height 0.3s ease-out, opacity 0.2s;
+    overflow: hidden;
+}
+.collapsed .collapsible-content {
+    max-height: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+}
+.collapsed .collapse-icon::before {
+    content: "[+]";
+}
+.collapse-icon::before {
+    content: "[-]";
+}
+
+@media (max-width: 1200px) {
+    .mobile-nav {
+        display: block; 
+    }
+    .layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+    }
+    .panel {
+        width: 100%;
+        max-width: 550px;
+        height: auto !important;
+        scroll-margin-top: 60px;
+    }
+    .preset-favourites-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 550px;
+    }
+    .bottom-panel {
+        scroll-margin-top: 60px;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 15px;
+    }
+    .character-panel { 
+        order: 1; 
+        height: 700px !important;
+    }
+    .inventory-panel { order: 2; min-height: 400px; }
+    .stats-panel { order: 3; }
+    .preset-favourites-container { order: 4; }
+    .character img { max-height: 500px; }
+    .slot { width: 80px; height: 80px; font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<!-- STICKY MOBILE NAV -->
+<div class="mobile-nav">
+    <a href="#character-anchor" class="nav-link">Character</a>
+    <a href="#inventory-anchor" class="nav-link">Item Window</a>
+    <a href="#stats-anchor" class="nav-link">Stats</a>
+    <a href="#preset-anchor" class="nav-link">Presets</a>
+    <a href="#display-anchor" class="nav-link">Item Display</a>
+    <a href="#favourites-anchor" class="nav-link">Favourites</a>
+    <a href="#hunt-anchor" class="nav-link">Hunt Log</a>
+    <a href="#craft-anchor" class="nav-link">Craft Log</a>
+</div>
+
+<div class="title">WINDS OF VALEN EQUIPPER</div>
+
+<div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; width: 100%;">
+    <a href="index.html" class="back-btn" style="text-decoration: none; font-weight: bold; width: 200px;">🏠 HOME</a>
+    
+    <a href="ai.html" class="back-btn" style="text-decoration: none; font-weight: bold; width: 200px;">🔮 ASK ALICE AI</a>
+</div>
+
+<div class="layout">
+    <!-- LEFT PANEL: INVENTORY -->
+    <div class="panel inventory-panel" id="inventory-anchor">
+        <h2>Inventory</h2>
+        <div id="unequip-all-container">
+            <div class="unequip-all-btn" onclick="unequipAll()">Unequip All Items</div>
+        </div>
+        <div id="instruction-text" style="font-size:14px; color:var(--highlight); margin-bottom:15px; font-weight: bold;">
+            Click a character slot to browse items...
+        </div>
+        
+        <div id="socket-area-relocated"></div>
+        <div id="unequip-area"></div>
+        <div id="inventory-container"></div>
+    </div>
+
+    <!-- MIDDLE PANEL: CHARACTER -->
+    <div class="panel character-panel" id="character-anchor">
+        <div class="character">
+            <img src="https://i.postimg.cc/q7Yb7dhG/image.png" alt="Character">
+            <div class="slot" id="head">Head</div>
+            <div class="slot" id="neck">Neck</div>
+            <div class="slot" id="chest">Chest</div>
+            <div class="slot" id="weapon">Main Hand</div>
+            <div class="slot" id="shield">Shield</div>
+            <div class="slot" id="hands">Hands</div>
+            <div class="slot" id="ring">Ring</div>
+            <div class="slot" id="legs">Legs</div>
+            <div class="slot" id="feet">Feet</div>
+            <div class="slot" id="trinket">Trinket</div>
+            <div class="slot" id="ammo">Ammo</div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: STATS -->
+    <div class="panel stats-panel" id="stats-anchor">
+        <div class="stat-section">
+            <h3>Damage Stats</h3>
+            <div class="stat-row" data-stat="quickDamage"><span class="stat-label" id="lbl-dmg">Damage</span><span class="stat-val" id="val-dmg">-</span></div>
+            <div class="stat-row" data-stat="attackSpeed"><span class="stat-label">Attack Speed</span><span class="stat-val" id="val-spd">0</span></div>
+            <div class="stat-row" data-stat="attackRange"><span class="stat-label">Attack Range</span><span class="stat-val" id="val-rng">0</span></div>
+            <div class="stat-row" data-stat="pierceAccuracy"><span class="stat-label">Pierce Accuracy</span><span class="stat-val" id="val-acc-pierce">0</span></div>
+            <div class="stat-row" data-stat="slashAccuracy"><span class="stat-label">Slash Accuracy</span><span class="stat-val" id="val-acc-slash">0</span></div>
+        </div>
+
+        <div class="stat-section">
+            <h3>Power Stats</h3>
+            <div class="stat-row" data-stat="meleePower"><span class="stat-label">Melee Power</span><span class="stat-val" id="val-melee">0</span></div>
+            <div class="stat-row" data-stat="rangedPower"><span class="stat-label">Ranged Power</span><span class="stat-val" id="val-ranged">0</span></div>
+            <div class="stat-row" data-stat="magicPower"><span class="stat-label">Magic Power</span><span class="stat-val" id="val-magic">0</span></div>
+            <div class="stat-row" data-stat="miningPower"><span class="stat-label">Mining Power</span><span class="stat-val" id="val-mining">0</span></div>
+            <div class="stat-row" data-stat="smithingPower"><span class="stat-label">Smithing Power</span><span class="stat-val" id="val-smithing">0</span></div>
+            <div class="stat-row" data-stat="potionMakingPower"><span class="stat-label">Potion Making Power</span><span class="stat-val" id="val-potion">0</span></div>
+            <div class="stat-row" data-stat="fishingPower"><span class="stat-label">Fishing Power</span><span class="stat-val" id="val-fishing">0</span></div>
+            
+            <div class="stat-row" data-stat="fireAccuracy"><span class="stat-label">Fire Accuracy</span><span class="stat-val" id="val-pow-fire">0</span></div>
+            <div class="stat-row" data-stat="iceAccuracy"><span class="stat-label">Ice Accuracy</span><span class="stat-val" id="val-pow-ice">0</span></div>
+            <div class="stat-row" data-stat="lightningAccuracy"><span class="stat-label">Lightning Accuracy</span><span class="stat-val" id="val-pow-light">0</span></div>
+            <div class="stat-row" data-stat="agility"><span class="stat-label">Agility</span><span class="stat-val" id="val-agi">0</span></div>
+            <div class="stat-row" data-stat="shieldPower"><span class="stat-label" id="lbl-shield">Shield Power</span><span class="stat-val" id="val-shield">-</span></div>
+        </div>
+
+        <div class="stat-section">
+            <h3>Passive Defenses</h3>
+            <div class="stat-row" data-stat="pierceDefence"><span class="stat-label">Pierce Defence</span><span class="stat-val" id="val-def-pierce">0</span></div>
+            <div class="stat-row" data-stat="slashDefence"><span class="stat-label">Slash Defence</span><span class="stat-val" id="val-def-slash">0</span></div>
+            <div class="stat-row" data-stat="fireDefence"><span class="stat-label">Fire Defence</span><span class="stat-val" id="val-def-fire">0</span></div>
+            <div class="stat-row" data-stat="iceDefence"><span class="stat-label">Ice Defence</span><span class="stat-val" id="val-def-ice">0</span></div>
+            <div class="stat-row" data-stat="lightningDefence"><span class="stat-label">Lightning Defence</span><span class="stat-val" id="val-def-light">0</span></div>
+        </div>
+
+        <div class="stat-section" style="border-top: 2px solid var(--gold); padding-top: 10px;">
+            <h3 style="color: var(--gold);">Economic Stats</h3>
+            <div class="stat-row" data-stat="totalItemValue"><span class="stat-label">Total Item Value</span><span class="stat-val val-gold" id="val-total-worth">0g</span></div>
+        </div>
+    </div>
+
+    <!-- PRESET FAVOURITES CONTAINER - REORGANIZED ORDER -->
+    <div class="preset-favourites-container">
+        
+        <!-- ROW 2: PRESETS -->
+        <div class="bottom-panel" id="preset-anchor">
+            <div class="collapsible-header" onclick="togglePanel('preset-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Presets</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px;">
+                <table class="preset-table" style="margin-top:10px;">
+                    <tr>
+                        <td><input type="text" id="preset-name-1" class="preset-input" placeholder="Slot 1 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(1)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(1)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-2" class="preset-input" placeholder="Slot 2 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(2)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(2)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-3" class="preset-input" placeholder="Slot 3 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(3)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(3)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-4" class="preset-input" placeholder="Slot 4 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(4)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(4)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-5" class="preset-input" placeholder="Slot 5 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(5)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(5)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-6" class="preset-input" placeholder="Slot 6 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(6)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(6)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-7" class="preset-input" placeholder="Slot 7 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(7)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(7)">Load</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="preset-name-8" class="preset-input" placeholder="Slot 8 Name" onchange="savePresetNames()"></td>
+                        <td><button class="preset-btn btn-save" onclick="savePreset(8)">Save</button></td>
+                        <td><button class="preset-btn btn-load" onclick="loadPreset(8)">Load</button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- ROW 2: ITEM DISPLAY -->
+        <div class="bottom-panel" id="display-anchor">
+            <div class="collapsible-header" onclick="togglePanel('display-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Item Display</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="item-display-table" class="display-content" style="margin-top:10px; height: 450px;">
+                    <div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats and drop/buy location</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: FAVOURITES -->
+        <div class="bottom-panel" id="favourites-anchor">
+            <div class="collapsible-header" onclick="togglePanel('favourites-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Selected Favourites</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="favourites-list" class="fav-list" style="margin-top:10px; height: 450px;">
+                    <!-- Favourites will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: HUNTING LOG -->
+        <div class="bottom-panel" id="hunt-anchor">
+            <div class="collapsible-header" onclick="togglePanel('hunt-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Hunting Log</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="hunting-log-list" class="hunt-list" style="margin-top:10px; height: 450px;">
+                    <!-- Hunting info injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: CRAFTING LOG -->
+        <div class="bottom-panel" id="craft-anchor">
+            <div class="collapsible-header" onclick="togglePanel('craft-anchor')">
+                <h2 style="font-size: 20px; margin:0;">Crafting Log</h2>
+                <span class="collapse-icon"></span>
+            </div>
+            <div class="collapsible-content" style="max-height: 500px; display:flex; flex-direction:column;">
+                <div id="crafting-log-list" class="hunt-list" style="margin-top:10px; height: 450px;">
+                    <!-- Crafting info injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: INFO WINDOW -->
+        <div class="info-container">
+            <div class="info-panel">
+                <h2 style="font-size: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px;">App Guide & Equipper Features</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Item Comparison</h4>
+                        <p>Hover over items in the inventory to see a live comparison against your currently equipped gear. Green values indicate improvements, while red indicates a stat decrease.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Presets & Storage</h4>
+                        <p>Save up to 8 unique equipment setups. Name your presets and use "Save" to store your current loadout (including gems) or "Load" to quickly switch back. Data is saved locally.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Gem Sockets</h4>
+                        <p>Neck and Ring slots support Gem Sockets. Equip a base item first, then select a gem from the available list to apply powerful percentage or flat stat multipliers.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Dynamic Item Display</h4>
+                        <p>Clicking an item (or a filled slot) updates the "Item Display" panel. This provides a permanent view of the item's stats, merchant value, and detailed drop locations.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Favourites System</h4>
+                        <p>Click the star (★) on any item to add it to your Favourites. These items stay pinned at the top of their respective categories and appear in the quick-access panel below.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Instant Equipping</h4>
+                        <p>You can instant equip items by pressing them in the favourites panel. This allows for rapid gear swaps without needing to navigate the main inventory categories.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Hunting Log</h4>
+                        <p>The Hunting Log automatically identifies which monsters/resources drop your currently equipped gear. It provides the enemy/resource name, level, and map location to help you track your progression sources.</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Crafting Log</h4>
+                        <p>The Crafting Log displays the materials and requirements for equipped gear created at an Anvil. It also provides a "Total Materials" summary at the bottom, calculating exactly what you need to craft your full equipped set.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// COLLAPSE LOGIC FOR MOBILE FRIENDLINESS
+function togglePanel(id) {
+    const panel = document.getElementById(id);
+    panel.classList.toggle('collapsed');
+}
+
+// ALL ORIGINAL LOGIC KEPT 100% UNCHANGED BELOW
+const slots = ["head","neck","chest","weapon","shield","hands","ring","legs","feet","trinket","ammo"];
+let equipped = {};
+slots.forEach(s => equipped[s] = null);
+
+let sockets = { neck: null, ring: null };
+
+let selectedSlot = null;
+let selectedWeaponCategory = null;
+let selectedMagicCategory = null; 
+let selectedShieldCategory = null;
+let selectedChestCategory = null; 
+let selectedLegsCategory = null;
+let selectedHeadCategory = null;
+let selectedToolCategory = null; 
+
+document.addEventListener('click', function(event) {
+    const isClickInside = event.target.closest('.slot') || 
+                          event.target.closest('.inventory-item') || 
+                          event.target.closest('.preset-btn') || 
+                          event.target.closest('.unequip-btn') ||
+                          event.target.closest('.unequip-all-btn') ||
+                          event.target.closest('.back-btn') ||
+                          event.target.closest('.fav-item') ||
+                          event.target.closest('.gem-item') ||
+                          event.target.closest('.preset-input');
+
+    if (!isClickInside && selectedSlot !== null) {
+        selectedSlot = null;
+        selectedWeaponCategory = null; 
+        selectedMagicCategory = null;
+        selectedShieldCategory = null; 
+        selectedChestCategory = null;
+        selectedLegsCategory = null;
+        selectedHeadCategory = null;
+        selectedToolCategory = null; 
+        
+        const display = document.getElementById("item-display-table");
+        display.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">Select an item to view stats</div>`;
+        
+        update();
+    }
+});
+
+let favourites = JSON.parse(localStorage.getItem("vEquipper_favourites")) || [];
+
+function toggleFavourite(itemName, event) {
+    if(event) event.stopPropagation();
+    const index = favourites.indexOf(itemName);
+    if (index > -1) {
+        favourites.splice(index, 1);
+    } else {
+        favourites.push(itemName);
+    }
+    localStorage.setItem("vEquipper_favourites", JSON.stringify(favourites));
+    update();
+}
+
+const items = [
+    {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
+    {name:"Bronze Helmet", slot:"head", headType: "Heavy armor", defPierce:6, defSlash:6, sellPrice:35, source:"Anvil", craftData: { ingredients: "4 Bronze Bar", smLevel: 8, smXP: 60, dur: "6s" }},
+    {name:"Iron Helmet", slot:"head", headType: "Heavy armor", defPierce:10, defSlash:10, sellPrice:105, source:"Anvil", craftData: { ingredients: "4 Iron Bar", smLevel: 18, smXP: 120, dur: "10s" }},
+    {name:"Steel Helmet", slot:"head", headType: "Heavy armor", defPierce:16, defSlash:16, sellPrice:210, source:"Anvil", craftData: { ingredients: "4 Steel Bar", smLevel: 28, smXP: 220, dur: "14s" }},
+    {name:"Mithril Helmet", slot:"head", headType: "Heavy armor", defPierce:25, defSlash:25, sellPrice:700, source:"Anvil", craftData: { ingredients: "4 Mithril Bar", smLevel: 38, smXP: 620, dur: "18s" }},
+    {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35, source:"Archery Stall in Valen Gate"},
+    {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210, drops:[{u:"Pirate Captain",l:25, loc:"Valen Port"}]},
+    {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "10 Bronze Bar", smLevel: 6, smXP: 60, dur: "18s" }},
+    {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "10 Iron Bar", smLevel: 16, smXP: 300, dur: "28s" }},
+    {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "10 Steel Bar", smLevel: 26, Capability: 550, Platform: "38s" }},
+    {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750, source:"Anvil", craftData: { ingredients: "10 Mithril Bar", smLevel: 36, smXP: 1550, dur: "48s" }},
+    {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Archery Stall in Valen Gate"},
+    {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, Platform:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
+    {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Bronze Bar", smLevel: 2, smXP: 120, dur: "16s" }},
+    {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Iron Bar", smLevel: 12, Capability: 240, Platform: "24s" }},
+    {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Steel Bar", smLevel: 22, smXP: 440, dur: "32s" }},
+    {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400, source:"Anvil", craftData: { ingredients: "8 Mithril Bar", smLevel: 32, smXP: 1240, dur: "40s" }},
+    {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Archery Stall in Valen Gate"},
+    {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, Platform:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10, loc:"Valen Port"}]},
+    {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}]},
+    {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, Platform:2, defIce:1, agi:5, sellPrice:28, source:"Archery Stall in Valen Gate"},
+    {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
+    {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, Platform:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"}]},
+    {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15, loc:"Goblin village south of Valen Gate"}]},
+    {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140, source:"Anvil", craftData: { ingredients: "3 Steel Bar", smLevel: 21, smXP: 165, dur: "14s" }},
+    {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400, drops:[{u:"Elf Scholar",l:37, loc:"Elven Haven east of Valen Gate"}]},
+    {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0, source:"Sword Stall in Valen Gate"},
+    {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", craftData: { ingredients: "6 Bronze Bar", smLevel: 4, smXP: 90, dur: "8s" }},
+    {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}], craftData: { ingredients: "6 Iron Bar", smLevel: 14, smXP: 180, dur: "12s" }},
+    {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", craftData: { ingredients: "6 Steel Bar", smLevel: 24, smXP: 330, dur: "16s" }},
+    {name:"Mithril Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050, source:"Anvil", craftData: { ingredients: "6 Mithril Bar", smLevel: 34, smXP: 930, dur: "20s" }},
+    {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100, drops:[{u:"Skeleton Pioneer",l:90, loc:"West Mine deeper sections"}]},
+    {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70, drops:[{u:"Goblin Berserker",l:9, loc:"Broken village south of Valen Gate"}]},
+    {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420, drops:[{u:"Bandit Leader",l:25, loc:"Forest east of Valen Gate"}]},
+    {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750, drops:[{u:"Skeleton Knight",l:26, loc:"West Mine"}]},
+    {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000, drops:[{u:"Elf Warden",l:120, loc:"Elven Haven east of Valen Gate"}]},
+    {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5, source:"Archery Stall in Valen Gate"},
+    {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80, source:"Archery Stall in Valen Gate"},
+    {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100, drops:[{u:"Goblin Watcher",l:9, loc:"Goblin Cave south-west of Valen Gate"}]},
+    {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250, source:"Archery Stall in Valen Gate"},
+    {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000, source:"Archery Stall in Valen Gate"},
+    {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420, drops:[{u:"Pirate Captain",l:25, loc:"Valen Port"}]},
+    {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2, source:"Wand Stall in Valen Gate"},
+    {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42, source:"Wand Stall in Valen Gate"},
+    {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140, source:"Wand Stall in Valen Gate"},
+    {name:"Birch Ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, icePower:20, sellPrice:140, source:"Wand Stall in Valen Gate"},
+    {name:"Willow fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, firePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, Platform:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
+    {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
+    {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
+    {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350, source:"Armour Stall in Valen Gate", alsoSource:"Shield Stall in Valen Port"},
+    {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750, source:"Shield Stall in Valen Port"},
+    {name:"Elven Shield", slot:"shield", shieldType:"Block", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+    {name:"Novice Ward", slot:"shield", shieldType:"Ward", shieldPower:35, sellPrice:350, source:"Armour Stall in Valen Gate", alsoSource:"Shield Stall in Valen Port"},
+    {name:"Apprentice Ward", slot:"shield", shieldType:"Ward", shieldPower:50, sellPrice:1750, source:"Shield Stall in Valen Port"},
+    {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+    {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400, drops:[{u:"Highwayman",l:28, loc:"West Mine"}]},
+    {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+    {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1, source:"Archery Stall in Valen Gate"},
+    {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3, source:"Archery Stall in Valen Gate"},
+    {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14, source:"Archery Stall in Valen Gate", drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"},{u:"Pirate Rigger",l:10, loc:"Valen Port"},{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
+    {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28, source:"Archery Stall in Valen Gate"},
+    {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14, drops:[{u:"Cow",l:5, loc:"Farmlands south-east of Valen Gate"}]},
+    {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14, drops:[{u:"Goblin",l:1, loc:"Goblin Cave south-east of Valen Gate"},{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
+    {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70, drops:[{u:"Bandit",l:10, loc:"Forest east of Valen Gate"}]},
+    {name:"Titanium Ring", slot:"ring", meleePower:11, rangedPower:9, magicPower:9, sellPrice:350, drops:[{u:"Skeleton Knight",l:26, loc:"West Mine"},{u:"Skeleton Knight (Darklands)",l:67, loc:"Darklands"}]},
+    {name:"Elven Ring", slot:"ring", meleePower:16, rangedPower:13, magicPower:13, sellPrice:1400, drops:[{u:"Elf",l:37, loc:"Elven Haven east of Valen Gate"}]},
+    {name:"Copper Amulet", slot:"neck", meleePower:10, rangedPower:10, magicPower:10, sellPrice:175, source:"Jewellery Stall in Valen Gate"},
+    {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560, source:"Jewellery Stall in Valen Gate"},
+    {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100, source:"Jewellery Stall in Valen Gate"},
+    {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000, source:"Jewellery Stall in Valen Gate"},
+    {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
+    {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:28, drops:[{u:"Hen",l:1, loc:"Farmlands south-east of Valen Gate"},{u:"Rooster",l:1, loc:"Farmlands south-east of Valen Gate"}]},
+    
+    {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0, source:"Mining Stall in Valen gate"},
+    {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28, source:"Mining Stall in Valen gate", drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
+    {name:"Iron Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:12, sellPrice:168, source:"Mining Stall in Valen gate", alsoSource:"Mining Stall in Grave Town"},
+    {name:"Steel Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:25, sellPrice:672, source:"Mining Stall in Grave Town"},
+    {name:"Dwarven Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:50, sellPrice:1400, drops:[{u:"Bandit Mercenary Boss",l:74, loc:"Bandit Camp north-east of Valen Gate"}]},
+    {name:"Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:5, sellPrice:5, source:"Blacksmithing Stall in Valen Gate", alsoSource:"Mining Stall in Grave Town"},
+    {name:"Dwarven Smithing Hammer", slot:"weapon", subType:"Tools", toolType:"Smithing", smithingPower:15, sellPrice:700, drops:[{u:"Goblin Chieftain",l:40, loc:"Goblin village south of Valen Gate"}]},
+    {name:"Crude Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:1, sellPrice:7, source:"Fishing Stall in Valen Port"},
+    {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700, source:"Fishing Stall in Valen port"}
+];
+
+const gems = [
+    { name: "Weak Power Gem", type: "meleePower", multi: 0.20, price: 70, loc: "Mining Tin Rock or Copper Rock" },
+    { name: "Power Gem", type: "meleePower", multi: 0.30, price: 245, loc: "Mining Iron Rock" },
+    { name: "Strong Power Gem", type: "meleePower", multi: 0.40, price: 840, loc: "Mining Coal Rock" },
+    { name: "Fishing Power Gem", type: "fishingPower", flat: 5, price: 1400, loc: "Mining Mithril Rock" },
+    { name: "Weak Magic Power Gem", type: "magicPower", multi: 0.20, price: 70, loc: "Cut out of Rare Trout using Bait Knife" },
+    { name: "Magic Power Gem", type: "magicPower", multi: 0.30, price: 350, loc: "Cut out of Rare Bass using Bait Knife" },
+    { name: "Strong Magic Power Gem", type: "magicPower", multi: 0.40, price: 840, loc: "Cut out of Rare Carp using Bait Knife" }, 
+    { name: "Potion Making Power Gem", type: "potionMakingPower", flat: 5, price: 245, loc: "Cut out of Rare Perch using Bait Knife" },
+    { name: "Smithing Power Gem", type: "smithingPower", flat: 5, price: 1400, loc: "Cut out of Rare Elder Trout using Bait Knife" },
+    { name: "Mining Power Gem", type: "miningPower", flat: 5, price: 3500, loc: "Mining Gold Rock or Volcanic Gold Rock" }
+];
+
+const tooltipDescriptions = {
+    quickDamage: "Quick damage a weapon will do on successful hit.",
+    attackSpeed: "Time between regular attacks. Bigger number means slower attacks.",
+    attackRange: "Determines distance at which a weapon can attack from.",
+    pierceAccuracy: "Increases accuracy with pierce weapons.",
+    slashAccuracy: "Increases accuracy with slash weapons.",
+    meleePower: "Increases all melee weapon damage. Scaled by attack speed so all weapons benefit equally.",
+    rangedPower: "Increases all archery weapon damage. Scaled by attack speed so all weapons benefit equally.",
+    magicPower: "Increases all magic weapon damage. Scaled by attack speed so all weapons benefit equally.",
+    miningPower: "Increases the speed of mining.",
+    smithingPower: "Increases the speed of using an anvil.",
+    potionMakingPower: "Increases the speed of using potion making facilities.",
+    fishingPower: "Increases efficiency while fishing.",
+    fireAccuracy: "Increases accuracy with fire weapons.",
+    iceAccuracy: "Increases accuracy with ice weapons.",
+    lightningAccuracy: "Increases accuracy with lightning weapons.",
+    agility: "Increility speed of the attack animation.",
+    blockPower: "Reduces incoming heavy damage.",
+    wardPower: "Reduces incoming mystical damage.",
+    deflectPower: "Reduces incoming quick damage.",
+    pierceDefence: "Reduces incoming pierce damage.",
+    slashDefence: "Reduces incoming slash damage.",
+    fireDefence: "Reduces incoming fire damage.",
+    iceDefence: "Reduces incoming ice damage.",
+    lightningDefence: "Reduces incoming lightning damage.",
+    totalItemValue: "Total item value the player has currently equipped."
+};
+
+const tooltip = document.getElementById("tooltip");
+
+function hideTooltip() { tooltip.style.display = "none"; }
+
+function moveTooltip(e) {
+    let x = e.clientX + 15;
+    let y = e.clientY + 15;
+    const ttWidth = tooltip.offsetWidth;
+    const ttHeight = tooltip.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    if (x + ttWidth > windowWidth) x = e.clientX - ttWidth - 15;
+    if (y + ttHeight > windowHeight) y = e.clientY - ttHeight - 15;
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+}
+
+function updateItemDisplay(item) {
+    const display = document.getElementById("item-display-table");
+    if (!item) return;
+
+    let html = `<div class="display-title">${item.name}</div>`;
+    const statMap = {
+        damage: "Damage", speed: "Speed", range: "Range",
+        shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
+        accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
+        pierceBonus: "Pierce Accuracy", meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", magicPower: "Magic Power",
+        miningPower: "Mining Power", smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power", fishingPower: "Fishing Power",
+        agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", Platform: "Lightning Defense",
+        firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
+    };
+
+    Object.keys(item).forEach(key => {
+        if (statMap[key]) {
+            let val = item[key];
+            if (item.slot && sockets.hasOwnProperty(item.slot)) {
+                const boosted = calculateBoostedStat(item, key);
+                if (boosted !== val) val = `${val} (${boosted})`;
+            }
+            html += `<div class="display-row"><span class="display-label">${statMap[key]}</span><span class="display-val">${val}</span></div>`;
+        }
+    });
+
+    html += `<div class="display-row" style="border-top:1px solid var(--gold); margin-top:10px;"><span class="display-label" style="color:var(--gold)">Sell Value</span><span class="display-val" style="color:var(--gold)">${item.sellPrice || 0}g</span></div>`;
+    
+    if (item.drops) {
+        html += `<div class="display-drop-header">Dropped By</div>`;
+        item.drops.forEach(d => {
+            html += `<div style="font-size:14px; color:#fff; font-weight:bold; margin-bottom:2px;">• ${d.u} (Lvl ${d.l})</div>`;
+            if(d.loc) html += `<div style="font-size:12px; color:#fca5a5; margin-bottom:10px; padding-left:12px; font-style:italic;">Loc: ${d.loc}</div>`;
+        });
+    }
+
+    if (item.source || item.alsoSource) {
+        html += `<div class="display-vendor-header">Vendor / Crafting</div>`;
+        if (item.source) html += `<div style="font-size:14px; color:#fff; font-weight:bold; margin-bottom:4px;">• ${item.source}</div>`;
+        if (item.alsoSource) html += `<div style="font-size:14px; color:#fff; font-weight:bold; margin-bottom:4px;">• ${item.alsoSource}</div>`;
+    }
+
+    display.innerHTML = html;
+}
+
+function showGemTooltip(e, gem) {
+    let html = `<h4>${gem.name}</h4>`;
+    const statName = gem.type.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    const valueStr = gem.multi ? `+${(gem.multi * 100).toFixed(0)}%` : `+${gem.flat}`;
+    html += `<div class="tt-row"><span class="tt-label">Boost</span><span class="tt-val" style="color:var(--highlight)">${valueStr} ${statName}</span></div>`;
+    html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Worth</span><span class="tt-val">${gem.price}g</span></div>`;
+    html += `<div class="tt-desc" style="margin-top:8px;">Attach this gem to a ring or amulet to enhance your stats.</div>`;
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
+function unequipAll() {
+    hideTooltip();
+    slots.forEach(s => equipped[s] = null);
+    if (sockets.hasOwnProperty("neck")) sockets.neck = null;
+    if (sockets.hasOwnProperty("ring")) sockets.ring = null;
+    selectedSlot = null;
+    update();
+}
+
+function showItemTooltip(e, item) {
+    let html = `<h4>${item.name}</h4>`;
+    const curEquipped = equipped[item.slot];
+    const statMap = {
+        damage: "Damage", speed: "Speed", range: "Range",
+        shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
+        accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
+        pierceBonus: "Pierce Accuracy", meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", magicPower: "Magic Power",
+        miningPower: "Mining Power", smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power", fishingPower: "Fishing Power",
+        agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", Platform: "Lightning Defense",
+        firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
+    };
+
+    if (curEquipped && curEquipped !== item) {
+        html += `<div style="font-size: 11px; color: var(--highlight); margin-bottom: 5px; border-bottom: 1px solid var(--accent);">vs ${curEquipped.name}</div>`;
+    }
+
+    Object.keys(statMap).forEach(key => {
+        if (item[key] !== undefined || (curEquipped && curEquipped[key] !== undefined)) {
+            let val = item[key] || 0;
+            let compClass = "";
+            let diffStr = "";
+            if (item.slot && sockets.hasOwnProperty(item.slot)) val = calculateBoostedStat(item, key);
+            if (curEquipped && curEquipped !== item) {
+                let oldVal = curEquipped[key] || 0;
+                if (curEquipped.slot && sockets.hasOwnProperty(curEquipped.slot)) oldVal = calculateBoostedStat(curEquipped, key);
+                let diff = val - oldVal;
+                if (key === "speed") {
+                    if (diff < 0) { compClass = "comp-pos"; diffStr = ` (${diff})`; }
+                    else if (diff > 0) { compClass = "comp-neg"; diffStr = ` (+${diff})`; }
+                } else {
+                    if (diff > 0) { compClass = "comp-pos"; diffStr = ` (+${diff})`; }
+                    else if (diff < 0) { compClass = "comp-neg"; diffStr = ` (${diff})`; }
+                }
+            }
+            if (item[key] !== undefined || diffStr !== "") html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val ${compClass}">${val}${diffStr}</span></div>`;
+        }
+    });
+
+    let priceClass = "";
+    let priceDiff = "";
+    if (curEquipped && curEquipped !== item) {
+        let diff = (item.sellPrice || 0) - (curEquipped.sellPrice || 0);
+        if (diff > 0) { priceClass = "comp-pos"; priceDiff = ` (+${diff})`; }
+        else if (diff < 0) { priceClass = "comp-neg"; priceDiff = ` (${diff})`; }
+    }
+    html += `<div class="tt-row" style="color:var(--gold); margin-top:5px;"><span class="tt-label" style="color:var(--gold)">Value</span><span class="tt-val ${priceClass}">${item.sellPrice || 0}g${priceDiff}</span></div>`;
+    
+    if (item.drops) item.drops.forEach(d => html += `<div class="tt-source tt-source-drop">Dropped by ${d.u}, level ${d.l}</div>`);
+    if (item.source) html += `<div class="tt-source tt-source-vendor">Source: ${item.source}</div>`;
+    if (item.alsoSource) html += `<div class="tt-source tt-source-vendor">Source: ${item.alsoSource}</div>`;
+
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
+function showEquippedSlotTooltip(e, slotId) {
+    const item = equipped[slotId];
+    if (!item) { hideTooltip(); return; }
+    let html = `<h4>Slot: ${slotId.charAt(0).toUpperCase() + slotId.slice(1)}</h4>`;
+    html += `<div style="color:var(--gold); font-size:12px; margin-bottom:10px;">${item.name}</div>`;
+    const statMap = {
+        damage: "Damage", speed: "Speed", range: "Range",
+        shieldPower: item.shieldType ? item.shieldType + " Power" : "Shield Power",
+        accuracy: item.accType ? item.accType + " Accuracy" : "Accuracy",
+        pierceBonus: "Pierce Accuracy", meleePower: "Melee Power", 
+        rangedPower: "Ranged Power", magicPower: "Magic Power",
+        miningPower: "Mining Power", smithingPower: "Smithing Power",
+        potionPower: "Potion Making Power", fishingPower: "Fishing Power",
+        agi: "Agility", defPierce: "Pierce Defense", defSlash: "Slash Defense",
+        defFire: "Fire Defense", defIce: "Ice Defense", Platform: "Lightning Defense",
+        firePower: "Fire Accuracy", icePower: "Ice Accuracy", lightPower: "Lightning Accuracy"
+    };
+
+    Object.keys(item).forEach(key => {
+        if (statMap[key]) html += `<div class="tt-row"><span class="tt-label">${statMap[key]}</span><span class="tt-val">${calculateBoostedStat(item, key)}</span></div>`;
+    });
+    if (sockets[slotId]) html += `<div style="border-top:1px solid var(--accent); margin-top:8px; padding-top:5px; font-size:11px; color:var(--highlight)">Gem: ${sockets[slotId].name}</div>`;
+    tooltip.innerHTML = html;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
+function calculateBoostedStat(item, statKey) {
+    let base = item[statKey] || 0;
+    const gem = sockets[item.slot];
+    if (!item.slot || !gem) return base;
+    const effectiveStatKey = (statKey === "potionPower") ? "potionMakingPower" : statKey;
+    if (gem.type === effectiveStatKey) {
+        if (gem.multi) base *= (1 + gem.multi);
+        if (gem.flat) base += gem.flat;
+    }
+    return Number(base.toFixed(1));
+}
+
+function showStatTooltip(e, statKey) {
+    const desc = tooltipDescriptions[statKey];
+    if (!desc) return;
+    const label = e.currentTarget.querySelector('.stat-label').innerText;
+    tooltip.innerHTML = `<h4>${label}</h4><div class="tt-desc">${desc}</div>`;
+    tooltip.style.display = "block";
+    moveTooltip(e);
+}
+
+document.querySelectorAll('.stat-row[data-stat]').forEach(row => {
+    row.addEventListener('mouseenter', (e) => {
+        const stat = e.currentTarget.getAttribute('data-stat');
+        if (stat === "shieldPower") {
+            const shield = equipped["shield"];
+            const type = (shield && shield.shieldType) ? shield.shieldType.toLowerCase() : "block";
+            showStatTooltip(e, type + "Power");
+        } else { showStatTooltip(e, stat); }
+    });
+    row.addEventListener('mousemove', moveTooltip);
+    row.addEventListener('mouseleave', hideTooltip);
+});
+
+function updateInventoryUI() {
+    const container = document.getElementById("inventory-container");
+    const unequipArea = document.getElementById("unequip-area");
+    const socketArea = document.getElementById("socket-area-relocated");
+    const instruction = document.getElementById("instruction-text");
+    container.innerHTML = ""; unequipArea.innerHTML = ""; socketArea.innerHTML = "";
+
+    if (!selectedSlot) {
+        instruction.innerText = "Click a character slot to browse items...";
+        container.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 20px;">NO SLOT SELECTED</div>`;
+        return;
+    }
+
+    if (selectedSlot === "weapon" && !selectedWeaponCategory) {
+        instruction.innerText = "SELECT MAIN HAND CATEGORY";
+        ["1H Weapon", "2H Weapon", "Bows", "Magic", "Tools"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.style.borderLeft = "5px solid var(--highlight)";
+            div.innerHTML = `<strong>${cat}</strong>`; div.onclick = () => { hideTooltip(); selectedWeaponCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "weapon" && selectedWeaponCategory === "Magic" && !selectedMagicCategory) {
+        const backBtn = document.createElement("div"); backBtn.className = "back-btn"; backBtn.innerText = `← BACK TO MAIN HAND`;
+        backBtn.onclick = () => { hideTooltip(); selectedWeaponCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn); instruction.innerText = "SELECT MAGIC TYPE";
+        ["Magic 1H", "Magic 2H"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.style.borderLeft = "5px solid var(--highlight)";
+            div.innerHTML = `<strong>${cat}</strong>`; div.onclick = () => { hideTooltip(); selectedMagicCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "weapon" && selectedWeaponCategory === "Tools" && !selectedToolCategory) {
+        const backBtn = document.createElement("div"); backBtn.className = "back-btn"; backBtn.innerText = `← BACK TO MAIN HAND`;
+        backBtn.onclick = () => { hideTooltip(); selectedWeaponCategory = null; updateInventoryUI(); };
+        container.appendChild(backBtn); instruction.innerText = "SELECT TOOL CATEGORY";
+        ["Fishing tools", "Smithing", "Mining Tools"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.style.borderLeft = "5px solid var(--highlight)";
+            div.innerHTML = `<strong>${cat}</strong>`; div.onclick = () => { hideTooltip(); selectedToolCategory = cat; updateInventoryUI(); };
+            container.appendChild(div);
+        });
+        return;
+    }
+
+    if ((selectedSlot === "weapon" && selectedWeaponCategory) || (selectedSlot === "head" && selectedHeadCategory) || (selectedSlot === "chest" && selectedChestCategory) || (selectedSlot === "legs" && selectedLegsCategory) || (selectedSlot === "shield" && selectedShieldCategory)) {
+        const backBtn = document.createElement("div"); backBtn.className = "back-btn"; backBtn.innerText = `← BACK`;
+        backBtn.onclick = () => { 
+            hideTooltip();
+            if (selectedMagicCategory) selectedMagicCategory = null;
+            else if (selectedToolCategory) selectedToolCategory = null;
+            else if (selectedWeaponCategory) selectedWeaponCategory = null;
+            else if (selectedHeadCategory) selectedHeadCategory = null;
+            else if (selectedChestCategory) selectedChestCategory = null;
+            else if (selectedLegsCategory) selectedLegsCategory = null;
+            else if (selectedShieldCategory) selectedShieldCategory = null;
+            updateInventoryUI(); 
+        };
+        container.appendChild(backBtn);
+    }
+
+    if (selectedSlot === "head" && !selectedHeadCategory) {
+        instruction.innerText = "SELECT ARMOR TYPE";
+        ["Light armor", "Heavy armor"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { hideTooltip(); selectedHeadCategory = cat; updateInventoryUI(); }; container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "chest" && !selectedChestCategory) {
+        instruction.innerText = "SELECT ARMOR TYPE";
+        ["Light armor", "Heavy armor"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { hideTooltip(); selectedChestCategory = cat; updateInventoryUI(); }; container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "legs" && !selectedLegsCategory) {
+        instruction.innerText = "SELECT ARMOR TYPE";
+        ["Light armor", "Heavy armor"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { hideTooltip(); selectedLegsCategory = cat; updateInventoryUI(); }; container.appendChild(div);
+        });
+        return;
+    }
+
+    if (selectedSlot === "shield" && !selectedShieldCategory) {
+        instruction.innerText = "SELECT SHIELD CATEGORY";
+        ["Block", "Ward", "Deflect"].forEach(cat => {
+            const div = document.createElement("div"); div.className = "inventory-item"; div.innerHTML = `<strong>${cat}</strong>`;
+            div.onclick = () => { hideTooltip(); selectedShieldCategory = cat; updateInventoryUI(); }; container.appendChild(div);
+        });
+        return;
+    }
+
+    let displayCategory = selectedWeaponCategory;
+    if (selectedMagicCategory) displayCategory = selectedMagicCategory;
+    if (selectedToolCategory) displayCategory = selectedToolCategory;
+    let slotLabel = selectedSlot.toUpperCase();
+    if (selectedSlot === "weapon") slotLabel = "Main Hand";
+    instruction.innerText = `BROWSING: ${slotLabel.toUpperCase()} ${displayCategory ? '(' + displayCategory + ')' : ''}`;
+
+    if (equipped[selectedSlot]) {
+        if (selectedSlot === "neck" || selectedSlot === "ring") {
+            const sBox = document.createElement("div"); sBox.className = "socket-container";
+            const currentGem = sockets[selectedSlot];
+            if (currentGem) {
+                sBox.innerHTML = `<div class="socket-title">EQUIPPED GEM (1/1 Max)</div>`;
+                const gDiv = document.createElement("div"); gDiv.className = "gem-item"; gDiv.style.borderColor = "var(--highlight)";
+                gDiv.innerHTML = `💎 ${currentGem.name} <span style="float:right; color:#ef4444; font-weight:bold;">REMOVE</span>`;
+                gDiv.onmouseenter = (e) => showGemTooltip(e, currentGem); gDiv.onmousemove = (e) => moveTooltip(e); gDiv.onmouseleave = () => hideTooltip();
+                gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = null; updateItemDisplay(equipped[selectedSlot]); update(); };
+                sBox.appendChild(gDiv);
+            } else {
+                sBox.innerHTML = `<div class="socket-title">ATTACH GEM (Empty Slot)</div>`;
+                const scrollWrapper = document.createElement("div"); scrollWrapper.className = "gem-scroll-area";
+                gems.forEach(gem => {
+                    const gDiv = document.createElement("div"); gDiv.className = "gem-item";
+                    gDiv.innerText = `+ ${gem.name} (+${gem.multi ? gem.multi*100+'%' : gem.flat})`;
+                    gDiv.onmouseenter = (e) => showGemTooltip(e, gem); gDiv.onmousemove = (e) => moveTooltip(e); gDiv.onmouseleave = () => hideTooltip();
+                    gDiv.onclick = () => { hideTooltip(); sockets[selectedSlot] = gem; updateItemDisplay(equipped[selectedSlot]); update(); };
+                    scrollWrapper.appendChild(gDiv);
+                });
+                sBox.appendChild(scrollWrapper);
+            }
+            socketArea.appendChild(sBox);
+        }
+        const uBtn = document.createElement("div"); uBtn.className = "unequip-btn"; uBtn.innerText = `Remove ${equipped[selectedSlot].name}`;
+        uBtn.onclick = () => { hideTooltip(); equipped[selectedSlot] = null; if(sockets.hasOwnProperty(selectedSlot)) sockets[selectedSlot] = null; update(); };
+        unequipArea.appendChild(uBtn);
+    }
+
+    const validItems = items.filter(i => {
+        if (selectedSlot === "weapon") {
+            if (selectedMagicCategory) return i.slot === "weapon" && i.subType === selectedMagicCategory;
+            if (selectedToolCategory) return i.slot === "weapon" && i.subType === "Tools" && i.toolType === selectedToolCategory;
+            return i.slot === "weapon" && i.subType === selectedWeaponCategory;
+        }
+        if (selectedSlot === "shield") return i.slot === "shield" && i.shieldType === selectedShieldCategory;
+        if (selectedSlot === "head") return i.slot === "head" && i.headType === selectedHeadCategory;
+        if (selectedSlot === "chest") return i.slot === "chest" && i.chestType === selectedChestCategory;
+        if (selectedSlot === "legs") return i.slot === "legs" && i.legsType === selectedLegsCategory;
+        return i.slot === selectedSlot;
+    });
+
+    validItems.sort((a, b) => {
+        const aFav = favourites.includes(a.name) ? 1 : 0; const bFav = favourites.includes(b.name) ? 1 : 0;
+        if (aFav !== bFav) return bFav - aFav; return (a.sellPrice || 0) - (b.sellPrice || 0);
+    });
+
+    validItems.forEach(item => {
+        const div = document.createElement("div"); div.className = "inventory-item"; if (equipped[selectedSlot] === item) div.style.borderColor = "var(--accent)";
+        const isFav = favourites.includes(item.name);
+        div.innerHTML = `<strong>${item.name}</strong><span class="fav-star ${isFav ? 'active' : ''}" onclick="toggleFavourite('${item.name}', event)">★</span>`;
+        div.onmouseenter = (e) => showItemTooltip(e, item); div.onmousemove = (e) => moveTooltip(e); div.onmouseleave = () => hideTooltip();
+        div.onclick = () => { hideTooltip(); equipped[selectedSlot] = item; updateItemDisplay(item); update(); };
+        container.appendChild(div);
+    });
+}
+
+function updateFavouritesWindow() {
+    const favList = document.getElementById("favourites-list"); favList.innerHTML = "";
+    if (favourites.length === 0) { favList.innerHTML = `<div style="text-align:center; opacity:0.5; font-size:12px; margin-top:50px;">No Favourites Selected</div>`; return; }
+    favourites.forEach(favName => {
+        const item = items.find(i => i.name === favName); if (!item) return;
+        const div = document.createElement("div"); div.className = "fav-item";
+        div.innerHTML = `<div><strong style="color:var(--highlight)">${item.name}</strong><div style="font-size:10px; color:var(--accent)">${item.slot.toUpperCase()}</div></div><span class="fav-star active" onclick="toggleFavourite('${favName}', event)">★</span>`;
+        div.onmouseenter = (e) => showItemTooltip(e, item); div.onmousemove = (e) => moveTooltip(e); div.onmouseleave = () => hideTooltip();
+        div.onclick = () => { hideTooltip(); selectedSlot = item.slot; equipped[item.slot] = item; updateItemDisplay(item); update(); };
+        favList.appendChild(div);
+    });
+}
+
+function updateHuntingLog() {
+    const logList = document.getElementById("hunting-log-list"); logList.innerHTML = "";
+    let dropFound = false;
+    slots.forEach(slot => {
+        const item = equipped[slot];
+        if (item && item.drops) {
+            item.drops.forEach(d => {
+                dropFound = true; const div = document.createElement("div"); div.className = "hunt-entry";
+                div.innerHTML = `<div class="hunt-enemy">${d.u} (Lvl ${d.l})</div><div class="hunt-loc">Location: ${d.loc || "Unknown"}</div><div class="hunt-item-ref">Drops: ${item.name}</div>`;
+                logList.appendChild(div);
+            });
+        }
+        if (sockets[slot]) {
+            dropFound = true; const gem = sockets[slot]; const div = document.createElement("div"); div.className = "hunt-entry"; div.style.borderColor = "var(--gold)"; div.style.background = "rgba(245, 158, 11, 0.1)";
+            div.innerHTML = `<div class="hunt-enemy" style="color:var(--gold)">${gem.name} (Socketed)</div><div class="hunt-loc" style="color:var(--highlight)">Source: ${gem.loc}</div><div class="hunt-item-ref" style="opacity:1">Equipped in: ${item ? item.name : slot.toUpperCase()}</div>`;
+            logList.appendChild(div);
+        }
+    });
+    if (!dropFound) logList.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">No monsters/resources found for current gear.</div>`;
+}
+
+function updateCraftingLog() {
+    const craftList = document.getElementById("crafting-log-list"); craftList.innerHTML = "";
+    let craftFound = false; let totals = {};
+    slots.forEach(slot => {
+        const item = equipped[slot];
+        if (item && item.craftData) {
+            craftFound = true;
+            const div = document.createElement("div"); div.className = "craft-entry";
+            div.innerHTML = `<div class="hunt-enemy" style="color:#10b981;">${item.name}</div><div class="craft-ingredients">Requires: ${item.craftData.ingredients}</div><div class="craft-details">Smith Level: ${item.craftData.smLevel} | XP: ${item.craftData.smXP} | Time: ${item.craftData.dur}</div>`;
+            craftList.appendChild(div);
+            item.craftData.ingredients.split(',').forEach(ing => {
+                const parts = ing.trim().split(' '); const amount = parseInt(parts[0]); const name = parts.slice(1).join(' ');
+                if (amount && name) totals[name] = (totals[name] || 0) + amount;
+            });
+        }
+    });
+    if (!craftFound) craftList.innerHTML = `<div style="text-align:center; opacity:0.3; margin-top:100px; font-size: 14px;">No craftable items currently equipped.</div>`;
+    else {
+        const summaryDiv = document.createElement("div"); summaryDiv.style.borderTop = "2px solid #10b981"; summaryDiv.style.marginTop = "15px"; summaryDiv.style.paddingTop = "10px";
+        let summaryHtml = `<div style="color:var(--highlight); font-weight:bold; font-size:14px; text-transform:uppercase; margin-bottom:8px;">Total Materials Needed:</div>`;
+        for (const [mat, count] of Object.entries(totals)) summaryHtml += `<div style="display:flex; justify-content:space-between; font-size:13px; color:#fff; padding:2px 0;"><span>${mat}</span><span style="color:#10b981; font-weight:bold;">x${count}</span></div>`;
+        summaryDiv.innerHTML = summaryHtml; craftList.appendChild(summaryDiv);
+    }
+}
+
+function update() {
+    const weapon = equipped["weapon"];
+    const is2H = weapon && weapon.isTwoHanded; const isBow = weapon && weapon.subType === "Bows";
+    const isMagic = weapon && (weapon.subType === "Magic 1H" || weapon.subType === "Magic 2H"); const is1H = weapon && !weapon.isTwoHanded; 
+    slots.forEach(s => {
+        const el = document.getElementById(s); el.classList.toggle("filled", !!equipped[s]); el.classList.toggle("selected", selectedSlot === s);
+        let shouldLock = false; if (is2H && s === "shield") shouldLock = true;
+        if (s === "ammo") { if (isMagic || (is2H && !isBow) || is1H) shouldLock = true; }
+        if (shouldLock) { el.classList.add("locked"); el.innerText = "LOCKED"; }
+        else { el.classList.remove("locked"); let displayText = s === "weapon" ? "Main Hand" : s; if (equipped[s]) { displayText = `<div>${equipped[s].name}</div>`; if (sockets[s]) displayText += `<div style="color:var(--highlight); font-size:10px; margin-top:4px;">${sockets[s].name}</div>`; } el.innerHTML = displayText; }
+    });
+    const sh = equipped["shield"];
+    document.getElementById("lbl-dmg").innerText = weapon ? (weapon.dmgType || "Weapon") + " Damage" : "Damage";
+    document.getElementById("val-dmg").innerText = weapon && weapon.damage ? weapon.damage : "-";
+    document.getElementById("val-spd").innerText = weapon && weapon.speed ? weapon.speed : "0";
+    document.getElementById("val-rng").innerText = weapon && weapon.range ? weapon.range : "0";
+    document.getElementById("lbl-shield").innerText = sh && !is2H ? (sh.shieldType || "Shield") + " Power" : "Shield Power";
+    document.getElementById("val-shield").innerText = sh && !is2H ? sh.shieldPower : "-";
+    let s = { melee:0, ranged:0, magic:0, agi:0, worth:0, fPow:0, iPow:0, lPow:0, pDef:0, sDef:0, fDef:0, iDef:0, lDef:0, mining:0, smithing:0, potion:0, fishing:0 };
+    slots.forEach(slot => {
+        const item = equipped[slot]; if(!item) return;
+        let isSlotLocked = false; if (is2H && slot === "shield") isSlotLocked = true; if (slot === "ammo" && (isMagic || (is2H && !isBow) || is1H)) isSlotLocked = true;
+        if (isSlotLocked) { s.worth += (item.sellPrice || 0); return; }
+        s.melee += calculateBoostedStat(item, "meleePower"); s.ranged += calculateBoostedStat(item, "rangedPower"); s.magic += calculateBoostedStat(item, "magicPower");
+        s.mining += calculateBoostedStat(item, "miningPower"); s.smithing += calculateBoostedStat(item, "smithingPower"); s.potion += calculateBoostedStat(item, "potionPower"); 
+        s.fishing += calculateBoostedStat(item, "fishingPower"); s.agi += (item.agi || 0); s.fPow += (item.firePower || 0); s.iPow += (item.icePower || 0); s.lPow += (item.lightPower || 0);
+        s.pDef += (item.defPierce || 0); s.sDef += (item.defSlash || 0); s.fDef += (item.defFire || 0); s.iDef += (item.defIce || 0); s.lDef += (item.defLight || 0);
+        s.worth += (item.sellPrice || 0); if (sockets[slot]) s.worth += sockets[slot].price;
+    });
+    let totalPierceAcc = 0; let totalSlashAcc = 0; if (weapon) { if (weapon.accType === "Pierce") totalPierceAcc += (weapon.accuracy || 0); if (weapon.accType === "Slash") totalSlashAcc += (weapon.accuracy || 0); }
+    if (equipped["ammo"] && equipped["ammo"].pierceBonus && !isMagic && (!is2H || isBow) && !is1H) totalPierceAcc += equipped["ammo"].pierceBonus;
+    document.getElementById("val-acc-pierce").innerText = totalPierceAcc; document.getElementById("val-acc-slash").innerText = totalSlashAcc; 
+    document.getElementById("val-melee").innerText = Number(s.melee.toFixed(1)); document.getElementById("val-ranged").innerText = Number(s.ranged.toFixed(1)); document.getElementById("val-magic").innerText = Number(s.magic.toFixed(1));
+    document.getElementById("val-mining").innerText = Number(s.mining.toFixed(1)); document.getElementById("val-smithing").innerText = Number(s.smithing.toFixed(1)); document.getElementById("val-potion").innerText = Number(s.potion.toFixed(1));
+    document.getElementById("val-fishing").innerText = Number(s.fishing.toFixed(1)); document.getElementById("val-pow-fire").innerText = s.fPow; document.getElementById("val-pow-ice").innerText = s.iPow;
+    document.getElementById("val-pow-light").innerText = s.lPow; document.getElementById("val-agi").innerText = s.agi; document.getElementById("val-def-pierce").innerText = s.pDef;
+    document.getElementById("val-def-slash").innerText = s.sDef; document.getElementById("val-def-fire").innerText = s.fDef; document.getElementById("val-def-ice").innerText = s.iDef;
+    document.getElementById("val-def-light").innerText = s.lDef; document.getElementById("val-total-worth").innerText = s.worth.toLocaleString() + "g";
+    updateInventoryUI(); updateFavouritesWindow(); updateHuntingLog(); updateCraftingLog();
+}
+
+function savePresetNames() {
+    const names = []; for (let i = 1; i <= 8; i++) { const input = document.getElementById(`preset-name-${i}`); if(input) names.push(input.value); }
+    localStorage.setItem("vEquipper_presetNames", JSON.stringify(names));
+}
+function loadPresetNames() {
+    const saved = localStorage.getItem("vEquipper_presetNames"); if (saved) { JSON.parse(saved).forEach((name, i) => { const input = document.getElementById(`preset-name-${i+1}`); if(input) input.value = name || ""; }); }
+}
+function savePreset(slotIndex) {
+    const presetData = { equipped: {}, sockets: {} }; slots.forEach(s => { presetData.equipped[s] = equipped[s] ? equipped[s].name : null; });
+    Object.keys(sockets).forEach(s => { presetData.sockets[s] = sockets[s] ? sockets[s].name : null; });
+    localStorage.setItem(`vEquipper_preset_${slotIndex}`, JSON.stringify(presetData)); alert(`Preset saved to Slot ${slotIndex}!`);
+}
+function loadPreset(slotIndex) {
+    const saved = localStorage.getItem(`vEquipper_preset_${slotIndex}`); if (!saved) { alert("Slot is empty!"); return; }
+    const presetData = JSON.parse(saved); slots.forEach(s => { const itemName = presetData.equipped[s]; equipped[s] = itemName ? items.find(i => i.name === itemName) : null; });
+    Object.keys(sockets).forEach(s => { const gemName = presetData.sockets[s]; sockets[s] = gemName ? gems.find(g => g.name === gemName) : null; });
+    update();
+}
+
+slots.forEach(s => {
+    const el = document.getElementById(s);
+    el.addEventListener('click', (e) => {
+        e.stopPropagation(); hideTooltip(); 
+        if (selectedSlot !== s) { 
+            selectedSlot = s; selectedWeaponCategory = null; selectedMagicCategory = null; selectedShieldCategory = null; 
+            selectedChestCategory = null; selectedLegsCategory = null; selectedHeadCategory = null; selectedToolCategory = null; 
+        }
+        if (equipped[s]) updateItemDisplay(equipped[s]); update();
+    });
+    el.addEventListener('mouseenter', (e) => showEquippedSlotTooltip(e, s)); el.addEventListener('mousemove', moveTooltip); el.addEventListener('mouseleave', hideTooltip);
+});
+
+loadPresetNames();
+update();
+</script>
+</body>
+</html>
