@@ -95,6 +95,12 @@ body {
     border: 1px solid var(--border-color);
     word-wrap: break-word;
 }
+/* Fix for tables on phone */
+.message table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
 
 .message img {
     max-width: 100%;
@@ -313,6 +319,13 @@ button:hover {
     }
     .sidebar {
         width: 90%;
+    }
+    /* This part fixes the button cutoff */
+    .input-area {
+        flex-direction: column;
+    }
+    .input-area button {
+        width: 100%;
     }
 }
 /* --- SIDEBAR & LAYOUT END --- */
