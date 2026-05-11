@@ -95,11 +95,12 @@ body {
     border: 1px solid var(--border-color);
     word-wrap: break-word;
 }
-/* Fix for tables on phone */
+/* Fix: Prevents tables inside messages from breaking the mobile screen */
 .message table {
     display: block;
     width: 100%;
     overflow-x: auto;
+    border-collapse: collapse;
 }
 
 .message img {
@@ -320,14 +321,29 @@ button:hover {
     .sidebar {
         width: 90%;
     }
-    /* This part fixes the button cutoff */
+/* This part fixes the button cutoff */
     .input-area {
         flex-direction: column;
     }
     .input-area button {
         width: 100%;
     }
-}
+
+    /* This part fixes the Goblin table/image overflow */
+    .message {
+        max-width: 100%; 
+    }
+    /* Forces the Image and Table to stack on top of each other */
+    .message div {
+        display: flex;
+        flex-direction: column !important;
+    }
+    /* Makes sure the table stays inside the bubble and allows swiping */
+    .message table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }}
 /* --- SIDEBAR & LAYOUT END --- */
 </style>
 </head>
