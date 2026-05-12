@@ -312,14 +312,8 @@ button:hover {
     width: 100%;
 }
 
-/* MOBILE FIX: FULL SCREEN CHAT WINDOW */
+/* PHONE COMPATIBILITY: FORCES IMAGE ABOVE TEXT & TABLES */
 @media (max-width: 950px) {
-    /* 1. Reset body to prevent accidental side-scrolling */
-    body {
-        padding-bottom: 0;
-        overflow-x: hidden;
-    }
-
     .main-layout {
         flex-direction: column;
         align-items: center;
@@ -327,39 +321,54 @@ button:hover {
         margin: 0;
     }
 
-    /* 2. THE CHAT WINDOW: Takes on the full size of the phone screen */
+    /* THE CHAT WINDOW: Full screen height/width */
     .chat-container {
-        width: 100vw !important;  /* Full screen width */
-        height: 100dvh !important; /* Full screen height (dynamic) */
+        width: 100vw !important;
+        height: 100dvh !important;
         max-width: 100vw !important;
         margin: 0 !important;
-        border-radius: 0 !important; /* Removes corners for a clean phone app look */
-        border-left: none !important;
-        border-right: none !important;
-        position: fixed; /* Locks it to the screen */
+        border-radius: 0 !important;
+        position: fixed;
         top: 0;
         left: 0;
         z-index: 100;
     }
 
-    /* 3. Adjust Internal Chat Box for the new height */
-    #chat-box {
-        padding: 15px !important;
-        flex-grow: 1 !important;
-    }
-
-    /* 4. Fix Message Bubble Widths */
+    /* IMAGE-ABOVE-TEXT FIX: Targets the Goblin/Item containers */
+    .message > div[style*="display: flex"], 
+    .message .alice-msg > div,
     .message {
-        max-width: 90% !important;
+        display: flex !important;
+        flex-direction: column !important; /* Forces vertical stacking */
+        align-items: center !important;
     }
 
-    /* 5. Keeps Sidebar and Info below the fixed chat (if you scroll past) */
+    /* Ensures the image doesn't get squashed and stays at the top */
+    .message img {
+        order: -1 !important; /* Forces image to the top regardless of HTML order */
+        width: 180px !important; 
+        max-width: 80% !important;
+        height: auto !important;
+        margin-bottom: 15px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Fixes the table overflow so you can see all stats by swiping */
+    .message table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        border-collapse: collapse;
+    }
+
     .sidebar, .info-container {
-        display: none; /* Recommended for "Chat App" feel on mobile, or remove this line to keep them below */
+        display: none; /* Keeps it clean for full-screen chat */
     }
 
     .input-area {
-        padding-bottom: 25px !important; /* Extra space for phone home-bars */
+        padding-bottom: 25px !important;
     }
 }
 /* --- SIDEBAR & LAYOUT END --- */
