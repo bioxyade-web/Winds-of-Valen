@@ -87,15 +87,34 @@ body {
     100% { transform: translate(-100%, 0); }
 }
 
+/* The new master layout */
+.layout-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile default: 1 column */
+    gap: 20px;
+    width: 95%;
+    max-width: 1100px;
+    margin-top: 30px;
+}
+
+/* Desktop upgrade: 2 columns top, 1 column bottom */
+@media (min-width: 900px) {
+    .layout-grid {
+        grid-template-columns: 1.6fr 1fr;
+    }
+    .full-width {
+        grid-column: 1 / -1; /* Makes guestbook span both columns */
+    }
+}
+
+/* This is your original container look, but now it fits inside the grid */
 .container {
-    width: 92%;
-    max-width: 800px;
+    width: 100%;
     background: var(--panel-bg);
     border: 2px solid var(--border-color);
     border-radius: 12px;
     padding: clamp(20px, 5vw, 40px);
     box-shadow: 0 15px 50px rgba(0,0,0,0.9);
-    margin-top: 30px;
 }
 
 .hero-stat-card {
@@ -205,7 +224,7 @@ h2 {
 <body>
 
 <div class="header-section">
-    <h1 class="title">Winds of Valen, Alice's spot</h1>
+    <h1 class="title">Winds of Valen Wiki</h1>
     <div class="status-bar">
         <span>⚔️ Server: <span id="server-status" style="color: #4ade80;">Active</span></span>
         <span>🕒 <span id="game-time">--:--</span></span>
@@ -218,45 +237,55 @@ h2 {
     </div>
 </div>
 
-<div class="container">
-    <h2>🛡️ Traveler's Dashboard</h2>
-    <p>Hey there! I'm Alice. I spend most of my time exploring these lands and meeting fellow adventurers. Whether you're here to sharpen your gear or uncover new items, I've put together this website to help you find your way through <strong>Winds of Valen</strong>.</p>
+<div class="layout-grid">
+    <div class="container">
+        <h2>🛡️ Traveler's Dashboard</h2>
+        <p>Hey there! I'm Alice. I spend most of my time exploring these lands and meeting fellow adventurers. Whether you're here to sharpen your gear or uncover new items, I've put together this website to help you find your way through <strong>Winds of Valen</strong>.</p>
 
-    <div class="hero-stat-card">
-        <span class="stat-label">Heroes Currently Adventuring</span>
-        <span class="stat-value" id="steam-count">...</span>
-        <div class="stat-description">
-            This live count is fetched directly from the Steam Web API for App ID 4135880, processed through a high-speed real-time proxy to ensure accuracy.
+        <div class="hero-stat-card">
+            <span class="stat-label">Heroes Currently Adventuring</span>
+            <span class="stat-value" id="steam-count">...</span>
+            <div class="stat-description">
+                This live count is fetched directly from the Steam Web API for App ID 4135880.
+            </div>
+        </div>
+
+        <div class="nav-grid">
+            <a href="equipper.html" class="nav-card">
+                <div><h3>⚔️ The Equipper</h3></div>
+                <div class="btn">Optimize Gear</div>
+            </a>
+            <a href="ai.html" class="nav-card">
+                <div><h3>🔮 AI Alice Bot</h3></div>
+                <div class="btn">Talk to Alice</div>
+            </a>
         </div>
     </div>
 
-    <div class="nav-grid">
-        <a href="equipper.html" class="nav-card">
-            <div>
-                <h3>⚔️ The Equipper</h3>
-                <p>Plan your perfect build! Test gear sets and see your final stats.</p>
-            </div>
-            <div class="btn">Optimize Gear</div>
-        </a>
-        <a href="ai.html" class="nav-card">
-            <div>
-                <h3>🔮 AI Alice Bot</h3>
-                <p>Ask me anything! I am your search encyclopedia for items recipes and more.</p>
-            </div>
-            <div class="btn">Talk to Alice</div>
-        </a>
+    <div class="container">
+        <h2>Did you know ?</h2>
+        <p style="font-size: 14px; line-height: 1.8;">
+            • These pages are optimized for mobile 😮?<br>
+            • You can download the bot for offline use ?<br>
+            • This is NOT the official wiki ?<br>
+            • We keep a guestbook <strong>Friendly</strong> ?<br>
+            • Drop tables change almost every update ?<br>
+            • <strong>Excessive language</strong> and <strong>Disrespect</strong> will get this project stopped !<br>
+            • Winds of Valen is a 2 Developer team.<br>
+            • The AI bot has a little of "basic chat" haha.<br>
+        </p>
     </div>
-</div>
 
-<div class="container">
-    <h2>📜 Global Guestbook</h2>
-    <input type="text" id="guest-name" class="guestbook-input" placeholder="Your Name...">
-    <textarea id="guest-msg" class="guestbook-input" placeholder="Your Message..." rows="2"></textarea>
-    <button onclick="addEntry()" id="submit-btn" class="btn" style="width: 100%;">Sign the Guestbook</button>
+    <div class="container full-width">
+        <h2>📜 Global Guestbook</h2>
+        <input type="text" id="guest-name" class="guestbook-input" placeholder="Your Name...">
+        <textarea id="guest-msg" class="guestbook-input" placeholder="Your Message..." rows="2"></textarea>
+        <button onclick="addEntry()" id="submit-btn" class="btn" style="width: 100%;">Sign the Guestbook</button>
 
-    <div style="margin-top: 25px;">
-        <div class="guestbook-list" id="guestbook-list">
-            <div class="entry">Reading tavern logs...</div>
+        <div style="margin-top: 25px;">
+            <div class="guestbook-list" id="guestbook-list">
+                <div class="entry">Reading tavern logs...</div>
+            </div>
         </div>
     </div>
 </div>
