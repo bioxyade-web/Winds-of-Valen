@@ -264,7 +264,6 @@ button:hover {
     margin-bottom: 20px;
 }
 /* --- SIDEBAR & LAYOUT START --- */
-/* Global Reset to ensure borders don't push things out */
 * { box-sizing: border-box; }
 
 .main-layout {
@@ -315,62 +314,68 @@ button:hover {
     width: 100%;
 }
 
-/* PHONE COMPATIBILITY: FULL SCREEN CHAT & OVERFLOW PREVENTION */
+/* PHONE COMPATIBILITY: THE "ZERO OVERFLOW" FIX */
 @media (max-width: 950px) {
-    /* STRETCH CHAT TO FULL SCREEN */
+    /* 1. Force the container to be the EXACT width of the screen */
+    body {
+        overflow-x: hidden; /* Stops the whole page from shaking left/right */
+    }
+
     .chat-container {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
         height: 100dvh !important; 
         margin: 0 !important;
         border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
+        border: none !important;
     }
 
-    .main-layout {
-        width: 100% !important;
-        flex-direction: column;
-        align-items: center;
-        gap: 0 !important;
+    #chat-box {
+        padding: 10px !important;
+        overflow-x: hidden !important; /* Prevents internal horizontal bounce */
     }
 
-    .sidebar {
-        width: 90%;
-        margin-top: 20px;
-    }
-
-    /* PREVENT "GOING OUT" FOR GOBLIN STATS & TABLES */
+    /* 2. THE HARD CLAMP: Forces the bubble to stay inside the screen */
     .message {
-        max-width: 95% !important; /* Leaves a tiny gap so it doesn't touch the wall */
+        max-width: 92vw !important; /* Forces bubble to be slightly thinner than screen */
         width: auto !important;
-        overflow: hidden !important; /* Clamps everything inside */
+        box-sizing: border-box !important;
+        word-wrap: break-word !important;
+        overflow: hidden !important; /* Keeps "leakage" inside the bubble border */
     }
 
-    /* This forces the "Image | Table" side-by-side layout to stack vertically */
+    /* 3. STACK THE GOBLIN IMAGE/TABLE: Forces vertical layout */
     .message div[style*="display: flex"] {
+        display: flex !important;
         flex-direction: column !important;
-        align-items: center !important;
         width: 100% !important;
+        align-items: center !important;
     }
 
-    /* This makes sure the table itself scrolls if it's still too wide */
+    /* 4. THE TABLE SCROLL: If the table is too wide, it scrolls INSIDE the bubble */
     .message table {
         display: block !important;
         width: 100% !important;
         max-width: 100% !important;
         overflow-x: auto !important;
+        border-collapse: collapse;
         -webkit-overflow-scrolling: touch;
-        white-space: nowrap; /* Prevents text from squishing */
     }
 
-    .input-area {
+    .message img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Layout cleanup */
+    .main-layout {
         flex-direction: column;
+        width: 100% !important;
+        gap: 20px;
     }
-
-    .input-area button {
-        width: 100%;
-    }
+    .sidebar { width: 95%; margin-top: 20px; }
+    .input-area { flex-direction: column; }
+    .input-area button { width: 100%; }
 }
 /* --- SIDEBAR & LAYOUT END --- */
 </style>
