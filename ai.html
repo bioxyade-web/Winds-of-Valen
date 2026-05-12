@@ -472,7 +472,7 @@ const knowledge = [
   },
   {
     title: "Controls",
-    keywords: ["how to","split","controls","control","middle mouse","left click","right click","splitting","devide","halve","socket","info","help"],
+    keywords: ["how to","split","controls","control","middle mouse","left click","right click","splitting","devide","halve","socket","info","help","how to drop items"],
     answer: "• <strong>Middle Mouse + Drag:</strong> Split stacks evenly.<br>• <strong>CTRL + Middle Mouse:</strong> Specify exact split amount.<br>• <strong>Right-Click Item:</strong> Auto-move for trade/sale.<br>• <strong>CTRL + Drop:</strong> Drop all items of the same type.<br>• <strong>Drag Gem to Jewelry:</strong> Socket a gem.<br>• <strong>Drag Socketed Gem:</strong>to remove.<br>• <strong>Click the corner of the chat window:</strong> This minimalizes the chat window cleaning up the screen."
   },
   {
@@ -12263,7 +12263,7 @@ const knowledge = [
   },
   {
     title: "Fast Leveling Guide",
-    keywords: ["fast leveling","level guide","fast level"],
+    keywords: ["fast leveling","level guide","how to level fast"],
     answer: "In Winds of Valen, more damage equals more XP. Efficiency is key to fast progression. Here is the optimal path:<br><br>\
 <strong>— Combat (Attack & Defense) —</strong><br>\
 • <strong>Lvl 1-10:</strong> Farm Goblins (Broken Village, South of T1). They are weak and die fast.<br>\
@@ -12445,6 +12445,11 @@ const knowledge = [
 // ==================================== STALLS&STATIONS ====================================
 
 // ========= STALLS&STATIONS QUESTIONS =========
+  {
+    title: "where is the bank",
+    keywords: ["where to find bank","where can i find the bank","bank location","where can i find a bank"],
+    answer: `<strong>Banks</strong> are spread across the Valen realm and are currently located in:<br>• Every town<br>• Mercenary Camp<br>• <strong>West Mine</strong> entrance near the <strong>Path at West mine</strong>`
+  },
   {
     title: "Character Creator Stall",
     keywords: ["character creator stall","customize","change hair","change face","appearance","stall"],
@@ -12931,7 +12936,7 @@ const knowledge = [
 // ==================================== SKILLS ====================================
   {
     title: "Magic System",
-    keywords: ["magic","spells","mana","wand","staff","essence","fire","ice","lightning","spellbook","magic skill","cast spells","cast","can i cast","magic skill"],
+    keywords: ["magic","spells","mana","wand","staff","essence","fire","ice","lightning","spellbook","magic skill","cast spells","cast","can i cast","magic skill","how to cast spells"],
     answer: "The <strong>Magic</strong> system in Winds of Valen is entirely weapon-based. There are <strong>no standalone spells</strong> to learn or cast; instead, all magical abilities are tied directly to the weapon you hold. My database shows:<br><br>\
 • <strong>Weapon-Locked:</strong> Magic can only be used by equipping a <strong>Wand</strong> or <strong>Staff</strong> (Fire, Ice, or Lightning).<br>\
 • <strong>No Spellcasting:</strong> You do not learn spells in a traditional spellbook. The weapon itself fires the projectiles.<br>\
@@ -13513,40 +13518,48 @@ function processInput(text, isAutomatic = false) {
     const rawInput = text.trim();
     let cleanInput = rawInput.toLowerCase().replace(/[^\w\s-]/g, ' ').replace(/\s+/g, ' ').trim();
     
-// ========================================== ==========================================
-// ========================================== ==========================================
-// STEP 0: THE SMART CHAT BYPASS (V2 - REGEX PROTECTION)
-// ========================================== ==========================================
+    // ==========================================
+    // STEP 0: THE SMART CHAT BYPASS
+    // ==========================================
     const chatMatch = knowledge.find(entry => {
         if (entry.title !== "response :") return false;
-        
         return entry.keywords.some(k => {
-            // 1. Clean the keyword
             let cleanK = k.toLowerCase().replace(/[^\w\s-]/g, '').trim();
-            
-            // 2. Create a "Smart Search" pattern
-            // This looks for the phrase as a whole word (so "ok" won't trigger "its ok")
-            let pattern = new RegExp(`\\b${cleanK}\\b`, 'i');
-            
-            // 3. Check if it matches the input
+            let pattern = new RegExp(`^${cleanK}( alice)?$`, 'i');
             return pattern.test(cleanInput);
         });
     });
 
-    // CRITICAL: If found, we return 'text' and KILL the function immediately.
-    // This prevents Step 1 and Step 2 from ever running.
     if (chatMatch) {
         return { type: 'text', content: `<strong>${chatMatch.title}</strong><br><br>${chatMatch.answer}` };
     }
-// ========================================== ==========================================
-// ========================================== ==========================================
 
-    const corrections = { "wath": "what", "wat": "what", "were": "where", "wear": "where", "hwo": "how", "sel": "sell", "byu": "buy", "fnd": "find", "blaksmith": "blacksmith" };
+// 1. TYPO CORRECTIONS (Ensures 'hello' and 'alice' are fixed before stripping)
+    const corrections = { 
+        "wath": "what", "wat": "what", "were": "where", "wear": "where", 
+        "hwo": "how", "sel": "sell", "byu": "buy", "fnd": "find", 
+        "blaksmith": "blacksmith", "helo": "hello", "hellow": "hello",
+        "allice": "alice", "alise": "alice" , "heyo": "hello", "yo": "hello"
+    };
     let wordsToFix = cleanInput.split(/\s+/);
     cleanInput = wordsToFix.map(w => corrections[w] || w).join(' ');
 
-    const stripFillers = (str) => str.split(/\s+/).filter(w => w && !["a", "an", "the"].includes(w)).join(' ');
+    // 2. FUZZY GREETING STRIPPER
+    // This catches "hello", "hi alice", "hey allice", etc. in one go
+    const greetingWords = ["hi", "hello", "hey", "heya", "yo", "hiya"];
+    const nameVariations = ["alice", "allice"];
     
+    const aggressivePattern = new RegExp(`^\\s*(${greetingWords.join('|')})?\\s*(${nameVariations.join('|')})?\\s*`, 'gi');
+    
+    let testClean = cleanInput.replace(aggressivePattern, '').trim();
+    
+    // Safety check: Only strip if there's content left and something actually changed
+    if (testClean.length > 0 && testClean !== cleanInput) {
+        cleanInput = testClean;
+    }
+
+    // 3. PRE-PROCESSING TOOLS
+    const stripFillers = (str) => str.split(/\s+/).filter(w => w && !["a", "an", "the"].includes(w)).join(' ');
     const standardizeIntent = (str) => {
         return str
             .replace(/^(where|how)\s+(can i\s+|do i\s+|to\s+)?(find|get)\s+/g, 'guide_intent ')
@@ -13554,26 +13567,25 @@ function processInput(text, isAutomatic = false) {
             .replace(/\s+(sell|buy|shop|inventory|stock)$/g, ' trade_intent');
     };
 
+    // 4. RE-CALCULATING THE SEARCH STRINGS
     let searchNoFillers = stripFillers(cleanInput);
     let searchStandardized = standardizeIntent(searchNoFillers);
 
     // --- STEP 1: THE HIERARCHICAL SNIPER ---
-    // We check for absolute 1:1 matches before doing anything else
     const sniperResults = knowledge.map(e => {
         const tClean = e.title.toLowerCase().replace(/[^\w\s-]/g, ' ').replace(/\s+/g, ' ').trim();
         const tNoFillers = stripFillers(tClean);
         const tStandardized = standardizeIntent(tNoFillers);
         
         let priority = 0;
-        if (tClean === cleanInput) priority = 3; // PERFECT MATCH (Copper Ore)
-        else if (tNoFillers === searchNoFillers) priority = 2; // CLEAN MATCH (The Copper Ore)
-        else if (tStandardized === searchStandardized) priority = 1; // INTENT MATCH (Where to find Copper Ore)
+        if (tClean === cleanInput) priority = 3; 
+        else if (tNoFillers === searchNoFillers) priority = 2; 
+        else if (tStandardized === searchStandardized) priority = 1; 
         
         return { entry: e, priority };
     }).filter(r => r.priority > 0).sort((a, b) => b.priority - a.priority);
 
     if (sniperResults.length > 0 && !isAutomatic) {
-        // Always take the highest priority (e.g., Priority 3 beats Priority 1)
         const bestMatch = sniperResults[0].entry;
         return { type: 'text', content: `<strong>${bestMatch.title}</strong><br><br>${bestMatch.answer}` };
     }
@@ -13588,13 +13600,19 @@ function processInput(text, isAutomatic = false) {
     if (rawWords.length === 0) return { type: 'text', content: "I am Alice. What knowledge do you seek?" };
 
     let results = [];
-    knowledge.forEach(entry => {
+knowledge.forEach(entry => {
         let score = 0;
         const tRaw = entry.title.toLowerCase().replace(/[^\w\s-]/g, ' ').replace(/\s+/g, ' ').trim();
         const tClean = stripFillers(tRaw);
         const tWords = tClean.split(/\s+/).map(normalize);
         const kWords = entry.keywords.map(k => k.toLowerCase().replace(/[^\w\s-]/g, ' ').replace(/\s+/g, ' ').trim());
 
+        // --- THE SNIPER LOCK ---
+        if (tRaw === cleanInput || tClean === searchNoFillers || kWords.some(k => k === cleanInput)) {
+            score += 9000000; 
+        }
+
+        // --- THE ARCHERY/HANDEDNESS FILTERS ---
         if (searchNoFillers.includes("two-handed") && (tRaw.includes("one-handed") || kWords.some(k => k.includes("one-handed")))) return;
         if (searchNoFillers.includes("one-handed") && (tRaw.includes("two-handed") || kWords.some(k => k.includes("two-handed")))) return;
 
