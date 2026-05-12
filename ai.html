@@ -264,8 +264,6 @@ button:hover {
     margin-bottom: 20px;
 }
 /* --- SIDEBAR & LAYOUT START --- */
-* { box-sizing: border-box; }
-
 .main-layout {
     display: flex;
     flex-wrap: wrap;
@@ -286,6 +284,26 @@ button:hover {
     backdrop-filter: blur(5px);
 }
 
+.sidebar h3 {
+    color: var(--highlight);
+    text-transform: uppercase;
+    font-size: 18px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 10px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-nav button {
+    width: 100%;
+}
+
 .main-content {
     flex: 3 1 700px;
     display: flex;
@@ -294,61 +312,55 @@ button:hover {
     width: 100%;
 }
 
-/* MOBILE SCROLL & TABLE VISIBILITY FIX */
+/* MOBILE FIX: FULL SCREEN CHAT WINDOW */
 @media (max-width: 950px) {
-    /* 1. Fix the Chat Window Size and Scrolling */
-    .chat-container {
-        width: 100% !important;
-        max-width: 100vw !important;
-        height: 80vh !important; /* Forces a height so it HAS to scroll */
-        margin: 0 0 20px 0 !important;
-        display: flex;
+    /* 1. Reset body to prevent accidental side-scrolling */
+    body {
+        padding-bottom: 0;
+        overflow-x: hidden;
+    }
+
+    .main-layout {
         flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin: 0;
     }
 
+    /* 2. THE CHAT WINDOW: Takes on the full size of the phone screen */
+    .chat-container {
+        width: 100vw !important;  /* Full screen width */
+        height: 100dvh !important; /* Full screen height (dynamic) */
+        max-width: 100vw !important;
+        margin: 0 !important;
+        border-radius: 0 !important; /* Removes corners for a clean phone app look */
+        border-left: none !important;
+        border-right: none !important;
+        position: fixed; /* Locks it to the screen */
+        top: 0;
+        left: 0;
+        z-index: 100;
+    }
+
+    /* 3. Adjust Internal Chat Box for the new height */
     #chat-box {
-        flex: 1 !important;
-        overflow-y: auto !important; /* Enables vertical scrolling */
-        overflow-x: hidden !important;
-        -webkit-overflow-scrolling: touch; /* Makes scrolling smooth on iPhone */
-        padding: 10px !important;
+        padding: 15px !important;
+        flex-grow: 1 !important;
     }
 
-    /* 2. Fix the Goblin Stats Visibility */
+    /* 4. Fix Message Bubble Widths */
     .message {
-        max-width: 95% !important;
-        width: auto !important;
+        max-width: 90% !important;
     }
 
-    /* This targets ONLY the wrapper div that holds the Image + Table */
-    .message > div[style*="display: flex"] {
-        display: flex !important;
-        flex-direction: column !important; /* Stacks image on top of stats */
-        align-items: center !important;
+    /* 5. Keeps Sidebar and Info below the fixed chat (if you scroll past) */
+    .sidebar, .info-container {
+        display: none; /* Recommended for "Chat App" feel on mobile, or remove this line to keep them below */
     }
 
-    /* 3. Ensure the Table is visible and scrollable inside the bubble */
-    .message table {
-        display: block !important; 
-        width: 100% !important;
-        overflow-x: auto !important; /* Allows you to swipe left/right on the stats */
-        white-space: nowrap; /* Prevents text from bunching up */
-        border-collapse: collapse;
-        margin-top: 10px;
+    .input-area {
+        padding-bottom: 25px !important; /* Extra space for phone home-bars */
     }
-
-    /* 4. Fix Image Size */
-    .message img {
-        max-width: 180px !important; /* Keeps the Goblin image from being too big */
-        height: auto !important;
-        margin-bottom: 10px;
-    }
-
-    /* Layout cleanup */
-    .main-layout { flex-direction: column; }
-    .sidebar { width: 100%; order: 2; } /* Moves sidebar below chat on mobile */
-    .input-area { flex-direction: column; }
-    .input-area button { width: 100%; }
 }
 /* --- SIDEBAR & LAYOUT END --- */
 </style>
