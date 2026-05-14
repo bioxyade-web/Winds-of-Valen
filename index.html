@@ -387,6 +387,26 @@ async function registerVisit() {
         counter.innerText = 'Offline';
     }
 }
+
+// --- FETCH VISIT COUNTER (AUTO REFRESH LOGIC) ---
+async function refreshVisitCount() {
+    const counter = document.getElementById('visit-count');
+
+    try {
+        // GET TOTAL VISITS ONLY
+        const { count, error } = await _supabase
+            .from('page_visits')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+
+        counter.innerText = count.toLocaleString();
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 // --- 2. CLOCK LOGIC ---
 function updateClock() {
     const now = new Date();
@@ -437,6 +457,7 @@ registerVisit(); // Visit Counter
 // --- REFRESH LOOPS ---
 setInterval(updateClock, 1000);
 setInterval(updateSteamCount, 10000); // Check every 10 seconds
+setInterval(refreshVisitCount, 1000); // Auto refresh visitor count every 1 second
 </script>
 
 </body>
