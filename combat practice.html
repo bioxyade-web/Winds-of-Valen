@@ -163,6 +163,12 @@ body {
     justify-content: center;
     font-weight: bold;
     transition: all 0.2s ease;
+    flex-direction: column;
+}
+
+.gear-display-box img {
+    height: 40px;
+    margin-bottom: 5px;
 }
 
 .gear-display-box.pulse-gold {
@@ -554,15 +560,15 @@ const sounds = {
 };
 
 const shields = [
-    { id: 'block', name: 'Block' },
-    { id: 'evasion', name: 'Evasion' },
-    { id: 'warding', name: 'Warding' }
+    { id: 'block', name: 'Block', img: 'https://static.wikitide.net/windsofvalenwiki/thumb/0/01/Elven_Shield.png/100px-Elven_Shield.png' },
+    { id: 'evasion', name: 'Evasion', img: 'https://static.wikitide.net/windsofvalenwiki/thumb/0/01/Advanced_Parry_Shield.png/100px-Advanced_Parry_Shield.png' },
+    { id: 'warding', name: 'Warding', img: 'https://static.wikitide.net/windsofvalenwiki/thumb/1/12/Adept_Ward.png/100px-Adept_Ward.png' }
 ];
 
 const weapons = [
-    { id: 'heavy_damage', name: 'Heavy Damage' },
-    { id: 'quick_slash', name: 'Quick Damage' },
-    { id: 'magic_damage', name: 'Magic Damage' }
+    { id: 'heavy_damage', name: 'Heavy Damage', imgs: ['https://static.wikitide.net/windsofvalenwiki/thumb/b/bf/Elven_Greatsword.png/100px-Elven_Greatsword.png'] },
+    { id: 'quick_slash', name: 'Quick Damage', imgs: ['https://static.wikitide.net/windsofvalenwiki/thumb/d/dc/Mithril_Sword.png/100px-Mithril_Sword.png', 'https://static.wikitide.net/windsofvalenwiki/thumb/3/38/Skeleton_Rapier.png/100px-Skeleton_Rapier.png'] },
+    { id: 'magic_damage', name: 'Magic Damage', imgs: ['https://static.wikitide.net/windsofvalenwiki/f/f7/Magic.png'] }
 ];
 
 let hotkeys = {
@@ -711,10 +717,15 @@ function startRound() {
     document.getElementById('player-weapon-display').textContent = 'None';
     document.getElementById('feedback-panel').className = 'feedback-box';
     document.querySelectorAll('.gear-btn').forEach(b => b.classList.remove('active'));
+    
     currentEnemyWeapon = weapons[Math.floor(Math.random() * weapons.length)];
     currentEnemyShield = shields[Math.floor(Math.random() * shields.length)];
-    document.getElementById('enemy-weapon-display').textContent = currentEnemyWeapon.name;
-    document.getElementById('enemy-shield-display').textContent = currentEnemyShield.name;
+    
+    const weaponImgUrl = currentEnemyWeapon.imgs[Math.floor(Math.random() * currentEnemyWeapon.imgs.length)];
+    
+    document.getElementById('enemy-weapon-display').innerHTML = `<img src="${weaponImgUrl}" alt="Weapon"> <span>${currentEnemyWeapon.name}</span>`;
+    document.getElementById('enemy-shield-display').innerHTML = `<img src="${currentEnemyShield.img}" alt="Shield"> <span>${currentEnemyShield.name}</span>`;
+    
     document.getElementById('game-status-label').textContent = `ROUND ${currentRound} OF ${TOTAL_ROUNDS} - COUNTER THE TARGET!`;
     document.getElementById('main-action-btn').textContent = "Surrender Match";
     document.getElementById('main-action-btn').style.background = "linear-gradient(to bottom, #e74c3c, #c0392b)";
