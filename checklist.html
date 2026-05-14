@@ -6,6 +6,7 @@
 <title>Alice's Starters Checklist - Winds of Valen Digital Wiki</title>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
@@ -863,7 +864,20 @@ function toggleTask(checkbox) {
     }
     updateProgressBar();
 }
+// START PASTE: BACKGROUND VISITOR TRACKER
+const SUPABASE_URL = 'https://qiwstqpznabemqttivoa.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_cDOxkol6uWGhuAg564EmdQ_v3uhSeYQ';
+const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+async function registerSubPageVisit() {
+    try {
+        await _supabase.from('page_visits').insert([{}]);
+    } catch (err) {
+        console.error("Failed to track visit:", err);
+    }
+}
+registerSubPageVisit();
+// END PASTE
 // Refresh visual counters and bar graphs
 function updateProgressBar() {
     const checkboxes = document.querySelectorAll(".task-item input[type='checkbox']");
