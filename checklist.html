@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alice's Starters Checklist - Winds of Valen Digital Wiki</title>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
 :root {
     --accent: #b45309; 
@@ -687,6 +689,92 @@ kbd {
 </div>
 
 <script>
+// Web Audio API Sound Synthesizer for high-fidelity native browser game sound effects
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSoundEffect(type) {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    
+    const now = audioCtx.currentTime;
+    
+    if (type === 'check') {
+        // Quick subtle click/pop sound effect for simple checkbox marking
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.04);
+        
+        gainNode.gain.setValueAtTime(0.15, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 0.05);
+        
+    } else if (type === 'chapter') {
+        // Crisp, short retro chime sequence for completing individual chapters
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc1.type = 'triangle';
+        osc2.type = 'sine';
+        
+        // Quick upward arpeggio
+        osc1.frequency.setValueAtTime(523.25, now); // C5
+        osc1.frequency.setValueAtTime(659.25, now + 0.08); // E5
+        osc1.frequency.setValueAtTime(783.99, now + 0.16); // G5
+        osc1.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+        
+        osc2.frequency.setValueAtTime(1046.50, now + 0.24);
+        
+        gainNode.gain.setValueAtTime(0.3, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        osc1.start(now);
+        osc2.start(now + 0.24);
+        osc1.stop(now + 0.5);
+        osc2.stop(now + 0.5);
+        
+    } else if (type === 'grand_party') {
+        // Massive multi-tone level-up fanfare for completing EVERY single task on the checklist
+        for (let i = 0; i < 4; i++) {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            // Layered voices for a rich chords explosion
+            const baseFreqs = [261.63, 329.63, 392.00, 523.25]; // C major chord
+            const targetFreqs = [523.25, 659.25, 783.99, 1046.50];
+            
+            osc.type = i % 2 === 0 ? 'square' : 'triangle';
+            
+            osc.frequency.setValueAtTime(baseFreqs[i], now);
+            osc.frequency.exponentialRampToValueAtTime(targetFreqs[i], now + 0.3);
+            osc.frequency.setValueAtTime(targetFreqs[i] * 1.2, now + 0.4);
+            
+            gainNode.gain.setValueAtTime(0.15, now);
+            gainNode.gain.setValueAtTime(0.15, now + 0.4);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            osc.start(now);
+            osc.stop(now + 1.2);
+        }
+    }
+}
+
 // Load stored state configuration on startup
 document.addEventListener("DOMContentLoaded", () => {
     const tasks = document.querySelectorAll(".task-item");
@@ -710,10 +798,65 @@ document.addEventListener("DOMContentLoaded", () => {
 function toggleTask(checkbox) {
     const taskItem = checkbox.closest(".task-item");
     const id = taskItem.getAttribute("data-id");
+    const section = checkbox.closest(".checklist-section");
     
     if (checkbox.checked) {
         taskItem.classList.add("completed");
         localStorage.setItem(`vChecklist_${id}`, "true");
+        
+        // Evaluate if entire document is fully completed first
+        const allCheckboxes = Array.from(document.querySelectorAll(".task-item input[type='checkbox']"));
+        const completelyFinishedEverything = allCheckboxes.every(cb => cb.checked);
+        
+        if (completelyFinishedEverything) {
+            // GRAND PARTY CELEBRATION! Multi-stage confetti barrage from sides
+            playSoundEffect('grand_party');
+            
+            let duration = 3 * 1000;
+            let end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+            
+        } else if (section) {
+            // Dynamic Chapter Completion check
+            const sectionCheckboxes = section.querySelectorAll("input[type='checkbox']");
+            const allSectionCompleted = Array.from(sectionCheckboxes).every(cb => cb.checked);
+            
+            if (allSectionCompleted) {
+                // Fire off visual confetti party explosion
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+                
+                // Play individual chapter sound
+                playSoundEffect('chapter');
+            } else {
+                // Play simple single task check sound
+                playSoundEffect('check');
+            }
+        } else {
+            // Play simple single task check sound if section is not found
+            playSoundEffect('check');
+        }
     } else {
         taskItem.classList.remove("completed");
         localStorage.setItem(`vChecklist_${id}`, "false");
