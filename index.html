@@ -100,7 +100,7 @@ body {
 /* Desktop upgrade: 2 columns top, 1 column bottom */
 @media (min-width: 900px) {
     .layout-grid {
-        grid-template-columns: 1.6fr 1fr;
+        grid-template-columns: 2.2fr 0.8fr; /* Made the second column smaller */
     }
     .full-width {
         grid-column: 1 / -1; /* Makes guestbook span both columns */
@@ -152,7 +152,7 @@ h2 {
 
 .nav-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Tweaked minmax so 3 items fit in one row perfectly */
     gap: 20px;
 }
 
@@ -184,7 +184,7 @@ h2 {
     text-align: center;
     font-weight: bold;
     text-transform: uppercase;
-    margin-top: 20px;
+    margin-top: auto; /* Pushes the button to the exact bottom to align perfectly across the row */
     cursor: pointer;
 }
 
@@ -273,24 +273,31 @@ h2 {
 <div class="nav-grid">
     <a href="equipper.html" class="nav-card">
         <div>
-            <h3>⚔️ The Equipper</h3>
-            <p>Plan your perfect build! Test gear sets and see your final stats.</p>
+            <h3>🗺️ Starter Checklist</h3>
+            <p>New to the realm? Follow this step-by-step progression guide to know what to do first.</p>
         </div>
-        <div class="btn">Optimize Gear</div>
+        <div class="btn" style="margin-top: auto;">View Checklist</div>
     </a>
     <a href="ai.html" class="nav-card">
         <div>
             <h3>🔮 AI Alice Bot</h3>
             <p>Ask me anything! I am your search encyclopedia for items recipes and more.</p>
         </div>
-        <div class="btn">Talk to Alice</div>
+        <div class="btn" style="margin-top: auto;">Talk to Alice</div>
+    </a>
+    <a href="checklist.html" class="nav-card">
+        <div>
+            <h3>⚔️ The Equipper</h3>
+            <p>Plan your perfect build! Test gear sets and see your final stats.</p>
+        </div>
+        <div class="btn" style="margin-top: auto;">Optimize Gear</div>
     </a>
 </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="padding: 20px;">
         <h2>Did you know ?</h2>
-        <p style="font-size: 14px; line-height: 1.8;">
+        <p style="font-size: 12px; line-height: 1.5; margin: 0;">
             • These pages are optimized for mobile 😮?<br>
             • You can download the bot for offline use ?<br>
             • This is NOT the official wiki ?<br>
@@ -307,7 +314,7 @@ h2 {
         <h2>📜 Global Guestbook</h2>
         <input type="text" id="guest-name" class="guestbook-input" placeholder="Your Name...">
         <textarea id="guest-msg" class="guestbook-input" placeholder="Your Message..." rows="2"></textarea>
-        <button onclick="addEntry()" id="submit-btn" class="btn" style="width: 100%;">Sign the Guestbook</button>
+        <button onclick="addEntry()" id="submit-btn" class="btn" style="width: 100%; margin-top: 20px;">Sign the Guestbook</button>
 
         <div style="margin-top: 25px;">
             <div class="guestbook-list" id="guestbook-list">
