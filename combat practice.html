@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combat Practice Arena - Winds of Valen Digital Wiki</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+    --accent: #b45309; 
+    --highlight: #fbbf24; 
+    --bg-dark: #0f172a; 
+    --panel-bg: rgba(30, 20, 10, 0.85); 
+    --gold: #f59e0b;
+    --border-color: #78350f;
+    --text-main: #fef3c7;
+    --gem-slot: #1a120b;
+    --success: #2ecc71;
+    --danger: #e74c3c;
+}
+
+* { box-sizing: border-box; scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://img.itch.zone/aW1hZ2UvMzk1ODQ1Ny8yNDI3MDEzMS5qcGc=/original/qQvDhM.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 50px; 
+}
+
+.title {
+    width: 100%;
+    text-align: center;
+    padding: 20px 10px;
+    background: linear-gradient(to bottom, rgba(15,23,42,0.95), rgba(15,23,42,0.7));
+    border-bottom: 3px solid var(--accent);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+.title h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: var(--highlight);
+    text-shadow: 2px 2px 4px #000;
+    letter-spacing: 2px;
+}
+.title p {
+    margin: 5px 0 0 0;
+    font-style: italic;
+    color: #94a3b8;
+}
+
+.nav-container {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.nav-btn {
+    background: linear-gradient(to bottom, #9a3412, #78350f);
+    border: 2px solid var(--highlight);
+    color: var(--text-main);
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+.nav-btn:hover {
+    background: var(--highlight);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(251,191,36,0.3);
+}
+
+.main-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 10px;
+}
+
+.panel {
+    background: var(--panel-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.arena-header {
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.timer-display {
+    font-size: 2rem;
+    font-family: monospace;
+    color: var(--highlight);
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.combat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.combat-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.combat-card.enemy {
+    border-color: var(--danger);
+    background: rgba(231, 76, 60, 0.05);
+}
+.combat-card.player {
+    border-color: var(--success);
+    background: rgba(46, 204, 113, 0.05);
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+.player .card-title { color: var(--success); }
+.enemy .card-title { color: var(--danger); }
+
+.gear-display-box {
+    background: var(--gem-slot);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.gear-display-box.pulse-gold {
+    border-color: var(--highlight);
+    box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2);
+    color: var(--highlight);
+}
+
+.action-group-title {
+    font-size: 0.9rem;
+    color: var(--highlight);
+    text-transform: uppercase;
+    margin: 15px 0 5px 0;
+    letter-spacing: 1px;
+}
+
+.selection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.gear-btn {
+    background: linear-gradient(to bottom, #1e293b, #0f172a);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.1s ease;
+    transform: translateY(0);
+}
+.gear-btn:hover {
+    border-color: var(--highlight);
+    background: #334155;
+}
+.gear-btn:active {
+    transform: translateY(2px);
+    filter: brightness(0.8);
+}
+.gear-btn.active {
+    background: linear-gradient(to bottom, var(--accent), #78350f);
+    border-color: var(--highlight);
+    box-shadow: 0 0 15px rgba(180, 83, 9, 0.5), inset 0 0 5px rgba(251, 191, 36, 0.3);
+    color: #fff;
+}
+
+.hotkey-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 0.65rem;
+    background: rgba(0,0,0,0.6);
+    color: var(--highlight);
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid rgba(251,191,36,0.3);
+}
+
+.action-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    border: 2px solid #27ae60;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+}
+.action-btn:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+.action-btn:active {
+    transform: scale(0.98);
+}
+.action-btn:disabled {
+    background: #475569;
+    border-color: #334155;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.feedback-box {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+    transition: all 0.4s ease;
+}
+.feedback-box.win { display: block; background: rgba(46, 204, 113, 0.2); border: 1px solid var(--success); color: #87e8ab; }
+.feedback-box.lose { display: block; background: rgba(231, 76, 60, 0.2); border: 1px solid var(--danger); color: #f19086; }
+
+.round-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    background: rgba(15, 23, 42, 0.95);
+    border: 3px solid var(--highlight);
+    border-radius: 12px;
+    padding: 30px 50px;
+    text-align: center;
+    z-index: 9999;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9), 0 0 20px var(--highlight);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.round-popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+.round-popup h2 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: var(--success);
+    text-shadow: 0 2px 10px rgba(46, 204, 113, 0.4);
+}
+.round-popup p {
+    margin: 10px 0 0 0;
+    color: var(--text-main);
+    font-size: 1.2rem;
+}
+.popup-countdown {
+    margin-top: 15px !important;
+    font-family: monospace;
+    font-size: 1.5rem !important;
+    color: var(--highlight);
+    font-weight: bold;
+}
+
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.leaderboard-table th, .leaderboard-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(120,53,15,0.4);
+}
+.leaderboard-table th {
+    color: var(--highlight);
+    font-size: 0.9rem;
+}
+.leaderboard-table tr:nth-child(even) {
+    background: rgba(255,255,255,0.03);
+}
+
+.mapping-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.mapping-input {
+    width: 50px;
+    background: #0f172a;
+    border: 1px solid var(--border-color);
+    color: var(--highlight);
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: border-color 0.2s;
+}
+.mapping-input:focus {
+    outline: none;
+    border-color: var(--highlight);
+    background: #1e293b;
+}
+
+.guide-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+.guide-list li {
+    margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+    .main-wrapper {
+        grid-template-columns: 1fr;
+        width: 95%;
+    }
+}
+@media (max-width: 500px) {
+    .combat-grid {
+        grid-template-columns: 1fr;
+    }
+    .title h1 {
+        font-size: 1.8rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="title">
+    <h1>Winds of Valen</h1>
+    <p>Combat Practice Arena</p>
+</div>
+
+<div class="nav-container">
+    <a href="index.html" class="nav-btn">Home</a>
+    <a href="checklist.html" class="nav-btn">Starters Checklist</a>
+    <a href="equipper.html" class="nav-btn">Character Equipper</a>
+    <a href="ai.html" class="nav-btn">Alice Bot</a>
+</div>
+
+<div class="main-wrapper">
+    <div class="panel">
+        <div class="arena-header">
+            <div id="game-status-label" style="font-weight: bold; color: var(--highlight); margin-bottom: 5px;">READY TO TRAIN (5 ROUNDS)</div>
+            <div class="timer-display" id="timer">0.000s</div>
+        </div>
+
+        <div class="combat-grid">
+            <div class="combat-card enemy" id="enemy-card">
+                <div class="card-title">ENEMY TARGET</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1;">Incoming Attack:</div>
+                <div class="gear-display-box" id="enemy-weapon-display">???</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1;">Current Defence:</div>
+                <div class="gear-display-box" id="enemy-shield-display">???</div>
+            </div>
+
+            <div class="combat-card player" id="player-card">
+                <div class="card-title">YOUR LOADOUT</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1;">Active Counter-Weapon:</div>
+                <div class="gear-display-box" id="player-weapon-display">None</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1;">Active Shield Mitigation:</div>
+                <div class="gear-display-box" id="player-shield-display">None</div>
+            </div>
+        </div>
+
+        <div>
+            <div class="action-group-title">Select Counter Shield (Defensive Mitigation)</div>
+            <div class="selection-grid" id="shield-options-container"></div>
+
+            <div class="action-group-title">Select Counter Weapon (Breaks Enemy Shield Defence)</div>
+            <div class="selection-grid" id="weapon-options-container"></div>
+            
+            <button class="action-btn" id="main-action-btn" onclick="handleSystemAction()">Start Practice Match</button>
+            <div class="feedback-box" id="feedback-panel"></div>
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <h3 style="color: var(--highlight); margin-bottom: 10px;">Arena Operations</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #cbd5e1;">
+                This arena is a high-speed training ground to master <strong>Winds of Valen</strong> combat logic. You must clear <strong>5 consecutive rounds</strong> as fast as possible to register on the global leaderboard. 
+                <br><br>
+                <strong>How it works:</strong>
+                <ul style="font-size: 0.85rem; color: #94a3b8;">
+                    <li>Press the "Start" button to begin the clock.</li>
+                    <li>Observe the Enemy's <strong>Attack</strong> and <strong>Defence</strong>.</li>
+                    <li>Select the correct <strong>Shield</strong> to block their attack AND the correct <strong>Weapon</strong> to break their defence simultaneously.</li>
+                    <li>Use <strong>Hotkeys</strong> (visible on buttons) for maximum speed. Selection is instant.</li>
+                    <li>The clock pauses briefly between rounds for 1.2 seconds to allow you to reset.</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <div class="panel" style="padding: 15px;">
+            <h3 style="margin-top:0; color: var(--highlight); font-size:1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom:5px;">Combat Counters Manual</h3>
+            <ul class="guide-list">
+                <li><strong>Breaking Enemy Shields (Offense):</strong>
+                    <ul>
+                        <li>Enemy <span style="color:var(--highlight)">Block</span>: Use <strong>Quick Damage Slash</strong>, <strong>Quick Damage Pierce</strong>, or <strong>magic weapon</strong></li>
+                        <li>Enemy <span style="color:var(--highlight)">Evasion</span>: Use <strong>Heavy Damage</strong> or <strong>magic weapon</strong></li>
+                        <li>Enemy <span style="color:var(--highlight)">Warding</span>: Use <strong>Heavy Damage</strong>, <strong>Quick Damage Pierce</strong>, or <strong>Quick Damage Slash</strong></li>
+                    </ul>
+                </li>
+                <li style="margin-top: 8px;"><strong>Countering Enemy Attacks (Defence):</strong>
+                    <ul>
+                        <li>Enemy <strong>Quick Damage Pierce / Quick Damage Slash</strong>: Use <span style="color:var(--highlight)">Evasion</span> shield</li>
+                        <li>Enemy <strong>Heavy Damage</strong>: Use <span style="color:var(--highlight)">Block</span> shield</li>
+                        <li>Enemy <strong>magic weapon</strong>: Use <span style="color:var(--highlight)">Warding</span> shield</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="panel" style="padding: 15px;">
+            <h3 style="margin-top:0; color: var(--highlight); font-size:1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom:5px;">Custom Key Bindings</h3>
+            <div id="hotkey-settings-container"></div>
+            <p style="font-size: 0.75rem; color: #94a3b8; margin: 8px 0 0 0; text-align: center;">Pressing these keys changes gear instantly mid-combat.</p>
+        </div>
+
+        <div class="panel" style="padding: 15px;">
+            <h3 style="margin-top:0; color: var(--highlight); font-size:1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom:5px;">Global Leaderboard</h3>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Speed</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-rows">
+                    <tr><td colspan="3" style="text-align:center; font-size:0.85rem; color:#94a3b8;">Loading scores...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="round-popup" id="round-win-popup">
+    <h2>ROUND CLEARED!</h2>
+    <p id="round-popup-text">Prepare for the next target...</p>
+    <p class="popup-countdown" id="popup-countdown-display">1.20s</p>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://qiwstqpznabemqttivoa.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_cDOxkol6uWGhuAg564EmdQ_v3uhSeYQ';
+const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// --- HARDWARE SYNTH SOUND ENGINE ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSynth(freq, type, dur, vol = 0.1, endFreq = null) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    if (endFreq) {
+        osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + dur);
+    }
+    
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + dur);
+}
+
+const sounds = {
+    // Tactile UI click with a high-pitched chirpy sweep
+    click: () => playSynth(1200, 'sine', 0.05, 0.15, 800),
+    
+    // Rewarding major-interval chime for clearing a round
+    winRound: () => {
+        playSynth(523.25, 'triangle', 0.2, 0.1); // C5
+        setTimeout(() => playSynth(659.25, 'triangle', 0.3, 0.1), 100); // E5
+    },
+    
+    // Triumphant rising fanfare for match completion
+    victory: () => {
+        const notes = [523, 659, 783, 1046, 1318]; // C5, E5, G5, C6, E6
+        notes.forEach((f, i) => {
+            setTimeout(() => playSynth(f, 'square', 0.5, 0.05), i * 120);
+        });
+    },
+    
+    // Deep descending groan for surrender
+    surrender: () => {
+        playSynth(200, 'sawtooth', 0.5, 0.1, 40);
+    }
+};
+
+const shields = [
+    { id: 'block', name: 'Block' },
+    { id: 'evasion', name: 'Evasion' },
+    { id: 'warding', name: 'Warding' }
+];
+
+const weapons = [
+    { id: 'heavy_damage', name: 'Heavy Damage' },
+    { id: 'quick_slash', name: 'Quick Damage Slash' },
+    { id: 'quick_pierce', name: 'Quick Damage Pierce' },
+    { id: 'magic_damage', name: 'magic weapon' }
+];
+
+let hotkeys = {
+    'block': '1', 'evasion': '2', 'warding': '3',
+    'heavy_damage': 'q', 'quick_slash': 'w', 'quick_pierce': 'e', 'magic_damage': 'r'
+};
+
+let gameState = 'IDLE'; 
+let currentRound = 1;
+const TOTAL_ROUNDS = 5;
+
+let matchStartTime = 0;
+let totalTimePaused = 0;
+let roundPauseStart = 0;
+let timerInterval = null;
+let popupCountdownInterval = null;
+let selectedShield = null;
+let selectedWeapon = null;
+let currentEnemyWeapon = null;
+let currentEnemyShield = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadSavedHotkeys();
+    renderHotkeyConfigurationPanel();
+    renderControlGrids();
+    loadLeaderboard();
+    registerSubPageVisit();
+});
+
+function loadSavedHotkeys() {
+    const saved = localStorage.getItem('vCombat_hotkeys');
+    if (saved) { try { hotkeys = JSON.parse(saved); } catch(e) {} }
+}
+
+function saveHotkeys() {
+    localStorage.setItem('vCombat_hotkeys', JSON.stringify(hotkeys));
+    renderControlGrids(); 
+}
+
+function renderHotkeyConfigurationPanel() {
+    const container = document.getElementById('hotkey-settings-container');
+    container.innerHTML = '';
+    shields.forEach(s => container.appendChild(createMappingRow(`Shield: ${s.name}`, s.id)));
+    weapons.forEach(w => container.appendChild(createMappingRow(`Weapon: ${w.name}`, w.id)));
+}
+
+function createMappingRow(label, id) {
+    const row = document.createElement('div');
+    row.className = 'mapping-row';
+    row.innerHTML = `<span>${label}</span><input type="text" class="mapping-input" max-length="1" value="${hotkeys[id]}" data-id="${id}">`;
+    const input = row.querySelector('input');
+    input.addEventListener('keydown', (e) => {
+        e.preventDefault();
+        const key = e.key.toLowerCase();
+        if(key.length === 1 || key === 'escape') {
+            input.value = key;
+            hotkeys[id] = key;
+            saveHotkeys();
+        }
+    });
+    return row;
+}
+
+function renderControlGrids() {
+    const shieldContainer = document.getElementById('shield-options-container');
+    shieldContainer.innerHTML = '';
+    shields.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = `gear-btn shield-opt ${selectedShield === s.id ? 'active' : ''}`;
+        btn.id = `btn-${s.id}`;
+        btn.innerHTML = `${s.name} <span class="hotkey-badge">${hotkeys[s.id].toUpperCase()}</span>`;
+        btn.onclick = () => selectShield(s.id);
+        shieldContainer.appendChild(btn);
+    });
+
+    const weaponContainer = document.getElementById('weapon-options-container');
+    weaponContainer.innerHTML = '';
+    weapons.forEach(w => {
+        const btn = document.createElement('button');
+        btn.className = `gear-btn weapon-opt ${selectedWeapon === w.id ? 'active' : ''}`;
+        btn.id = `btn-${w.id}`;
+        btn.innerHTML = `${w.name} <span class="hotkey-badge">${hotkeys[w.id].toUpperCase()}</span>`;
+        btn.onclick = () => selectWeapon(w.id);
+        weaponContainer.appendChild(btn);
+    });
+}
+
+function selectShield(id) {
+    if (gameState !== 'ACTIVE') return;
+    sounds.click();
+    selectedShield = id;
+    const target = shields.find(s => s.id === id);
+    const display = document.getElementById('player-shield-display');
+    display.textContent = target ? target.name : 'None';
+    display.classList.add('pulse-gold');
+    setTimeout(() => display.classList.remove('pulse-gold'), 300);
+    document.querySelectorAll('.shield-opt').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btn-${id}`)?.classList.add('active');
+    checkCombatSuccessCondition();
+}
+
+function selectWeapon(id) {
+    if (gameState !== 'ACTIVE') return;
+    sounds.click();
+    selectedWeapon = id;
+    const target = weapons.find(w => w.id === id);
+    const display = document.getElementById('player-weapon-display');
+    display.textContent = target ? target.name : 'None';
+    display.classList.add('pulse-gold');
+    setTimeout(() => display.classList.remove('pulse-gold'), 300);
+    document.querySelectorAll('.weapon-opt').forEach(b => b.classList.remove('active'));
+    document.getElementById(`btn-${id}`)?.classList.add('active');
+    checkCombatSuccessCondition();
+}
+
+window.addEventListener('keydown', (e) => {
+    if (gameState !== 'ACTIVE' || document.activeElement.tagName === 'INPUT') return;
+    const pressed = e.key.toLowerCase();
+    for (const [itemId, keyBound] of Object.entries(hotkeys)) {
+        if (pressed === keyBound) {
+            e.preventDefault();
+            if (shields.some(s => s.id === itemId)) selectShield(itemId);
+            else if (weapons.some(w => w.id === itemId)) selectWeapon(itemId);
+            break;
+        }
+    }
+});
+
+function handleSystemAction() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (gameState === 'IDLE') {
+        currentRound = 1;
+        totalTimePaused = 0;
+        matchStartTime = performance.now();
+        startRound();
+    } else if (gameState === 'ACTIVE') {
+        sounds.surrender();
+        endMatch(false, "Surrendered!");
+    }
+}
+
+function startRound() {
+    gameState = 'ACTIVE';
+    selectedShield = null; selectedWeapon = null;
+    document.getElementById('player-shield-display').textContent = 'None';
+    document.getElementById('player-weapon-display').textContent = 'None';
+    document.getElementById('feedback-panel').className = 'feedback-box';
+    document.querySelectorAll('.gear-btn').forEach(b => b.classList.remove('active'));
+    currentEnemyWeapon = weapons[Math.floor(Math.random() * weapons.length)];
+    currentEnemyShield = shields[Math.floor(Math.random() * shields.length)];
+    document.getElementById('enemy-weapon-display').textContent = currentEnemyWeapon.name;
+    document.getElementById('enemy-shield-display').textContent = currentEnemyShield.name;
+    document.getElementById('game-status-label').textContent = `ROUND ${currentRound} OF ${TOTAL_ROUNDS} - COUNTER THE TARGET!`;
+    document.getElementById('main-action-btn').textContent = "Surrender Match";
+    document.getElementById('main-action-btn').style.background = "linear-gradient(to bottom, #e74c3c, #c0392b)";
+    document.getElementById('main-action-btn').style.borderColor = "#c0392b";
+    if (!timerInterval) {
+        timerInterval = setInterval(() => {
+            if (gameState === 'ACTIVE') {
+                const currentElapsed = (performance.now() - matchStartTime - totalTimePaused) / 1000;
+                document.getElementById('timer').textContent = `${currentElapsed.toFixed(3)}s`;
+            }
+        }, 43);
+    }
+}
+
+function checkCombatSuccessCondition() {
+    if (!selectedShield || !selectedWeapon) return;
+    let sC = false, wC = false;
+    const eAtk = currentEnemyWeapon.name, eDef = currentEnemyShield.id;
+    if (eAtk === 'Quick Damage Slash' || eAtk === 'Quick Damage Pierce') { if (selectedShield === 'evasion') sC = true; }
+    else if (eAtk === 'Heavy Damage') { if (selectedShield === 'block') sC = true; }
+    else if (eAtk === 'magic weapon') { if (selectedShield === 'warding') sC = true; }
+    if (eDef === 'block') { if (['quick_slash','quick_pierce','magic_damage'].includes(selectedWeapon)) wC = true; }
+    else if (eDef === 'evasion') { if (['heavy_damage','magic_damage'].includes(selectedWeapon)) wC = true; }
+    else if (eDef === 'warding') { if (['heavy_damage','quick_pierce','quick_slash'].includes(selectedWeapon)) wC = true; }
+    if (sC && wC) {
+        if (currentRound < TOTAL_ROUNDS) triggerRoundWinPopup();
+        else {
+            const totalElapsed = (performance.now() - matchStartTime - totalTimePaused) / 1000;
+            sounds.victory();
+            endMatch(true, `Victory! 5 Rounds Cleared in ${totalElapsed.toFixed(3)}s`);
+            processLeaderboardSubmission(totalElapsed);
+        }
+    }
+}
+
+function triggerRoundWinPopup() {
+    gameState = 'ANIMATING';
+    roundPauseStart = performance.now();
+    sounds.winRound();
+    const popup = document.getElementById('round-win-popup');
+    const countdownDisplay = document.getElementById('popup-countdown-display');
+    document.getElementById('round-popup-text').textContent = `Round ${currentRound} Complete! Next up is Round ${currentRound + 1}...`;
+    popup.classList.add('show');
+    let timeLeft = 1.2;
+    if (popupCountdownInterval) clearInterval(popupCountdownInterval);
+    popupCountdownInterval = setInterval(() => {
+        timeLeft -= 0.05;
+        countdownDisplay.textContent = `${Math.max(0, timeLeft).toFixed(2)}s`;
+    }, 50);
+    setTimeout(() => {
+        clearInterval(popupCountdownInterval);
+        popup.classList.remove('show');
+        totalTimePaused += (performance.now() - roundPauseStart);
+        currentRound++;
+        startRound();
+    }, 1200);
+}
+
+function endMatch(victory, msg) {
+    gameState = 'IDLE';
+    clearInterval(timerInterval); timerInterval = null;
+    if (popupCountdownInterval) clearInterval(popupCountdownInterval);
+    document.getElementById('main-action-btn').textContent = "Start Practice Match";
+    document.getElementById('main-action-btn').style.background = "linear-gradient(to bottom, #2ecc71, #27ae60)";
+    document.getElementById('main-action-btn').style.borderColor = "#27ae60";
+    document.getElementById('game-status-label').textContent = "TRAINING ENCOUNTER COMPLETED";
+    const feedback = document.getElementById('feedback-panel');
+    feedback.textContent = msg;
+    feedback.className = victory ? "feedback-box win" : "feedback-box lose";
+    document.getElementById('timer').style.color = victory ? "var(--success)" : "var(--danger)";
+}
+
+async function processLeaderboardSubmission(score) {
+    const name = prompt(`Flawless run! Enter your name (${score.toFixed(3)}s):`);
+    if (!name || !name.trim()) return;
+    try {
+        await _supabase.from('combat_leaderboard').insert([{ player_name: name.trim().substring(0, 14), completion_time: score }]);
+        loadLeaderboard();
+    } catch (err) {}
+}
+
+async function loadLeaderboard() {
+    const tbody = document.getElementById('leaderboard-rows');
+    try {
+        const { data } = await _supabase.from('combat_leaderboard').select('*').order('completion_time', { ascending: true }).limit(7);
+        if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No records.</td></tr>`; return; }
+        tbody.innerHTML = '';
+        data.forEach((s, idx) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td style="font-weight:bold; color:var(--highlight);">#${idx + 1}</td><td>${s.player_name}</td><td style="font-family:monospace; color:var(--success); font-weight:bold;">${parseFloat(s.completion_time).toFixed(3)}s</td>`;
+            tbody.appendChild(row);
+        });
+    } catch (err) { tbody.innerHTML = `<tr><td colspan="3">Offline.</td></tr>`; }
+}
+
+async function registerSubPageVisit() { try { await _supabase.from('page_visits').insert([{}]); } catch (err) {} }
+</script>
+
+</body>
+</html>
