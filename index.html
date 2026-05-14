@@ -225,9 +225,30 @@ h2 {
 
 <div class="header-section">
     <h1 class="title">Winds of Valen Wiki</h1>
+
     <div class="status-bar">
-        <span>⚔️ Server: <span id="server-status" style="color: #4ade80;">Active</span></span>
-        <span>🕒 <span id="game-time">--:--</span></span>
+
+        <span>
+            ⚔️ Server:
+            <span id="server-status" style="color: #4ade80;">
+                Active
+            </span>
+        </span>
+
+        <span>
+            👥 Visitors:
+            <span id="visit-count" style="color: #fbbf24;">
+                ...
+            </span>
+        </span>
+
+        <span>
+            🕒
+            <span id="game-time">
+                --:--
+            </span>
+        </span>
+
     </div>
 </div>
 
@@ -249,7 +270,6 @@ h2 {
                 This live count is fetched directly from the Steam Web API for App ID 4135880.
             </div>
         </div>
-
 <div class="nav-grid">
     <a href="equipper.html" class="nav-card">
         <div>
@@ -332,7 +352,34 @@ async function updateSteamCount() {
         } catch (e) {}
     }
 }
+// --- VISIT COUNTER ---
+async function registerVisit() {
 
+    const counter = document.getElementById('visit-count');
+
+    try {
+
+        // ADD VISIT
+        await _supabase
+            .from('page_visits')
+            .insert([{}]);
+
+        // GET TOTAL VISITS
+        const { count, error } = await _supabase
+            .from('page_visits')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+
+        counter.innerText = count.toLocaleString();
+
+    } catch (err) {
+
+        console.error(err);
+
+        counter.innerText = 'Offline';
+    }
+}
 // --- 2. CLOCK LOGIC ---
 function updateClock() {
     const now = new Date();
@@ -378,6 +425,7 @@ async function addEntry() {
 updateSteamCount(); // Priority 1: Fetch players immediately
 updateClock();      // Priority 2: Set clock
 loadGuestbook();    // Priority 3: Load logs
+registerVisit(); // Visit Counter
 
 // --- REFRESH LOOPS ---
 setInterval(updateClock, 1000);
