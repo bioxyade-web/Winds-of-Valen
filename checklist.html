@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alice's Starters Checklist - Winds of Valen Digital Wiki</title>
+
+<style>
+:root {
+    --accent: #b45309; 
+    --highlight: #fbbf24; 
+    --bg-dark: #0f172a; 
+    --panel-bg: rgba(30, 20, 10, 0.85); 
+    --gold: #f59e0b;
+    --border-color: #78350f;
+    --text-main: #fef3c7;
+    --gem-slot: #1a120b;
+    --success: #2ecc71;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://img.itch.zone/aW1hZ2UvMzk1ODQ1Ny8yNDI3MDEzMS5qcGc=/original/qQvDhM.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 50px; 
+}
+
+.title {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+    font-size: 32px;
+    font-weight: bold;
+    border-bottom: 4px solid var(--accent);
+    background: rgba(0, 0, 0, 0.6);
+    margin-bottom: 20px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 10px var(--gold);
+}
+
+/* --- MAIN SIDEBAR LAYOUT STYLES --- */
+.main-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+.sidebar {
+    flex: 1 1 240px;
+    background: var(--panel-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.sidebar h3 {
+    color: var(--highlight);
+    text-transform: uppercase;
+    font-size: 18px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 10px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sidebar-nav button {
+    width: 100%;
+    background: var(--gem-slot);
+    border: 1px solid var(--highlight);
+    color: var(--highlight);
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.2s;
+    text-align: left;
+}
+
+.sidebar-nav button:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.main-content {
+    flex: 3 1 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* --- CHECKLIST INTERFACE CONTAINER --- */
+.checklist-container {
+    width: 100%;
+    background: var(--panel-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    margin-bottom: 30px;
+}
+
+.checklist-header {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.checklist-header h2 {
+    margin: 0;
+    color: var(--highlight);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 22px;
+}
+
+/* Progress Tracker Styling */
+.progress-bar-container {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    width: 100%;
+    height: 20px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 5px;
+}
+
+.progress-bar-fill {
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.checklist-body {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.checklist-section {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+}
+
+.checklist-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--highlight);
+    font-size: 18px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+/* Checklist Item Custom Controls */
+.task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(120, 53, 15, 0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.task-checkbox-wrapper {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.task-checkbox-wrapper input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: var(--gem-slot);
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.task-checkbox-wrapper input[type="checkbox"]:checked ~ .checkmark {
+    background-color: var(--accent);
+    border-color: var(--highlight);
+    box-shadow: 0 0 8px var(--gold);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.task-checkbox-wrapper input[type="checkbox"]:checked ~ .checkmark:after {
+    display: block;
+}
+
+.task-checkbox-wrapper .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--text-main);
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
+
+.task-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #e2e8f0;
+    transition: color 0.2s, text-decoration 0.2s;
+}
+
+.task-item.completed .task-text {
+    color: #888888;
+    text-decoration: line-through;
+}
+
+kbd {
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    color: var(--highlight);
+    display: inline-block;
+    font-size: 12px;
+    font-family: monospace;
+    padding: 2px 5px;
+    margin: 0 2px;
+}
+
+.reset-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 10px;
+}
+
+.reset-btn {
+    background: var(--gem-slot);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.2s;
+    font-size: 12px;
+}
+
+.reset-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.motivation-panel {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--success);
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- PHONE COMPATIBILITY OVERRIDES --- */
+@media (max-width: 950px) {
+    .main-layout {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+    }
+
+    .checklist-container {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 0 20px 0 !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+
+    .checklist-header {
+        border-top-left-radius: 0 !important;
+        border-top-right-radius: 0 !important;
+    }
+
+    .sidebar {
+        width: 95% !important;
+        order: 2; 
+        margin-bottom: 30px;
+    }
+    
+    .title {
+        font-size: 24px;
+        padding: 20px 10px;
+        letter-spacing: 2px;
+    }
+    
+    .checklist-body {
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .task-text {
+        font-size: 14px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="title">Alice's Starters Checklist</div>
+
+<div class="main-layout">
+    <div class="sidebar">
+        <h3>Navigation</h3>
+        <div class="sidebar-nav">
+            <a href="index.html" style="text-decoration: none;"><button>🏠 Back to Mainpage</button></a>
+            <a href="ai new.html" style="text-decoration: none;"><button>💬 Ask Alice Bot</button></a>
+            <a href="equipper.html" style="text-decoration: none;"><button>⚔️ Go to Equipper</button></a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="checklist-container">
+            <div class="checklist-header">
+                <h2>Getting Started Checklist</h2>
+                <div style="color: #cbd5e1; font-size: 14px;">Things you must certainly do before doing anything else!</div>
+                
+                <div class="progress-bar-container">
+                    <div id="progress-fill" class="progress-bar-fill"></div>
+                    <div id="progress-label" class="progress-text">0/0 Tasks Completed (0%)</div>
+                </div>
+            </div>
+
+            <div class="checklist-body">
+                
+                <div class="checklist-section">
+                    <h3>🕹️ Interface & Core Controls</h3>
+                    
+                    <label class="task-item" data-id="task1">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Try moving the character using <kbd>Left Mouse Button</kbd></span>
+                    </label>
+
+                    <label class="task-item" data-id="task2">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Try moving holding the <kbd>Left Mouse Button</kbd> for permanent pathing</span>
+                    </label>
+
+                    <label class="task-item" data-id="task3">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Try moving the camera with <kbd>Middle Mouse Button</kbd>. <em>(Best advised to change to right click in settings!)</em></span>
+                    </label>
+
+                    <label class="task-item" data-id="task_map_m">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Press <kbd>M</kbd> to open the map</span>
+                    </label>
+
+                    <label class="task-item" data-id="task4">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Write your first chat message in both <strong>Global</strong> and <strong>Local</strong> tabs</span>
+                    </label>
+
+                    <label class="task-item" data-id="task5">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Click the chat bar corner to open/close or minimize it</span>
+                    </label>
+                </div>
+
+                <div class="checklist-section">
+                    <h3>⌨️ Key Combinations & Interaction Mechanics</h3>
+                    
+                    <label class="task-item" data-id="task6">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text"><strong>Hold Middle Mouse + Drag:</strong> Split item stacks evenly</span>
+                    </label>
+
+                    <label class="task-item" data-id="task7">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text"><strong>Right-Click an Item:</strong> Auto-move it instantly when selling, trading, or storing</span>
+                    </label>
+
+                    <label class="task-item" data-id="task10">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text"><kbd>CTRL</kbd> + <kbd>Middle Mouse Button</kbd> + Drag – <strong>X Splitting:</strong> specify exact custom split amount for items</span>
+                    </label>
+
+                    <label class="task-item" data-id="task11">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text"><kbd>CTRL</kbd> + Drop item – Drops every single item of the same type. <em>(Example: empty an entire inventory of the same ores at once!)</em></span>
+                    </label>
+
+                    <label class="task-item" data-id="task12">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Click a stats icon interface panel to look up weapons used and learn how to level it up</span>
+                    </label>
+
+                    <label class="task-item" data-id="task13">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Type <kbd>/commands</kbd> into the chat bar window to view available system functions</span>
+                    </label>
+
+                    <label class="task-item" data-id="task14">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Check out the shop stalls and locate the essential bank stall</span>
+                    </label>
+
+                    <label class="task-item" data-id="task_stall_trade">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Buy and sell your first item to/from a stall (shop)</span>
+                    </label>
+                </div>
+
+                <div class="checklist-section">
+                    <h3>⛏️ Gathering & Crafting Profession Progression</h3>
+                    
+                    <label class="task-item" data-id="task15">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Equip the copper pickaxe gained as a starting tool, mine your first full inventory of <strong>Copper Ore</strong>, and bank it</span>
+                    </label>
+
+                    <label class="task-item" data-id="task16">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Mine your first full inventory of <strong>Tin Ore</strong> and safely store it in your bank stall</span>
+                    </label>
+
+                    <label class="task-item" data-id="task9">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text"><strong>Drag a Gem onto an Amulet or Ring:</strong> Socket the gem into that jewelry piece</span>
+                    </label>
+
+                    <label class="task-item" data-id="task8">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text"><strong>Click and hold + Drag the gem:</strong> Remove it safely from an item socket</span>
+                    </label>
+
+                    <label class="task-item" data-id="task17">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Smelt and produce your very first set of <strong>Bronze Bars</strong> using the heated furnace</span>
+                    </label>
+
+                    <label class="task-item" data-id="task18">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Forge your first piece of gear at the anvil <em>(Don't forget to buy and equip a smithing hammer at the blacksmith stall first!)</em></span>
+                    </label>
+
+                    <label class="task-item" data-id="task19">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Cast out your line and reel in your very first fish</span>
+                    </label>
+
+                    <label class="task-item" data-id="task20">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Mix resources at a cauldron and brew your first potion</span>
+                    </label>
+                </div>
+
+                <div class="checklist-section">
+                    <h3>⚔️ Combat Training & Tactical Stances</h3>
+                    
+                    <label class="task-item" data-id="task_green_crystal">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Click the green crystal for your first time in town to heal</span>
+                    </label>
+
+                    <label class="task-item" data-id="task21">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Equip your starting weapon <em>(Copper Sword, Crude Bow, or Beginner Wand)</em>, or craft/buy a clean bronze sword</span>
+                    </label>
+
+                    <label class="task-item" data-id="task22">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Engage in battle and dispatch your first enemy creature</span>
+                    </label>
+
+                    <label class="task-item" data-id="task_first_loot">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Pick up your first loot <kbd>(left click)</kbd></span>
+                    </label>
+
+                    <label class="task-item" data-id="task23">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Level up your <strong>Attack skill</strong> <em>(Activate an aggressive attack stance using a melee weapon)</em></span>
+                    </label>
+
+                    <label class="task-item" data-id="task24">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Level up your <strong>Defence skill</strong> <em>(Block with a shield or hold a 2-handed weapon in a defensive stance)</em></span>
+                    </label>
+
+                    <label class="task-item" data-id="task25">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Level up your <strong>Warding skill</strong> <em>(Equip a warding shield set to a defensive stance position)</em></span>
+                    </label>
+
+                    <label class="task-item" data-id="task26">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Keep training and leveling up your combat stats until you are strong enough to defeat a <strong>Highwayman</strong></span>
+                    </label>
+
+                    <label class="task-item" data-id="task27">
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" onchange="toggleTask(this)">
+                            <span class="checkmark"></span>
+                        </div>
+                        <span class="task-text">Obtain a unique Highwayman drop reward and begin leveling up your <strong>Evasion</strong> skill <em>(Utilize a parry shield stance)</em></span>
+                    </label>
+                </div>
+
+                <div class="motivation-panel">
+                    🏆 Goal: Play the game and become the best!
+                </div>
+
+                <div class="reset-container">
+                    <button class="reset-btn" onclick="clearProgress()">🔄 Reset All Progress</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load stored state configuration on startup
+document.addEventListener("DOMContentLoaded", () => {
+    const tasks = document.querySelectorAll(".task-item");
+    tasks.forEach(task => {
+        const id = task.getAttribute("data-id");
+        const checkbox = task.querySelector("input[type='checkbox']");
+        const savedState = localStorage.getItem(`vChecklist_${id}`);
+        
+        if (savedState === "true") {
+            checkbox.checked = true;
+            task.classList.add("completed");
+        } else {
+            checkbox.checked = false;
+            task.classList.remove("completed");
+        }
+    });
+    updateProgressBar();
+});
+
+// Manage changes to checklist item checkboxes
+function toggleTask(checkbox) {
+    const taskItem = checkbox.closest(".task-item");
+    const id = taskItem.getAttribute("data-id");
+    
+    if (checkbox.checked) {
+        taskItem.classList.add("completed");
+        localStorage.setItem(`vChecklist_${id}`, "true");
+    } else {
+        taskItem.classList.remove("completed");
+        localStorage.setItem(`vChecklist_${id}`, "false");
+    }
+    updateProgressBar();
+}
+
+// Refresh visual counters and bar graphs
+function updateProgressBar() {
+    const checkboxes = document.querySelectorAll(".task-item input[type='checkbox']");
+    const total = checkboxes.length;
+    let completedCount = 0;
+    
+    checkboxes.forEach(cb => {
+        if (cb.checked) completedCount++;
+    });
+    
+    const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+    
+    document.getElementById("progress-fill").style.width = `${percentage}%`;
+    document.getElementById("progress-label").textContent = `${completedCount}/${total} Tasks Completed (${percentage}%)`;
+}
+
+// Complete removal tool for LocalStorage states
+function clearProgress() {
+    if (confirm("Are you sure you want to clear your checklist progress?")) {
+        const checkboxes = document.querySelectorAll(".task-item input[type='checkbox']");
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+            const taskItem = cb.closest(".task-item");
+            taskItem.classList.remove("completed");
+            const id = taskItem.getAttribute("data-id");
+            localStorage.removeItem(`vChecklist_${id}`);
+        });
+        updateProgressBar();
+    }
+}
+</script>
+
+</body>
+</html>
