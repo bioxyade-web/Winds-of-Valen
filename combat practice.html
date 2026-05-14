@@ -150,6 +150,23 @@ body {
 .player .card-title { color: var(--success); }
 .enemy .card-title { color: var(--danger); }
 
+.hp-bar-container {
+    width: 100%;
+    height: 12px;
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.hp-bar-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #e74c3c, #ff7675);
+    transition: width 0.3s ease;
+}
+
 .gear-display-box {
     background: var(--gem-slot);
     border: 1px solid var(--border-color);
@@ -420,6 +437,8 @@ body {
 
             <div class="combat-card player" id="player-card">
                 <div class="card-title">YOUR LOADOUT</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1;">HP: <span id="hp-value">3</span>/3</div>
+                <div class="hp-bar-container"><div class="hp-bar-fill" id="hp-bar"></div></div>
                 <div style="font-size: 0.85rem; color: #cbd5e1;">Active Counter-Weapon:</div>
                 <div class="gear-display-box" id="player-weapon-display">None</div>
                 <div style="font-size: 0.85rem; color: #cbd5e1;">Active Shield Mitigation:</div>
@@ -450,6 +469,7 @@ body {
                     <li>Select the correct <strong>Shield</strong> to block their attack AND the correct <strong>Weapon</strong> to break their defence simultaneously.</li>
                     <li>Use <strong>Hotkeys</strong> (visible on buttons) for maximum speed. Selection is instant.</li>
                     <li>The clock pauses briefly between rounds for 1.2 seconds to allow you to reset.</li>
+                    <li><strong>HP System:</strong> You start with 3 HP. Every wrong choice reduces 1 HP. Reach 0 and you fail.</li>
                 </ul>
             </p>
         </div>
@@ -536,26 +556,22 @@ function playSynth(freq, type, dur, vol = 0.1, endFreq = null) {
 }
 
 const sounds = {
-    // Tactile UI click with a high-pitched chirpy sweep
     click: () => playSynth(1200, 'sine', 0.05, 0.15, 800),
-    
-    // Rewarding major-interval chime for clearing a round
     winRound: () => {
-        playSynth(523.25, 'triangle', 0.2, 0.1); // C5
-        setTimeout(() => playSynth(659.25, 'triangle', 0.3, 0.1), 100); // E5
+        playSynth(523.25, 'triangle', 0.2, 0.1); 
+        setTimeout(() => playSynth(659.25, 'triangle', 0.3, 0.1), 100); 
     },
-    
-    // Triumphant rising fanfare for match completion
     victory: () => {
-        const notes = [523, 659, 783, 1046, 1318]; // C5, E5, G5, C6, E6
+        const notes = [523, 659, 783, 1046, 1318]; 
         notes.forEach((f, i) => {
             setTimeout(() => playSynth(f, 'square', 0.5, 0.05), i * 120);
         });
     },
-    
-    // Deep descending groan for surrender
     surrender: () => {
         playSynth(200, 'sawtooth', 0.5, 0.1, 40);
+    },
+    error: () => {
+        playSynth(150, 'sawtooth', 0.3, 0.1, 80);
     }
 };
 
@@ -579,6 +595,7 @@ let hotkeys = {
 let gameState = 'IDLE'; 
 let currentRound = 1;
 const TOTAL_ROUNDS = 5;
+let playerHP = 3;
 
 let matchStartTime = 0;
 let totalTimePaused = 0;
@@ -656,6 +673,11 @@ function renderControlGrids() {
     });
 }
 
+function updateHPUI() {
+    document.getElementById('hp-value').textContent = playerHP;
+    document.getElementById('hp-bar').style.width = `${(playerHP / 3) * 100}%`;
+}
+
 function selectShield(id) {
     if (gameState !== 'ACTIVE') return;
     sounds.click();
@@ -667,7 +689,8 @@ function selectShield(id) {
     setTimeout(() => display.classList.remove('pulse-gold'), 300);
     document.querySelectorAll('.shield-opt').forEach(b => b.classList.remove('active'));
     document.getElementById(`btn-${id}`)?.classList.add('active');
-    checkCombatSuccessCondition();
+    
+    validateSelection('shield');
 }
 
 function selectWeapon(id) {
@@ -681,7 +704,35 @@ function selectWeapon(id) {
     setTimeout(() => display.classList.remove('pulse-gold'), 300);
     document.querySelectorAll('.weapon-opt').forEach(b => b.classList.remove('active'));
     document.getElementById(`btn-${id}`)?.classList.add('active');
-    checkCombatSuccessCondition();
+    
+    validateSelection('weapon');
+}
+
+function validateSelection(type) {
+    let isCorrect = false;
+    const eAtk = currentEnemyWeapon.name, eDef = currentEnemyShield.id;
+    
+    if (type === 'shield') {
+        if (eAtk === 'Quick Damage' && selectedShield === 'evasion') isCorrect = true;
+        else if (eAtk === 'Heavy Damage' && selectedShield === 'block') isCorrect = true;
+        else if (eAtk === 'Magic Damage' && selectedShield === 'warding') isCorrect = true;
+    } else {
+        if (eDef === 'block' && ['quick_slash','magic_damage'].includes(selectedWeapon)) isCorrect = true;
+        else if (eDef === 'evasion' && ['heavy_damage','magic_damage'].includes(selectedWeapon)) isCorrect = true;
+        else if (eDef === 'warding' && ['heavy_damage','quick_slash'].includes(selectedWeapon)) isCorrect = true;
+    }
+
+    if (!isCorrect) {
+        playerHP--;
+        updateHPUI();
+        sounds.error();
+        if (playerHP <= 0) {
+            sounds.surrender();
+            endMatch(false, "Defeated! You ran out of HP.");
+        }
+    } else {
+        checkCombatSuccessCondition();
+    }
 }
 
 window.addEventListener('keydown', (e) => {
@@ -701,8 +752,11 @@ function handleSystemAction() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     if (gameState === 'IDLE') {
         currentRound = 1;
+        playerHP = 3;
+        updateHPUI();
         totalTimePaused = 0;
         matchStartTime = performance.now();
+        document.getElementById('timer').style.color = "var(--highlight)";
         startRound();
     } else if (gameState === 'ACTIVE') {
         sounds.surrender();
@@ -744,12 +798,13 @@ function checkCombatSuccessCondition() {
     if (!selectedShield || !selectedWeapon) return;
     let sC = false, wC = false;
     const eAtk = currentEnemyWeapon.name, eDef = currentEnemyShield.id;
-    if (eAtk === 'Quick Damage') { if (selectedShield === 'evasion') sC = true; }
-    else if (eAtk === 'Heavy Damage') { if (selectedShield === 'block') sC = true; }
-    else if (eAtk === 'Magic Damage') { if (selectedShield === 'warding') sC = true; }
-    if (eDef === 'block') { if (['quick_slash','magic_damage'].includes(selectedWeapon)) wC = true; }
-    else if (eDef === 'evasion') { if (['heavy_damage','magic_damage'].includes(selectedWeapon)) wC = true; }
-    else if (eDef === 'warding') { if (['heavy_damage','quick_slash'].includes(selectedWeapon)) wC = true; }
+    if (eAtk === 'Quick Damage' && selectedShield === 'evasion') sC = true;
+    else if (eAtk === 'Heavy Damage' && selectedShield === 'block') sC = true;
+    else if (eAtk === 'Magic Damage' && selectedShield === 'warding') sC = true;
+    if (eDef === 'block' && ['quick_slash','magic_damage'].includes(selectedWeapon)) wC = true;
+    else if (eDef === 'evasion' && ['heavy_damage','magic_damage'].includes(selectedWeapon)) wC = true;
+    else if (eDef === 'warding' && ['heavy_damage','quick_slash'].includes(selectedWeapon)) wC = true;
+    
     if (sC && wC) {
         if (currentRound < TOTAL_ROUNDS) triggerRoundWinPopup();
         else {
