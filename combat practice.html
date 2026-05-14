@@ -437,7 +437,7 @@ body {
 
             <div class="combat-card player" id="player-card">
                 <div class="card-title">YOUR LOADOUT</div>
-                <div style="font-size: 0.85rem; color: #cbd5e1;">HP: <span id="hp-value">3</span>/3</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1;">HP: <span id="hp-value">1</span>/1</div>
                 <div class="hp-bar-container"><div class="hp-bar-fill" id="hp-bar"></div></div>
                 <div style="font-size: 0.85rem; color: #cbd5e1;">Active Counter-Weapon:</div>
                 <div class="gear-display-box" id="player-weapon-display">None</div>
@@ -469,7 +469,7 @@ body {
                     <li>Select the correct <strong>Shield</strong> to block their attack AND the correct <strong>Weapon</strong> to break their defence simultaneously.</li>
                     <li>Use <strong>Hotkeys</strong> (visible on buttons) for maximum speed. Selection is instant.</li>
                     <li>The clock pauses briefly between rounds for 1.2 seconds to allow you to reset.</li>
-                    <li><strong>HP System:</strong> You start with 3 HP. Every wrong choice reduces 1 HP. Reach 0 and you fail.</li>
+                    <li><strong>HP System:</strong> You start with 1 HP. A wrong choice reduces HP to 0 and you fail.</li>
                 </ul>
             </p>
         </div>
@@ -595,7 +595,7 @@ let hotkeys = {
 let gameState = 'IDLE'; 
 let currentRound = 1;
 const TOTAL_ROUNDS = 5;
-let playerHP = 3;
+let playerHP = 1;
 
 let matchStartTime = 0;
 let totalTimePaused = 0;
@@ -675,7 +675,7 @@ function renderControlGrids() {
 
 function updateHPUI() {
     document.getElementById('hp-value').textContent = playerHP;
-    document.getElementById('hp-bar').style.width = `${(playerHP / 3) * 100}%`;
+    document.getElementById('hp-bar').style.width = `${(playerHP / 1) * 100}%`;
 }
 
 function selectShield(id) {
@@ -752,7 +752,7 @@ function handleSystemAction() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     if (gameState === 'IDLE') {
         currentRound = 1;
-        playerHP = 3;
+        playerHP = 1;
         updateHPUI();
         totalTimePaused = 0;
         matchStartTime = performance.now();
