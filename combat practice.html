@@ -455,16 +455,16 @@ body {
             <ul class="guide-list">
                 <li><strong>Breaking Enemy Shields (Offense):</strong>
                     <ul>
-                        <li>Enemy <span style="color:var(--highlight)">Block</span>: Use <strong>Quick Damage Slash</strong>, <strong>Quick Damage Pierce</strong>, or <strong>magic weapon</strong></li>
-                        <li>Enemy <span style="color:var(--highlight)">Evasion</span>: Use <strong>Heavy Damage</strong> or <strong>magic weapon</strong></li>
-                        <li>Enemy <span style="color:var(--highlight)">Warding</span>: Use <strong>Heavy Damage</strong>, <strong>Quick Damage Pierce</strong>, or <strong>Quick Damage Slash</strong></li>
+                        <li>Enemy <span style="color:var(--highlight)">Block</span>: Use <strong>Quick Damage</strong>, or <strong>Magic Damage</strong></li>
+                        <li>Enemy <span style="color:var(--highlight)">Evasion</span>: Use <strong>Heavy Damage</strong> or <strong>Magic Damage</strong></li>
+                        <li>Enemy <span style="color:var(--highlight)">Warding</span>: Use <strong>Heavy Damage</strong>, or <strong>Quick Damage</strong></li>
                     </ul>
                 </li>
                 <li style="margin-top: 8px;"><strong>Countering Enemy Attacks (Defence):</strong>
                     <ul>
-                        <li>Enemy <strong>Quick Damage Pierce / Quick Damage Slash</strong>: Use <span style="color:var(--highlight)">Evasion</span> shield</li>
+                        <li>Enemy <strong>Quick Damage</strong>: Use <span style="color:var(--highlight)">Evasion</span> shield</li>
                         <li>Enemy <strong>Heavy Damage</strong>: Use <span style="color:var(--highlight)">Block</span> shield</li>
-                        <li>Enemy <strong>magic weapon</strong>: Use <span style="color:var(--highlight)">Warding</span> shield</li>
+                        <li>Enemy <strong>Magic Damage</strong>: Use <span style="color:var(--highlight)">Warding</span> shield</li>
                     </ul>
                 </li>
             </ul>
@@ -561,14 +561,13 @@ const shields = [
 
 const weapons = [
     { id: 'heavy_damage', name: 'Heavy Damage' },
-    { id: 'quick_slash', name: 'Quick Damage Slash' },
-    { id: 'quick_pierce', name: 'Quick Damage Pierce' },
-    { id: 'magic_damage', name: 'magic weapon' }
+    { id: 'quick_slash', name: 'Quick Damage' },
+    { id: 'magic_damage', name: 'Magic Damage' }
 ];
 
 let hotkeys = {
     'block': '1', 'evasion': '2', 'warding': '3',
-    'heavy_damage': 'q', 'quick_slash': 'w', 'quick_pierce': 'e', 'magic_damage': 'r'
+    'heavy_damage': 'q', 'quick_slash': 'w', 'magic_damage': 'r'
 };
 
 let gameState = 'IDLE'; 
@@ -734,12 +733,12 @@ function checkCombatSuccessCondition() {
     if (!selectedShield || !selectedWeapon) return;
     let sC = false, wC = false;
     const eAtk = currentEnemyWeapon.name, eDef = currentEnemyShield.id;
-    if (eAtk === 'Quick Damage Slash' || eAtk === 'Quick Damage Pierce') { if (selectedShield === 'evasion') sC = true; }
+    if (eAtk === 'Quick Damage') { if (selectedShield === 'evasion') sC = true; }
     else if (eAtk === 'Heavy Damage') { if (selectedShield === 'block') sC = true; }
-    else if (eAtk === 'magic weapon') { if (selectedShield === 'warding') sC = true; }
-    if (eDef === 'block') { if (['quick_slash','quick_pierce','magic_damage'].includes(selectedWeapon)) wC = true; }
+    else if (eAtk === 'Magic Damage') { if (selectedShield === 'warding') sC = true; }
+    if (eDef === 'block') { if (['quick_slash','magic_damage'].includes(selectedWeapon)) wC = true; }
     else if (eDef === 'evasion') { if (['heavy_damage','magic_damage'].includes(selectedWeapon)) wC = true; }
-    else if (eDef === 'warding') { if (['heavy_damage','quick_pierce','quick_slash'].includes(selectedWeapon)) wC = true; }
+    else if (eDef === 'warding') { if (['heavy_damage','quick_slash'].includes(selectedWeapon)) wC = true; }
     if (sC && wC) {
         if (currentRound < TOTAL_ROUNDS) triggerRoundWinPopup();
         else {
