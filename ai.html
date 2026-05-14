@@ -369,6 +369,7 @@ button:hover {
 }
 /* --- SIDEBAR & LAYOUT END --- */
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -13852,6 +13853,20 @@ window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
 updateOnlineStatus();
+// START PASTE: BACKGROUND VISITOR TRACKER
+const SUPABASE_URL = 'https://qiwstqpznabemqttivoa.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_cDOxkol6uWGhuAg564EmdQ_v3uhSeYQ';
+const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function registerSubPageVisit() {
+    try {
+        await _supabase.from('page_visits').insert([{}]);
+    } catch (err) {
+        console.error("Failed to track visit:", err);
+    }
+}
+registerSubPageVisit();
+// END PASTE
 
 </script>
 </body>
