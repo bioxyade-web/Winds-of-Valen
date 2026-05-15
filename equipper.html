@@ -969,7 +969,6 @@ document.addEventListener('click', function(event) {
         update();
     }
 });
-// START PASTE: BACKGROUND VISITOR TRACKER
 const SUPABASE_URL = 'https://qiwstqpznabemqttivoa.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_cDOxkol6uWGhuAg564EmdQ_v3uhSeYQ';
 const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -982,9 +981,7 @@ async function registerSubPageVisit() {
     }
 }
 registerSubPageVisit();
-// END PASTE
 let favourites = JSON.parse(localStorage.getItem("vEquipper_favourites")) || [];
-
 function toggleFavourite(itemName, event) {
     if(event) event.stopPropagation();
     const index = favourites.indexOf(itemName);
@@ -997,7 +994,12 @@ function toggleFavourite(itemName, event) {
     update();
 }
 
+//========================================================= ITEM LISTING =========================================================
+
 const items = [
+
+//================= HELM LISTING =================
+
     {name:"Skeleton Helmet", slot:"head", headType: "Heavy armor", defPierce:7, defSlash:5, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
     {name:"Bronze Helmet", slot:"head", headType: "Heavy armor", defPierce:6, defSlash:6, sellPrice:35, source:"Anvil", craftData: { ingredients: "4 Bronze Bar", smLevel: 8, smXP: 60, dur: "6s" }},
     {name:"Iron Helmet", slot:"head", headType: "Heavy armor", defPierce:10, defSlash:10, sellPrice:105, source:"Anvil", craftData: { ingredients: "4 Iron Bar", smLevel: 18, smXP: 120, dur: "10s" }},
@@ -1005,41 +1007,65 @@ const items = [
     {name:"Mithril Helmet", slot:"head", headType: "Heavy armor", defPierce:25, defSlash:25, sellPrice:700, source:"Anvil", craftData: { ingredients: "4 Mithril Bar", smLevel: 38, smXP: 620, dur: "18s" }},
     {name:"Leather Hood", slot:"head", headType: "Light armor", defPierce:3, defSlash:3, defFire:3, defLight:3, defIce:3, agi:5, sellPrice:35, source:"Archery Stall in Valen Gate"},
     {name:"Pirate Hat", slot:"head", headType: "Light armor", defPierce:6, defSlash:6, defFire:6, defLight:6, defIce:6, agi:10, rangedPower:10, sellPrice:210, drops:[{u:"Pirate Captain",l:25, loc:"Valen Port"}]},
+
+//================= CHEST LISTING =================
+
     {name:"Bronze Platebody", slot:"chest", chestType: "Heavy armor", defPierce:9, defSlash:7, sellPrice:70, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "10 Bronze Bar", smLevel: 6, smXP: 60, dur: "18s" }},
     {name:"Iron Platebody", slot:"chest", chestType: "Heavy armor", defPierce:14, defSlash:11, sellPrice:175, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "10 Iron Bar", smLevel: 16, smXP: 300, dur: "28s" }},
     {name:"Steel Platebody", slot:"chest", chestType: "Heavy armor", defPierce:21, defSlash:18, sellPrice:350, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "10 Steel Bar", smLevel: 26, Capability: 550, Platform: "38s" }},
     {name:"Mithril Platebody", slot:"chest", chestType: "Heavy armor", defPierce:35, defSlash:29, sellPrice:1750, source:"Anvil", craftData: { ingredients: "10 Mithril Bar", smLevel: 36, smXP: 1550, dur: "48s" }},
     {name:"Leather Armour", slot:"chest", chestType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:70, source:"Archery Stall in Valen Gate"},
     {name:"Pirate Armour", slot:"chest", chestType: "Light armor", defPierce:6, Capability:7, defFire:7, Platform:7, defIce:7, agi:10, sellPrice:175, drops:[{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
+
+//================= LEGS LISTING =================
+
     {name:"Bronze Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:8, defSlash:6, sellPrice:49, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Bronze Bar", smLevel: 2, smXP: 120, dur: "16s" }},
     {name:"Iron Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:13, defSlash:10, sellPrice:140, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Iron Bar", smLevel: 12, Capability: 240, Platform: "24s" }},
     {name:"Steel Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:21, defSlash:16, sellPrice:280, source:"Anvil", alsoSource:"Armour Stall in Valen Gate", craftData: { ingredients: "8 Steel Bar", smLevel: 22, smXP: 440, dur: "32s" }},
     {name:"Mithril Platelegs", slot:"legs", legsType: "Heavy armor", defPierce:30, defSlash:27, sellPrice:1400, source:"Anvil", craftData: { ingredients: "8 Mithril Bar", smLevel: 32, smXP: 1240, dur: "40s" }},
     {name:"Leather Legs", slot:"legs", legsType: "Light armor", defPierce:4, defSlash:3, defFire:4, defLight:3, defIce:2, agi:5, sellPrice:49, source:"Archery Stall in Valen Gate"},
     {name:"Pirate Legs", slot:"legs", legsType: "Light armor", defPierce:5, Capability:6, defFire:6, Platform:6, defIce:6, agi:10, sellPrice:140, drops:[{u:"Pirate Rigger",l:10, loc:"Valen Port"}]},
+
+//================= BOOTS LISTING =================
+
     {name:"Berserker Boots", slot:"feet", meleePower:8, defPierce:7, defSlash:7, sellPrice:490, drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}]},
     {name:"Leather Boots", slot:"feet", defPierce:2, defSlash:2, defFire:2, Platform:2, defIce:1, agi:5, sellPrice:28, source:"Archery Stall in Valen Gate"},
     {name:"Mining Boots", slot:"feet", miningPower:5, sellPrice:28, drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
     {name:"Pirate Boots", slot:"feet", defPierce:5, defSlash:3, defFire:2, Platform:4, defIce:2, agi:10, sellPrice:70, drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"}]},
+
+//================= GLOVES LISTING =================
+
     {name:"Berserker Gloves", slot:"hands", meleePower:5, defPierce:5, defSlash:5, sellPrice:210, drops:[{u:"Goblin Villager",l:15, loc:"Goblin village south of Valen Gate"}]},
     {name:"Mining Gloves", slot:"hands", miningPower:15, sellPrice:140, source:"Anvil", craftData: { ingredients: "3 Steel Bar", smLevel: 21, smXP: 165, dur: "14s" }},
     {name:"Artisan Gloves", slot:"hands", smithingPower:10, potionPower:10, sellPrice:1400, drops:[{u:"Elf Scholar",l:37, loc:"Elven Haven east of Valen Gate"}]},
+
+//================= 1 HANDED MELLEE WEAPONS LISTING =================
+
     {name:"Copper Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:10, speed:2, range:120, accType:"Slash", accuracy:8, sellPrice:0, source:"Sword Stall in Valen Gate"},
     {name:"Bronze Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:15, speed:2, range:120, accType:"Slash", accuracy:15, sellPrice:40, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", craftData: { ingredients: "6 Bronze Bar", smLevel: 4, smXP: 90, dur: "8s" }},
     {name:"Iron Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:25, speed:2, range:120, accType:"Slash", accuracy:30, sellPrice:105, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", drops:[{u:"Bandit Mercenary",l:30, loc:"Bandit Camp north-east of Valen Gate"}], craftData: { ingredients: "6 Iron Bar", smLevel: 14, smXP: 180, dur: "12s" }},
     {name:"Steel Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:40, speed:2, range:120, accType:"Slash", accuracy:50, sellPrice:210, source:"Anvil", alsoSource:"Sword Stall in Valen Gate", craftData: { ingredients: "6 Steel Bar", smLevel: 24, smXP: 330, dur: "16s" }},
     {name:"Mithril Sword", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Slash", accuracy:75, sellPrice:1050, source:"Anvil", craftData: { ingredients: "6 Mithril Bar", smLevel: 34, smXP: 930, dur: "20s" }},
     {name:"Skeleton Rapier", slot:"weapon", subType:"1H Weapon", dmgType:"Quick", damage:60, speed:2, range:120, accType:"Pierce", accuracy:75, sellPrice:2100, drops:[{u:"Skeleton Pioneer",l:90, loc:"West Mine deeper sections"}]},
+
+//================= 2 HANDED MELLEE WEAPONS LISTING =================
+
     {name:"Goblin Axe", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:40, speed:3, range:150, accType:"Slash", accuracy:30, sellPrice:70, drops:[{u:"Goblin Berserker",l:9, loc:"Broken village south of Valen Gate"}]},
     {name:"Bandit Spear", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:65, speed:3, range:150, accType:"Pierce", accuracy:50, sellPrice:420, drops:[{u:"Bandit Leader",l:25, loc:"Forest east of Valen Gate"}]},
     {name:"Skeleton Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:100, speed:3, range:150, accType:"Slash", accuracy:70, sellPrice:1750, drops:[{u:"Skeleton Knight",l:26, loc:"West Mine"}]},
     {name:"Elven Greatsword", slot:"weapon", subType:"2H Weapon", isTwoHanded: true, dmgType:"Heavy", damage:150, speed:3, range:150, accType:"Slash", accuracy:100, sellPrice:7000, drops:[{u:"Elf Warden",l:120, loc:"Elven Haven east of Valen Gate"}]},
+
+//================= BOW WEAPONS LISTING =================
+
     {name:"Crude Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:5, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:5, source:"Archery Stall in Valen Gate"},
     {name:"Wood Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:15, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:80, source:"Archery Stall in Valen Gate"},
     {name:"Goblin Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:20, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:100, drops:[{u:"Goblin Watcher",l:9, loc:"Goblin Cave south-west of Valen Gate"}]},
     {name:"Birch Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:30, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:250, source:"Archery Stall in Valen Gate"},
     {name:"Willow Bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Heavy", damage:45, speed:2.5, range:1200, accType:"Pierce", accuracy:0, sellPrice:1000, source:"Archery Stall in Valen Gate"},
     {name:"Exotic bow", slot:"weapon", subType:"Bows", isTwoHanded: true, dmgType:"Quick", damage:30, speed:1.5, range:750, accType:"Pierce", accuracy:0, sellPrice:420, drops:[{u:"Pirate Captain",l:25, loc:"Valen Port"}]},
+
+//================= MAGIC WEAPONS LISTING =================
+
     {name:"Beginner wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:8, range:600, speed:2, firePower:5, sellPrice:2, source:"Wand Stall in Valen Gate"},
     {name:"Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:12, range:600, speed:2, firePower:10, sellPrice:42, source:"Wand Stall in Valen Gate"},
     {name:"Birch Fire wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:20, range:600, speed:2, firePower:20, sellPrice:140, source:"Wand Stall in Valen Gate"},
@@ -1048,6 +1074,9 @@ const items = [
     {name:"Willow ice wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, icePower:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
     {name:"Willow lightning wand", slot:"weapon", subType:"Magic 1H", dmgType:"Mystical", damage:35, range:600, speed:2, Platform:40, sellPrice:700, source:"Wand Stall in Valen Gate"},
     {name:"Ornate fire staff", slot:"weapon", subType:"Magic 2H", isTwoHanded: true, dmgType:"Mystical", damage:140, range:800, speed:3, firePower:70, sellPrice:7000, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
+
+//================= SHIELDS LISTING =================
+
     {name:"Skeleton Shield", slot:"shield", shieldType:"Block", shieldPower:25, sellPrice:42, drops:[{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
     {name:"Iron Shield", slot:"shield", shieldType:"Block", shieldPower:35, sellPrice:350, source:"Armour Stall in Valen Gate", alsoSource:"Shield Stall in Valen Port"},
     {name:"Steel Shield", slot:"shield", shieldType:"Block", shieldPower:50, sellPrice:1750, source:"Shield Stall in Valen Port"},
@@ -1057,10 +1086,16 @@ const items = [
     {name:"Adept Ward", slot:"shield", shieldType:"Ward", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
     {name:"Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:50, sellPrice:1400, drops:[{u:"Highwayman",l:28, loc:"West Mine"}]},
     {name:"Advanced Parry Shield", slot:"shield", shieldType:"Deflect", shieldPower:70, sellPrice:7000, source:"Shield Stall in Valen Port"},
+
+//================= AMMO LISTING =================
+
     {name:"Wooden arrow", slot:"ammo", pierceBonus:10, sellPrice:1, source:"Archery Stall in Valen Gate"},
     {name:"Bronze arrow", slot:"ammo", pierceBonus:20, sellPrice:3, source:"Archery Stall in Valen Gate"},
     {name:"Iron arrow", slot:"ammo", pierceBonus:40, sellPrice:14, source:"Archery Stall in Valen Gate", drops:[{u:"Pirate Deckhand",l:10, loc:"Valen Port"},{u:"Pirate Rigger",l:10, loc:"Valen Port"},{u:"Pirate Corsair",l:10, loc:"Valen Port"}]},
     {name:"Steel arrow", slot:"ammo", pierceBonus:60, sellPrice:28, source:"Archery Stall in Valen Gate"},
+
+//================= JEWELLERY LISTING =================
+
     {name:"Cow Ring", slot:"ring", meleePower:4, rangedPower:7, magicPower:4, sellPrice:14, drops:[{u:"Cow",l:5, loc:"Farmlands south-east of Valen Gate"}]},
     {name:"Copper Ring", slot:"ring", meleePower:6, rangedPower:5, magicPower:4, sellPrice:14, drops:[{u:"Goblin",l:1, loc:"Goblin Cave south-east of Valen Gate"},{u:"Skeleton",l:6, loc:"Graveyard south of Valen Gate"}]},
     {name:"Gold Ring", slot:"ring", meleePower:8, rangedPower:7, magicPower:7, sellPrice:70, drops:[{u:"Bandit",l:10, loc:"Forest east of Valen Gate"}]},
@@ -1070,8 +1105,13 @@ const items = [
     {name:"Gold Amulet", slot:"neck", meleePower:13, rangedPower:13, magicPower:13, sellPrice:560, source:"Jewellery Stall in Valen Gate"},
     {name:"Titanium Amulet", slot:"neck", meleePower:17, rangedPower:17, magicPower:17, sellPrice:2100, source:"Jewellery Stall in Valen Gate"},
     {name:"Elven Amulet", slot:"neck", meleePower:25, rangedPower:25, magicPower:25, sellPrice:7000, source:"Jewellery Stall in Valen Gate"},
+
+//================= TRINKETS LISTING =================
+
     {name:"Fire totem", slot:"trinket", defFire:10, sellPrice:1400, drops:[{u:"Fire Lich",l:120, loc:"Grave town graveyard"}]},
     {name:"Slightly magical feather", slot:"trinket", agi:5, sellPrice:28, drops:[{u:"Hen",l:1, loc:"Farmlands south-east of Valen Gate"},{u:"Rooster",l:1, loc:"Farmlands south-east of Valen Gate"}]},
+
+//================= TOOLS LISTING =================
     
     {name:"Copper Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:1, sellPrice:0, source:"Mining Stall in Valen gate"},
     {name:"Bronze Pickaxe", slot:"weapon", subType:"Tools", toolType:"Mining Tools", miningPower:4, sellPrice:28, source:"Mining Stall in Valen gate", drops:[{u:"Skeleton Miner",l:13, loc:"Cliffside west of Valen Gate, west of Grave town"}]},
@@ -1084,6 +1124,7 @@ const items = [
     {name:"Sturdy Fishing Rod", slot:"weapon", subType:"Tools", toolType:"Fishing tools", fishingPower:20, sellPrice:700, source:"Fishing Stall in Valen port"}
 ];
 
+//================= GEMS LISTING =================
 const gems = [
     { name: "Weak Power Gem", type: "meleePower", multi: 0.20, price: 70, loc: "Mining Tin Rock or Copper Rock" },
     { name: "Power Gem", type: "meleePower", multi: 0.30, price: 245, loc: "Mining Iron Rock" },
@@ -1096,6 +1137,10 @@ const gems = [
     { name: "Smithing Power Gem", type: "smithingPower", flat: 5, price: 1400, loc: "Cut out of Rare Elder Trout using Bait Knife" },
     { name: "Mining Power Gem", type: "miningPower", flat: 5, price: 3500, loc: "Mining Gold Rock or Volcanic Gold Rock" }
 ];
+
+//========================================================= END OF ITEM LISTING =========================================================
+//========================================================= DESCRIPTIONS =========================================================
+
 
 const tooltipDescriptions = {
     quickDamage: "Quick damage a weapon will do on successful hit.",
@@ -1124,6 +1169,8 @@ const tooltipDescriptions = {
     lightningDefence: "Reduces incoming lightning damage.",
     totalItemValue: "Total item value the player has currently equipped."
 };
+
+//========================================================= END OF DESCRIPTIONS =========================================================
 
 const tooltip = document.getElementById("tooltip");
 
