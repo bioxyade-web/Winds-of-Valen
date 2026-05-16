@@ -810,6 +810,11 @@ const knowledge = [
     answer: "<img src='https://static.wikitide.net/windsofvalenwiki/thumb/9/93/Pvppop.png/800px-Pvppop.png' alt='pvp warning Tab'><br>The <strong>Darklands</strong> is a dangerous region designed for player-versus-player combat. Before entering the Darklands, players receive a PvP warning. This warning reminds players that entering a PvP zone carries significant risk. PvP takes place exclusively within the Darklands. Players can freely attack each other, and combat uses the same mechanics as PvE, but opponents are adaptive players. Death results in the loss of equipped items and inventory. PvP encourages gear experimentation and learning through defeats. PvP is primarily decided by countering rather than raw stats. A lower-level player using the correct shield and weapon can defeat a higher-level player with an ineffective setup. Key strategies include understanding damage types, using the correct shield, targeting enemy weaknesses, and proper use of potions. Several restrictions apply within PvP: <br>•Logging out is disabled while in combat. <br>•Force-closing the game does not immediately remove the character; it remains in the world for 60 seconds and can still be attacked.<br>• The /unstuck command cannot be used during PvP combat.<br><br>These rules prevent combat avoidance and ensure fair encounters. Players should always equip the correct shield and weapon for their opponent’s weaknesses, stock up on potions before entering, and stay aware of their surroundings. PvP success is knowledge-based, where understanding mechanics and countering enemies matters more than raw stats.<br><img src='https://static.wikitide.net/windsofvalenwiki/thumb/0/04/Darklands_Layout_Upscale.png/901px-Darklands_Layout_Upscale.png' alt='darklands Tab'>"
   },
   {
+    title: "Darklands Map",
+    keywords: ["map od darklands","pvp zone map","map of pvp"],
+    answer: "<img src='https://static.wikitide.net/windsofvalenwiki/thumb/0/04/Darklands_Layout_Upscale.png/901px-Darklands_Layout_Upscale.png' alt='darklands Tab'>"
+  },
+  {
     title: "Wheat Fields Graveyard",
     keywords: ["wheat fields graveyard","starter","angel statue","graves","location","map"],
     answer: "The <strong>Wheat Fields Graveyard</strong> is a haunted point of interest located just past the <strong>Broken Village</strong> and the <strong>Wheat Fields</strong>, south of the <strong>Valen Gate</strong>. It acts as a transition zone between the peaceful farming lands and more areas further south. To reach the Graveyard from <strong>Valen Gate</strong>, travelers must head south, passing through the <strong>Broken Village</strong> and the surrounding <strong>Wheat Fields</strong> until reaching the burial grounds immediately beyond them. The area is filled with scattered graves and marked by a small angel statue at its center. The Graveyard is inhabited by <strong>Skeletons</strong> Level 6.<br><img src='https://static.wikitide.net/windsofvalenwiki/d/d5/Graveyard.png' alt='wheat fields graveyard Tab'>"
@@ -13611,7 +13616,7 @@ Location:
   },
 {
     title: "How to level the defence skill",
-    keywords: ["how to level defence","how to get defence xp","how to train defence","how to increase defence level","how to gain defence experience","how to level defence with a shield", "how to level defence with two handed weapons"],
+    keywords: ["how to level defense","how to level defence","how to get defence xp","how to train defence","how to increase defence level","how to gain defence experience","how to level defence with a shield", "how to level defence with two handed weapons"],
     answer: "• To train your <strong>Defence</strong> skill, you can equip a <strong>shield</strong> and set your combat stance to <strong>Defence</strong>.<br>• You can also gain Defence experience by equipping a <strong>two-handed melee weapon</strong> and setting the stance to Defence.<br>• Every successful hit you land on an enemy while in this stance will increase your Defence experience points.<br>• Increasing this skill is vital for raising your defence rolls and reducing the damage you take from enemies!"
   },
 {
@@ -13837,10 +13842,134 @@ function normalize(word) {
     return word;
 }
 
+// ==========================================
+// DYNAMIC EXP TABLE DATABASE
+// ==========================================
+const xpTableData = {
+  1: { total: 0, prev: 0, range: "0 → 74", hp: 100 },
+  2: { total: 74, prev: 74, range: "74 → 160", hp: 110 },
+  3: { total: 160, prev: 86, range: "160 → 258", hp: 120 },
+  4: { total: 258, prev: 98, range: "258 → 371", hp: 130 },
+  5: { total: 371, prev: 113, range: "371 → 500", hp: 140 },
+  6: { total: 500, prev: 129, range: "500 → 649", hp: 150 },
+  7: { total: 649, prev: 149, range: "649 → 820", hp: 160 },
+  8: { total: 820, prev: 171, range: "820 → 1016", hp: 170 },
+  9: { total: 1016, prev: 196, range: "1016 → 1241", hp: 180 },
+  10: { total: 1241, prev: 225, range: "1241 → 1500", hp: 190 },
+  11: { total: 1500, prev: 259, range: "1500 → 1797", hp: 200 },
+  12: { total: 1797, prev: 297, range: "1797 → 2139", hp: 210 },
+  13: { total: 2139, prev: 342, range: "2139 → 2531", hp: 220 },
+  14: { total: 2531, prev: 392, range: "2531 → 2982", hp: 230 },
+  15: { total: 2982, prev: 451, range: "2982 → 3500", hp: 240 },
+  16: { total: 3500, prev: 518, range: "3500 → 4095", hp: 250 },
+  17: { total: 4095, prev: 595, range: "4095 → 4778", hp: 260 },
+  18: { total: 4778, prev: 683, range: "4778 → 5563", hp: 270 },
+  19: { total: 5563, prev: 785, range: "5563 → 6464", hp: 280 },
+  20: { total: 6464, prev: 901, range: "6464 → 7500", hp: 290 },
+  21: { total: 7500, prev: 1036, range: "7500 → 8690", hp: 300 },
+  22: { total: 8690, prev: 1190, range: "8690 → 10056", hp: 310 },
+  23: { total: 10056, prev: 1366, range: "10056 → 11626", hp: 320 },
+  24: { total: 11626, prev: 1570, range: "11626 → 13429", hp: 330 },
+  25: { total: 13429, prev: 1803, range: "13429 → 15500", hp: 340 },
+  26: { total: 15500, prev: 2071, range: "15500 → 17879", hp: 350 },
+  27: { total: 17879, prev: 2379, range: "17879 → 20612", hp: 360 },
+  28: { total: 20612, prev: 2733, range: "20612 → 23751", hp: 370 },
+  29: { total: 23751, prev: 3139, range: "23751 → 27358", hp: 380 },
+  30: { total: 27358, prev: 3607, range: "27358 → 31500", hp: 390 },
+  31: { total: 31500, prev: 4142, range: "31500 → 36258", hp: 400 },
+  32: { total: 36258, prev: 4758, range: "36258 → 41724", hp: 410 },
+  33: { total: 41724, prev: 5466, range: "41724 → 48003", hp: 420 },
+  34: { total: 48003, prev: 6279, range: "48003 → 55215", hp: 430 },
+  35: { total: 55215, prev: 7212, range: "55215 → 63500", hp: 440 },
+  36: { total: 63500, prev: 8285, range: "63500 → 73017", hp: 450 },
+  37: { total: 73017, prev: 9517, range: "73017 → 83949", hp: 460 },
+  38: { total: 83949, prev: 10932, range: "83949 → 96506", hp: 470 },
+  39: { total: 96506, prev: 12557, range: "96506 → 110930", hp: 480 },
+  40: { total: 110930, prev: 14424, range: "110930 → 127500", hp: 490 },
+  41: { total: 127500, prev: 16570, range: "127500 → 146533", hp: 500 },
+  42: { total: 146533, prev: 19033, range: "146533 → 168397", hp: 510 },
+  43: { total: 168397, prev: 21864, range: "168397 → 193512", hp: 520 },
+  44: { total: 193512, prev: 25115, range: "193512 → 222361", hp: 530 },
+  45: { total: 222361, prev: 28849, range: "222361 → 255500", hp: 540 },
+  46: { total: 255500, prev: 33139, range: "255500 → 293567", hp: 550 },
+  47: { total: 293567, prev: 38067, range: "293567 → 337294", hp: 560 },
+  48: { total: 337294, prev: 43727, range: "337294 → 387523", hp: 570 },
+  49: { total: 387523, prev: 50229, range: "387523 → 445222", hp: 580 },
+  50: { total: 445222, prev: 57699, range: "445222 → 511500", hp: 590 },
+  51: { total: 511500, prev: 66178, range: "511500 → 587634", hp: 600 },
+  52: { total: 587634, prev: 76134, range: "587634 → 675088", hp: 610 },
+  53: { total: 675088, prev: 87454, range: "675088 → 775547", hp: 620 },
+  54: { total: 775547, prev: 100459, range: "775547 → 890944", hp: 630 },
+  55: { total: 890944, prev: 115397, range: "890944 → 1023500", hp: 640 },
+  56: { total: 1023500, prev: 132576, range: "1023500 → 1175767", hp: 650 },
+  57: { total: 1175767, prev: 151267, range: "1175767 → 1350676", hp: 660 },
+  58: { total: 1350676, prev: 175000, range: "1350676 → 1551594", hp: 670 },
+  59: { total: 1551594, prev: 230794, range: "1551594 → 1782388", hp: 680 },
+  60: { total: 1782388, prev: 265112, range: "1782388 → 2047500", hp: 690 },
+  61: { total: 2047500, prev: 305612, range: "2047500 → 2352034", hp: 700 },
+  62: { total: 2352034, prev: 348534, range: "2352034 → 2701852", hp: 710 },
+  63: { total: 2701852, prev: 350818, range: "2701852 → 3103688", hp: 720 },
+  64: { total: 3103688, prev: 360836, range: "3103688 → 3565275", hp: 730 },
+  65: { total: 3565275, prev: 461587, range: "3565275 → 4095500", hp: 740 },
+  66: { total: 4095500, prev: 670068, range: "4095500 → 4704568", hp: 750 },
+  67: { total: 4704568, prev: 699636, range: "4704568 → 5404204", hp: 760 },
+  68: { total: 5404204, prev: 803671, range: "5404204 → 6207875", hp: 770 },
+  69: { total: 6207875, prev: 922175, range: "6207875 → 7131050", hp: 780 },
+  70: { total: 7131050, prev: 1060450, range: "7131050 → 8191500", hp: 790 },
+  71: { total: 8191500, prev: 1218137, range: "8191500 → 9409637", hp: 800 },
+  72: { total: 9409637, prev: 1409272, range: "9409637 → 10808909", hp: 810 },
+  73: { total: 10808909, prev: 1607331, range: "10808909 → 12416250", hp: 820 },
+  74: { total: 12416250, prev: 1846350, range: "12416250 → 14262600", hp: 830 },
+  75: { total: 14262600, prev: 2110000, range: "14262600 → 16383500", hp: 840 },
+  76: { total: 16383500, prev: 2431974, range: "16383500 → 18819774", hp: 850 },
+  77: { total: 18819774, prev: 2802524, range: "18819774 → 21618318", hp: 860 },
+  78: { total: 21618318, prev: 3214698, range: "21618318 → 24833000", hp: 870 },
+  79: { total: 24833000, prev: 3682701, range: "24833000 → 28525701", hp: 880 },
+  80: { total: 28525701, prev: 4221800, range: "28525701 → 32767500", hp: 890 },
+  81: { total: 32767500, prev: 4872548, range: "32767500 → 37640048", hp: 900 },
+  82: { total: 37640048, prev: 5597087, range: "37640048 → 43237135", hp: 910 },
+  83: { total: 43237135, prev: 6429355, range: "43237135 → 49666500", hp: 920 },
+  84: { total: 49666500, prev: 7375418, range: "49666500 → 57051902", hp: 930 },
+  85: { total: 57051902, prev: 8473603, range: "57051902 → 65535500", hp: 940 },
+  86: { total: 65535500, prev: 9747085, range: "65535500 → 75280595", hp: 950 },
+  87: { total: 75280595, prev: 11191807, range: "75280595 → 86474770", hp: 960 },
+  88: { total: 86474770, prev: 12858731, range: "86474770 → 99333501", hp: 970 },
+  89: { total: 99333501, prev: 14770702, range: "99333501 → 114104303", hp: 980 },
+  90: { total: 114104303, prev: 16967197, range: "114104303 → 131071500", hp: 990 },
+  91: { total: 131071500, prev: 19490191, range: "131071500 → 150561691", hp: 1000 },
+  92: { total: 150561691, prev: 22404450, range: "150561691 → 172950041", hp: 1010 },
+  93: { total: 172950041, prev: 25697561, range: "172950041 → 198667502", hp: 1020 },
+  94: { total: 198667502, prev: 29541605, range: "198667502 → 228209107", hp: 1030 },
+  95: { total: 228209107, prev: 33934493, range: "228209107 → 262143500", hp: 1040 },
+  96: { total: 262143500, prev: 38980482, range: "262143500 → 301123982", hp: 1050 },
+  97: { total: 301123982, prev: 44776600, range: "301123982 → 345900582", hp: 1060 },
+  98: { total: 345900582, prev: 51434922, range: "345900582 → 397335504", hp: 1070 },
+  99: { total: 397335504, prev: 0, range: "397335504 → MAX", hp: 1080 }
+};
+
 function processInput(text, isAutomatic = false) {
     const rawInput = text.trim();
     let cleanInput = rawInput.toLowerCase().replace(/[^\w\s-]/g, ' ').replace(/\s+/g, ' ').trim();
     
+    // ==========================================
+    // EXTRA STEP: DYNAMIC EXP SYSTEM INTERCEPT
+    // ==========================================
+    if (!cleanInput.includes("how to level")) {
+        if (cleanInput.includes("level") || cleanInput.includes("lvl") || cleanInput.includes("exp") || cleanInput.includes("xp")) {
+            const numberMatches = cleanInput.match(/\d+/g);
+            if (numberMatches && numberMatches.length > 0) {
+                const targetLevel = parseInt(numberMatches[0]);
+                if (xpTableData[targetLevel]) {
+                    const data = xpTableData[targetLevel];
+                    return { 
+                        type: 'text', 
+                        content: `<strong>Experience Table - Level ${targetLevel}</strong><br><br>To reach <strong>Level ${targetLevel}</strong>, you need a Total of <strong>${data.total.toLocaleString()} XP</strong>. (XP needed from previous level: <em>${data.prev.toLocaleString()}</em>). Your active XP Range is <strong>${data.range}</strong>, and your Total HP will be <strong>${data.hp} HP</strong>.` 
+                    };
+                }
+            }
+        }
+    }
+
     // ==========================================
     // STEP 0: THE SMART CHAT BYPASS
     // ==========================================
@@ -13857,7 +13986,7 @@ function processInput(text, isAutomatic = false) {
         return { type: 'text', content: `<strong>${chatMatch.title}</strong><br><br>${chatMatch.answer}` };
     }
 
-// 1. TYPO CORRECTIONS (Ensures 'hello' and 'alice' are fixed before stripping)
+    // 1. TYPO CORRECTIONS (Ensures 'hello' and 'alice' are fixed before stripping)
     const corrections = { 
         "wath": "what", "wat": "what", "were": "where", "wear": "where", 
         "hwo": "how", "sel": "sell", "byu": "buy", "fnd": "find", 
@@ -13868,7 +13997,6 @@ function processInput(text, isAutomatic = false) {
     cleanInput = wordsToFix.map(w => corrections[w] || w).join(' ');
 
     // 2. FUZZY GREETING STRIPPER
-    // This catches "hello", "hi alice", "hey allice", etc. in one go
     const greetingWords = ["hi", "hello", "hey", "heya", "yo", "hiya"];
     const nameVariations = ["alice", "allice"];
     
@@ -13876,7 +14004,6 @@ function processInput(text, isAutomatic = false) {
     
     let testClean = cleanInput.replace(aggressivePattern, '').trim();
     
-    // Safety check: Only strip if there's content left and something actually changed
     if (testClean.length > 0 && testClean !== cleanInput) {
         cleanInput = testClean;
     }
@@ -13923,7 +14050,7 @@ function processInput(text, isAutomatic = false) {
     if (rawWords.length === 0) return { type: 'text', content: "I am Alice. What knowledge do you seek?" };
 
     let results = [];
-knowledge.forEach(entry => {
+    knowledge.forEach(entry => {
         let score = 0;
         const tRaw = entry.title.toLowerCase().replace(/[^\w\s-]/g, ' ').replace(/\s+/g, ' ').trim();
         const tClean = stripFillers(tRaw);
@@ -13953,7 +14080,7 @@ knowledge.forEach(entry => {
             if (kWords.some(k => k.split(/\s+/).includes(a))) score += 4000;
         });
 
-        // HUGE BONUS: If the title is EXACTLY what the user typed (prevents guide-stealing)
+        // HUGE BONUS
         if (tRaw === cleanInput || tClean === searchNoFillers) score += 500000;
 
         kWords.forEach(k => {
@@ -13996,10 +14123,8 @@ knowledge.forEach(entry => {
         return { type: 'text', content: `<strong>${top.title}</strong><br><br>${top.answer}` };
     }
 
-    return { type: 'options', message: "I found multiple answers related to your question 😛. Which of these fits your search best ?", options: uniqueResults.slice(0, 15) };
+    return { type: 'options', Message: "I found multiple answers related to your question 😛. Which of these fits your search best ?", options: uniqueResults.slice(0, 15) };
 }
-
-
 
 // ===================================== END OF BOT =====================================
 
@@ -14057,6 +14182,7 @@ function sendSuggestion(title) {
         addMessage(response, 'alice');
     }, 400);
 }
+
 function clearChat() {
     const chatBox = document.getElementById('chat-box');
     chatBox.innerHTML = `
@@ -14066,6 +14192,7 @@ function clearChat() {
         </div>
     `;
 }
+
 function handleKeyPress(e) {
   if(e.key === 'Enter') sendMessage();
 }
@@ -14076,10 +14203,6 @@ function openModal(src) {
     const modalImg = document.getElementById('modal-img');
     modal.style.display = "flex";
     modalImg.src = src;
-}
-
-function closeModal() {
-    document.getElementById('image-modal').style.display = "none";
 }
 
 function closeModal() {
@@ -14102,6 +14225,7 @@ window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
 updateOnlineStatus();
+
 // START PASTE: BACKGROUND VISITOR TRACKER
 const SUPABASE_URL = 'https://qiwstqpznabemqttivoa.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_cDOxkol6uWGhuAg564EmdQ_v3uhSeYQ';
