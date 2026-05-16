@@ -408,6 +408,7 @@ button:hover {
     <div class="input-area">
         <input type="text" id="user-input" placeholder="Ask about items, mechanics, guides, patches, have a chat,..." onkeypress="handleKeyPress(event)">
         <button onclick="sendMessage()">Ask Alice</button>
+        <button onclick="clearChat()">Clear Chat</button>
     </div>
 </div>
 
@@ -433,7 +434,9 @@ button:hover {
             </div>
         </div>
     </div>
-</div> </div> <script>
+</div> 
+</div> 
+<script>
 
 function downloadFile() {
     // This captures the current state of your HTML file
@@ -14025,7 +14028,15 @@ function sendSuggestion(title) {
         addMessage(response, 'alice');
     }, 400);
 }
-
+function clearChat() {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.innerHTML = `
+        <div class="message alice-msg">
+            <span class="alice-name">ALICE</span>
+            Hello ! i am Alice ❤️, the keeper of Valen's knowledge. What do you want to know from me today 😊 ?
+        </div>
+    `;
+}
 function handleKeyPress(e) {
   if(e.key === 'Enter') sendMessage();
 }
