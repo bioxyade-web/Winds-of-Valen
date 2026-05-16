@@ -363,12 +363,21 @@ button:hover {
         margin-bottom: 30px;
     }
 
-    .input-area {
+.input-area {
         padding-bottom: 20px !important;
+        flex-wrap: wrap; 
+    }
+
+    .input-area input[type="text"] {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    .input-area button {
+        flex-grow: 1;
     }
 }
-/* --- SIDEBAR & LAYOUT END --- */
-</style>
+/* --- SIDEBAR & LAYOUT END --- */</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
